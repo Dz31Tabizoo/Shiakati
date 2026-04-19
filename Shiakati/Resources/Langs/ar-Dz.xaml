@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--<sys:String x:Key="m_Thob">أقمصة</sys:String>
+    <sys:String x:Key="m_Shoes">أحذية</sys:String>
+    <sys:String x:Key="m_Sales">المبيعات</sys:String>-->
+
+    <FlowDirection x:Key="AppFlowDirection">RightToLeft</FlowDirection>
+
+</ResourceDictionary>
