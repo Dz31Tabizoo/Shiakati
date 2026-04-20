@@ -7,8 +7,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" 
-                                        PrimaryColor="DeepPurple" 
-                                        SecondaryColor="Amber" />
+                                             PrimaryColor="BlueGrey" 
+                                             SecondaryColor="DeepOrange" />
 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
 
@@ -17,6 +17,11 @@
                     <SolidColorBrush x:Key="SecondaryBrush" Color="#AB7D4C"/>
                     <SolidColorBrush x:Key="BgBrush" Color="#F5F5F0"/>
                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="#13304F"/>
+                    <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="#E6D9C8"/>
+
+                    <FontFamily x:Key="CairoFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Cairo/static/#Cairo</FontFamily>
+                    <FontFamily x:Key="MontserratFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Montserrat/static/#Montserrat</FontFamily>
+                    <FontFamily x:Key="PoppinsFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Poppins/#Poppins</FontFamily>
                 </ResourceDictionary>
 
                 <ResourceDictionary Source="Resources/Themes/LightTheme.xaml"/>
