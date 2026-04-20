@@ -1,11 +1,11 @@
 ﻿<Window x:Class="Shiakati.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mt="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Shiakati"
         Title="Shiakati POS" Height="720" Width="1280"
         Background="{DynamicResource BgBrush}"
         FlowDirection="{DynamicResource AppFlowDir}">
 
-   
+    
 </Window>

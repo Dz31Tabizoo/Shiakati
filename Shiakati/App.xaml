@@ -7,18 +7,21 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" 
-                                            PrimaryColor="DeepPurple" 
-                                            SecondaryColor="Amber" />
+                                        PrimaryColor="DeepPurple" 
+                                        SecondaryColor="Amber" />
 
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
 
                 <ResourceDictionary>
+                    <SolidColorBrush x:Key="PrimaryBrush" Color="#13304F"/>
+                    <SolidColorBrush x:Key="SecondaryBrush" Color="#AB7D4C"/>
+                    <SolidColorBrush x:Key="BgBrush" Color="#F5F5F0"/>
                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="#13304F"/>
-                    <SolidColorBrush x:Key="SecondaryAccentBrush" Color="#AB7D4C"/>
                 </ResourceDictionary>
 
                 <ResourceDictionary Source="Resources/Themes/LightTheme.xaml"/>
                 <ResourceDictionary Source="Resources/Langs/fr-FR.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/GlobalStyles.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
