@@ -16,17 +16,17 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private void NavigateToDashboard()
         {
-            CurrentView = new DashboardViewModel();
+            //CurrentView = new DashboardViewModel();
         }
          [RelayCommand]
         private void NavigateToSettings()
         {
-            CurrentView = new SettingsViewModel();
+            //CurrentView = new SettingsViewModel();
         } 
         [RelayCommand]
         private void NavigateToPOS()
         {
-            CurrentView = new POSViewModel();
+            //CurrentView = new POSViewModel();
         }
     }
 }

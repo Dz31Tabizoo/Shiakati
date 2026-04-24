@@ -42,7 +42,7 @@
 
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <views:POSView />
+                    <!--<views:PosView />-->
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>

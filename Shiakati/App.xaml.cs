@@ -11,12 +11,7 @@ namespace Shiakati
     {
         public App()
         {
-            // إضافة الموارد يدوياً لضمان التحميل في حال فشل XAML Designer
-            var materialDesignDefaults = new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml")
-            };
-            this.Resources.MergedDictionaries.Add(materialDesignDefaults);
+            
         }
     }
 

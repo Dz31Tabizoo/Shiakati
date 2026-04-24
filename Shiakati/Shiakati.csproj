@@ -56,8 +56,4 @@
     <Resource Include="Resources\Photos\Shiakati Light Logo.jpg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>

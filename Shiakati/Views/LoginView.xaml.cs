@@ -12,16 +12,52 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Shiakati.Views
-{
     /// <summary>
     /// Logique d'interaction pour LoginView.xaml
     /// </summary>
-    public partial class LoginView : Window
+namespace Shiakati.Views
     {
-        public LoginView()
+        public partial class LoginView : Window
         {
-            InitializeComponent();
+            public LoginView()
+            {
+                InitializeComponent();
+            }
+
+            // Permet de déplacer la fenêtre avec la souris
+            private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+            {
+                if (e.ChangedButton == MouseButton.Left)
+                    this.DragMove();
+            }
+
+            // CORRECTION : Le nom doit correspondre à Click="BtnClose_Click" dans le XAML
+            private void BtnClose_Click(object sender, RoutedEventArgs e)
+            {
+                Application.Current.Shutdown();
+            }
+
+            // CORRECTION : Ajout de la méthode manquante pour Click="BtnLogin_Click"
+            private void BtnLogin_Click(object sender, RoutedEventArgs e)
+            {
+                // Simulation de connexion pour le moment
+                string username = TxtUsername.Text;
+                string password = TxtPassword.Password;
+
+                if (username == "admin" && password == "admin")
+                {
+                    // Si c'est bon, on ouvre la MainWindow
+                    MainWindow main = new MainWindow();
+                    main.Show();
+                    this.Close();
+                }
+                else
+                {
+                    // Affichage du message d'erreur défini dans ton XAML
+                    TxtErrorMessage.Visibility = Visibility.Visible;
+                }
+            }
         }
     }
-}
+
+
