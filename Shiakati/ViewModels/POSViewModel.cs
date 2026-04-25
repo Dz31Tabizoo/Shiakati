@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using Shiakati.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -8,6 +9,7 @@ namespace Shiakati.ViewModels
 {
     public partial class POSViewModel : ObservableObject
     {
+        private readonly ILogger<POSViewModel> _logger;
         // ==========================================
         // 1. PROPRIÉTÉS (Connectées à l'UI)
         // ==========================================
@@ -16,7 +18,7 @@ namespace Shiakati.ViewModels
         private string _tabName;
 
         [ObservableProperty]
-        private string _searchText;
+        private string _searchText = string.Empty; // Initialiser _searchText à une chaîne vide pour satisfaire la contrainte non-nullable
 
         // La liste de tous les produits (cachée en mémoire)
         private List<Product> _allProducts = new();
@@ -35,12 +37,15 @@ namespace Shiakati.ViewModels
         // ==========================================
         // 2. CONSTRUCTEUR
         // ==========================================
-        public POSViewModel(string name)
+        public POSViewModel(string name,ILogger<POSViewModel> logger)
         {
             TabName = name;
             LoadFakeProducts();
+            _logger = logger;
+            _logger.LogInformation("POSViewModel for {TabName} initialized.", TabName);
 
             // Astuce : On dit au ViewModel de recalculer le Total à chaque fois qu'on ajoute/supprime un article
+            LoadFakeProducts();
             CartItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(CartTotal));
         }
 

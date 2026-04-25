@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Shiakati.Views;
 
 namespace Shiakati.ViewModels
 {
@@ -8,8 +9,10 @@ namespace Shiakati.ViewModels
         [ObservableProperty]
         private object _currentView;
 
-        public MainViewModel()
+        public PosContainerViewModel PosContainer { get; } 
+        public MainViewModel( PosContainerViewModel posContainer)
         {
+            PosContainer = posContainer;
             // set a default 
             //CurrentView = new DashboardViewModel();
         }
@@ -26,7 +29,7 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private void NavigateToPOS()
         {
-            //CurrentView = new POSViewModel();
+            CurrentView = this.PosContainer;
         }
     }
 }

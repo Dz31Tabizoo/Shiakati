@@ -2,11 +2,13 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Shiakati.ViewModels
 {
     public partial class PosContainerViewModel : ObservableObject
     {
+        private readonly IServiceProvider _serviceProvider;
         public ObservableCollection<POSViewModel> PosTabs { get; set; } = new();
 
         [ObservableProperty]
@@ -14,15 +16,16 @@ namespace Shiakati.ViewModels
 
         private int _tabCounter = 1;
 
-        public PosContainerViewModel()
+        public PosContainerViewModel(IServiceProvider serviceProvider)
         {
-            // Initialize with one tab
+            _serviceProvider = serviceProvider;
             AddNewTab();
         }
         [RelayCommand]
         private void AddNewTab()
         {
-            var newTab = new POSViewModel($"Ticket #{_tabCounter++}");
+            string tabName = $"Client #{_tabCounter}";
+            var newTab = ActivatorUtilities.CreateInstance<POSViewModel>(_serviceProvider, tabName);
             PosTabs.Add(newTab);
             SelectedTab = newTab;
         }
@@ -35,7 +38,7 @@ namespace Shiakati.ViewModels
                 PosTabs.Remove(tabToClose);
                 if (SelectedTab == tabToClose)
                 {
-                    SelectedTab = PosTabs.Count > 0 ? PosTabs[0] : null;
+                    SelectedTab = PosTabs.Count > 0 ? PosTabs[0] : default!;
                 }
             }
         }

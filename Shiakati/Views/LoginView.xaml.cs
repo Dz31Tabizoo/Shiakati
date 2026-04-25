@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,8 +47,8 @@ namespace Shiakati.Views
 
                 if (username == "admin" && password == "admin")
                 {
-                    // Si c'est bon, on ouvre la MainWindow
-                    MainWindow main = new MainWindow();
+                    // Si c'est bon, on ouvre la MainView
+                    var main = App.ServiceProvider.GetRequiredService<MainView>();
                     main.Show();
                     this.Close();
                 }

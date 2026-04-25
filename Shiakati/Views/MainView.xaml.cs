@@ -9,11 +9,12 @@ namespace Shiakati.Views
     /// <summary>
     /// Logique d'interaction pour MainView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : Window
     {
-        public MainWindow()
+        public MainView(MainViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         [DllImport("user32.dll")]

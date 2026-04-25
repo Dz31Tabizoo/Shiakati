@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shiakati.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,11 @@ namespace Shiakati.Views
     /// </summary>
     public partial class POSContainerView : UserControl
     {
-        public POSContainerView()
+        public POSContainerView(PosContainerViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
+
         }
     }
 }
