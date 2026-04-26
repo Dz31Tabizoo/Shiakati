@@ -75,8 +75,8 @@
 
                                     <Border Grid.Row="1" Background="{StaticResource BgBrush}" Padding="5">
                                         <StackPanel>
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding Price, StringFormat={}{0:N2} DA}" Foreground="{StaticResource SecondaryBrush}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding ProductInfo.ProductName}" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="{StaticResource SecondaryBrush}" FontWeight="SemiBold"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -100,10 +100,10 @@
                 <DataGrid Grid.Row="1" IsReadOnly="True" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
                           CanUserAddRows="False" Background="Transparent" BorderThickness="0" HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        
-                            <DataGridTextColumn Header="Article" Binding="{Binding ProductName}" Width="*"/>
 
-                            <DataGridTemplateColumn Header="Qté" Width="110">
+                        <DataGridTextColumn Header="Article" Binding="{Binding DisplayName}" Width="*"/>
+
+                        <DataGridTemplateColumn Header="Qté" Width="110">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -124,7 +124,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Total" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="100"/>
+                        <DataGridTextColumn Header="Total" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="100"/>
                         <DataGridTemplateColumn Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -146,7 +146,7 @@
                     <Separator Margin="0,0,0,10"/>
                     <Grid Margin="0,5">
                         <TextBlock Text="Sous-total :" FontSize="16"/>
-                        <TextBlock Text="0.00 DA" FontSize="16" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" FontSize="16" HorizontalAlignment="Right" FontWeight="SemiBold"/>
                     </Grid>
                     <Grid Margin="0,5">
                         <TextBlock Text="Remise :" FontSize="16" Foreground="Green"/>

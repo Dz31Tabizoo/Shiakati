@@ -1,11 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Shiakati.Models
 {
     public partial class ProductVariantsModel : ObservableObject
     {
         [ObservableProperty]
-        private int? _variantID;
+        private ProductModel _productInfo;
+
+        [ObservableProperty]
+        private int _variantID;
 
         [ObservableProperty]
         private int _productID;
@@ -25,7 +29,7 @@ namespace Shiakati.Models
         [ObservableProperty]
         private decimal? _discountFixed;
         [ObservableProperty]
-        private decimal? _salePrice;
+        private decimal _salePrice;
 
         [ObservableProperty]
         private int? _stockQuantity;

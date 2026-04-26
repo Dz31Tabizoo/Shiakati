@@ -1,23 +1,29 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Shiakati.Models;
+
 
 namespace Shiakati.Models
 {
     public partial class CartItem : ObservableObject
     {
-        public Product ProductRef { get; set; }
-        public string ProductName => ProductRef.Name;
-        public decimal UnitPrice => ProductRef.Price;
+        public ProductVariantsModel Variant { get; }
+        public ProductModel Product { get; }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TotalPrice))] // Met à jour le Total quand la Qté change !
+        [NotifyPropertyChangedFor(nameof(TotalPrice))]
         private int _quantity;
 
-        public decimal TotalPrice => Quantity * UnitPrice;
+        public decimal TotalPrice => Variant.SalePrice * Quantity;
 
-        public CartItem(Product product)
+        // Utilisation de ?. au cas où Product ou Variant seraient nuls
+        public string DisplayName => $"{Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
+
+        public CartItem(ProductVariantsModel variant, ProductModel product)
         {
-            ProductRef = product;
-            Quantity = 1;
+            Variant = variant;
+            Product = product;
+            _quantity = 1; // Initialisation directe du champ privé
         }
     }
 }
+

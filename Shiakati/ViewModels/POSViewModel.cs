@@ -10,89 +10,70 @@ namespace Shiakati.ViewModels
     public partial class POSViewModel : ObservableObject
     {
         private readonly ILogger<POSViewModel> _logger;
-        // ==========================================
-        // 1. PROPRIÉTÉS (Connectées à l'UI)
-        // ==========================================
 
         [ObservableProperty]
         private string _tabName;
 
         [ObservableProperty]
-        private string _searchText = string.Empty; // Initialiser _searchText à une chaîne vide pour satisfaire la contrainte non-nullable
+        private string _searchText = string.Empty;
 
-        // La liste de tous les produits (cachée en mémoire)
-        private List<Product> _allProducts = new();
+        // ON CHANGE ICI : On utilise ProductVariantsModel
+        private List<ProductVariantsModel> _allProducts = new();
 
-        // La liste affichée à l'écran (qui change quand on cherche)
         [ObservableProperty]
-        private ObservableCollection<Product> _filteredProducts = new();
+        private ObservableCollection<ProductVariantsModel> _filteredProducts = new();
 
-        // Le Panier
+        // Le Panier utilise notre nouveau CartItem
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
-        // Le Total du panier (calculé dynamiquement)
         public decimal CartTotal => CartItems.Sum(x => x.TotalPrice);
 
-
-        // ==========================================
-        // 2. CONSTRUCTEUR
-        // ==========================================
-        public POSViewModel(string name,ILogger<POSViewModel> logger)
+        public POSViewModel(string name, ILogger<POSViewModel> logger)
         {
             TabName = name;
-            LoadFakeProducts();
             _logger = logger;
-            _logger.LogInformation("POSViewModel for {TabName} initialized.", TabName);
 
-            // Astuce : On dit au ViewModel de recalculer le Total à chaque fois qu'on ajoute/supprime un article
             LoadFakeProducts();
+
             CartItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(CartTotal));
         }
 
-
-        // ==========================================
-        // 3. LOGIQUE MÉTIER & COMMANDES
-        // ==========================================
-
-        // Magie du Toolkit : Cette méthode est appelée AUTOMATIQUEMENT quand SearchText change !
         partial void OnSearchTextChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                FilteredProducts = new ObservableCollection<Product>(_allProducts);
+                FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);
                 return;
             }
 
-            // Recherche par nom ou par code-barres
             var filtered = _allProducts.Where(p =>
-                p.Name.Contains(value, System.StringComparison.OrdinalIgnoreCase) ||
-                p.Barcode == value).ToList();
+                (p.ProductInfo?.ProductName?.Contains(value, StringComparison.OrdinalIgnoreCase) == true) ||
+                (p.SKU != null && p.SKU.Equals(value, StringComparison.OrdinalIgnoreCase))).ToList();
 
-            FilteredProducts = new ObservableCollection<Product>(filtered);
+            FilteredProducts = new ObservableCollection<ProductVariantsModel>(filtered);
         }
 
         [RelayCommand]
-        private void AddToCart(Product selectedProduct)
+        private void AddToCart(ProductVariantsModel selectedVariant)
         {
-            if (selectedProduct == null) return;
+            if (selectedVariant == null) return;
 
-            // On vérifie si le produit est déjà dans le panier
-            var existingItem = CartItems.FirstOrDefault(c => c.ProductRef.Id == selectedProduct.Id);
+            // 1. Correction de la recherche (On cherche par VariantID et on utilise .Variant)
+            var existingItem = CartItems.FirstOrDefault(c => c.Variant.VariantID == selectedVariant.VariantID);
 
             if (existingItem != null)
             {
-                // Si oui, on ajoute juste +1 à la quantité
+                // 2. Utilise la propriété générée 'Quantity'
                 existingItem.Quantity++;
-                // On force la mise à jour du grand total en bas à droite
                 OnPropertyChanged(nameof(CartTotal));
             }
             else
             {
-                // Sinon, on crée une nouvelle ligne dans le ticket
-                CartItems.Add(new CartItem(selectedProduct));
+                // 3. Correction CS7036 : On doit passer la variante ET son info produit
+                // On suppose que selectedVariant a une propriété 'ProductInfo' (voir étape 3)
+                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
             }
 
-            // Optionnel : On vide la barre de recherche après un scan
             SearchText = string.Empty;
         }
 
@@ -101,11 +82,10 @@ namespace Shiakati.ViewModels
         {
             if (itemToRemove != null)
             {
-                //loger if needed
                 CartItems.Remove(itemToRemove);
+                OnPropertyChanged(nameof(CartTotal)); // Forcer la maj du total
             }
         }
-
 
         [RelayCommand]
         private void IncrementQty(CartItem item)
@@ -113,8 +93,6 @@ namespace Shiakati.ViewModels
             if (item != null)
             {
                 item.Quantity++;
-
-                // On force la mise à jour du grand total en bas à droite
                 OnPropertyChanged(nameof(CartTotal));
             }
         }
@@ -131,12 +109,10 @@ namespace Shiakati.ViewModels
                 }
                 else
                 {
-                    // Si on est à 1 et qu'on clique sur "-", on retire l'article
                     RemoveFromCart(item);
                 }
             }
         }
-
 
         [RelayCommand]
         private void Checkout()
@@ -147,31 +123,26 @@ namespace Shiakati.ViewModels
                 return;
             }
 
-            // Ici tu mettras la logique pour sauvegarder la vente dans SQL via Dapper
-            MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.\nImpression du ticket en cours...",
-                            "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // On vide le panier pour le prochain client de cet onglet
+            MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
             CartItems.Clear();
         }
 
-        // ==========================================
-        // 4. DONNÉES DE TEST (Pour ce soir)
-        // ==========================================
         private void LoadFakeProducts()
         {
-            _allProducts = new List<Product>
-            {
-                new Product { Id = 1, Name = "Qamis Blanc Premium", Price = 4500, Barcode = "123456" },
-                new Product { Id = 2, Name = "Parfum Oud Royal", Price = 8000, Barcode = "789101" },
-                new Product { Id = 3, Name = "Chéchia Noire", Price = 500, Barcode = "112233" },
-                new Product { Id = 4, Name = "Montre Classique", Price = 12000, Barcode = "445566" },
-                new Product { Id = 5, Name = "Qamis Noir Simple", Price = 3500, Barcode = "778899" }
-            };
+            // On simule ce que l'API/Dapper va nous renvoyer (La jointure)
+            var parentProd1 = new ProductModel { ProductID = 1, ProductName = "Qamis Blanc Premium" };
+            var parentProd2 = new ProductModel { ProductID = 2, ProductName = "Parfum Oud Royal" };
 
-            FilteredProducts = new ObservableCollection<Product>(_allProducts);
+            _allProducts = new List<ProductVariantsModel>
+        {
+            new ProductVariantsModel { VariantID = 1, ProductID = 1, SKU = "123456", SalePrice = 4500, FullSize = "L", Color = "Blanc", ProductInfo = parentProd1 },
+            new ProductVariantsModel { VariantID = 2, ProductID = 1, SKU = "123457", SalePrice = 4500, FullSize = "XL", Color = "Blanc", ProductInfo = parentProd1 },
+            new ProductVariantsModel { VariantID = 3, ProductID = 2, SKU = "789101", SalePrice = 8000, FullSize = "50ml", Color = "Standard", ProductInfo = parentProd2 }
+        };
+
+            FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);
         }
     }
 
-    
+
 }

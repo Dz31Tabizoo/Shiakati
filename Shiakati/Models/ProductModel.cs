@@ -13,7 +13,7 @@ namespace Shiakati.Models
         [ObservableProperty]
         private bool _isActive;
         [ObservableProperty]
-        private string _productName= string.Empty;
+        private string _productName;
         [ObservableProperty]        
         private string? _imagePath;
     }
