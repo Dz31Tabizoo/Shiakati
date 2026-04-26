@@ -5,32 +5,32 @@ namespace Shiakati.Models
     public partial class ProductVariantsModel : ObservableObject
     {
         [ObservableProperty]
-        private int _variantID;
+        private int? _variantID;
 
         [ObservableProperty]
         private int _productID;
         [ObservableProperty]
-        private string _sKU;
+        private string? _sKU;
         
         [ObservableProperty]
-        private string _color;
+        private string? _color;
 
         [ObservableProperty]
-        private int _lenth;
+        private int? _length;
         [ObservableProperty]
-        private string _width;
+        private string? _width;
 
         [ObservableProperty]
-        private decimal _purchasePrice;
+        private decimal? _purchasePrice;
         [ObservableProperty]
-        private decimal _discountFixed;
+        private decimal? _discountFixed;
         [ObservableProperty]
-        private decimal _salePrice;
+        private decimal? _salePrice;
 
         [ObservableProperty]
-        private int _stockQuantity;
+        private int? _stockQuantity;
         [ObservableProperty]
-        private string _fullSize;
+        private string? _fullSize;
 
         [ObservableProperty]
         private bool _isActive;

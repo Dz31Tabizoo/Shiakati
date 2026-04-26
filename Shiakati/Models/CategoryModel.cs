@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,8 @@ namespace Shiakati.Models
         [ObservableProperty]
         private string _categoryName = string.Empty;
         [ObservableProperty]
-        private string _iconPath = string.Empty;
+        [AllowNull]
+        private string _iconPath;
     }
     
 }

@@ -5,16 +5,16 @@ namespace Shiakati.Models
     public partial class SaleModel : ObservableObject
     {
         [ObservableProperty]
-        private int _saleID;
+        private int? _saleID;
         [ObservableProperty]
-        private int _ticketNumber;
+        private string _ticketNumber = string.Empty;
         [ObservableProperty]
-        private DateTime _saleDate;
+        private DateTime? _saleDate;
         [ObservableProperty]
-        private decimal _totalAmount;
+        private decimal? _totalAmount;
         [ObservableProperty]
-        private int _userID;
+        private int? _userID;
         [ObservableProperty]
-        private decimal _globalDiscount;
+        private decimal? _globalDiscount;
     }
 }

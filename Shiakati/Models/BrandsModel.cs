@@ -11,7 +11,7 @@ namespace Shiakati.Models
         private string _brandName = string.Empty;
 
         [ObservableProperty]
-        private int _categoryID;
+        private int? _categoryID;
     }   
 
 }
