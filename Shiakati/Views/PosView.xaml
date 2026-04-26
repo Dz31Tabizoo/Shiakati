@@ -27,12 +27,28 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,15">
+            <ScrollViewer Grid.Row="1"
+              HorizontalScrollBarVisibility="Auto"
+              VerticalScrollBarVisibility="Disabled"
+              Margin="0,0,0,15"
+              materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
+              materialDesign:ScrollViewerAssist.SupportHorizontalScroll="True"
+              PanningMode="HorizontalOnly"         
+              PanningDeceleration="0.5"               
+              PanningRatio="1.0">
+
+
                 <StackPanel Orientation="Horizontal">
                     <Button Content="TOUT" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,10,0"/>
                     <Button Content="THOBES" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                    <Button Content="PARFUMS" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Pantalon" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
                     <Button Content="CHAUSSURES" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Sous-vêtements" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Cosmetique" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Accessoires" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Sadjadat" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    <Button Content="Chaises" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
+                    
                 </StackPanel>
             </ScrollViewer>
 
@@ -81,20 +97,44 @@
 
                 <TextBlock Grid.Row="0" Text="Ticket Actuel" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
 
-                <DataGrid Grid.Row="1" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
+                <DataGrid Grid.Row="1" IsReadOnly="True" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
                           CanUserAddRows="False" Background="Transparent" BorderThickness="0" HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Article" Binding="{Binding ProductName}" Width="*"/>
-                        <DataGridTextColumn Header="Qté" Binding="{Binding Quantity}" Width="60"/>
-                        <DataGridTextColumn Header="Total" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="100"/>
-                        <DataGridTemplateColumn Width="50">
+                        
+                            <DataGridTextColumn Header="Article" Binding="{Binding ProductName}" Width="*"/>
+
+                            <DataGridTemplateColumn Header="Qté" Width="110">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Style="{StaticResource MaterialDesignOutlinedSecondaryButton}" 
+                                                    Width="24" Height="24" Padding="0" Content="-" FontSize="15"
+                                                    Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+
+                                            <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" Margin="8,0" FontWeight="SemiBold" FontSize="16"/>
+
+                                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                                                    Foreground="{StaticResource PrimaryBrush}" BorderBrush="{StaticResource PrimaryBrush}"
+                                                    Width="24" Height="24" Padding="0" Content="+" FontSize="15"
+                                                    Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Total" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="100"/>
+                        <DataGridTemplateColumn Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                                    <Button Style="{StaticResource MaterialDesignIconButton}" 
                                             Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
-                                            Foreground="Red" Width="24" Height="24">
-                                        <materialDesign:PackIcon Kind="Delete" Width="18" Height="18"/>
+                                            Foreground="Crimson" 
+                                            Width="32" Height="32"
+                                            ToolTip="Supprimer cet article">
+                                        <materialDesign:PackIcon Kind="DeleteOutline" Width="22" Height="22"/>
                                     </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

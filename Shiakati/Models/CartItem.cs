@@ -14,10 +14,10 @@ namespace Shiakati.Models
 
         public decimal TotalPrice => Quantity * UnitPrice;
 
-        public CartItem(Product product, int quantity = 1)
+        public CartItem(Product product)
         {
             ProductRef = product;
-            Quantity = quantity;
+            Quantity = 1;
         }
     }
 }

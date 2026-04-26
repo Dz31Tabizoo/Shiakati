@@ -39,6 +39,7 @@ namespace Shiakati
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<PosContainerViewModel>();
             services.AddTransient<POSViewModel>();
+            services.AddTransient<LoginView>(); 
 
             // Example: services.AddTransient<IMyService, MyService>();
         }
@@ -46,11 +47,7 @@ namespace Shiakati
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var login = new LoginView
-            {
-                // DataContext = ServiceProvider.GetRequiredService<LoginViewModel>()
-            };
-
+            var login = ServiceProvider!.GetRequiredService<LoginView>();
             login.Show();
         }
     }

@@ -101,9 +101,42 @@ namespace Shiakati.ViewModels
         {
             if (itemToRemove != null)
             {
+                //loger if needed
                 CartItems.Remove(itemToRemove);
             }
         }
+
+
+        [RelayCommand]
+        private void IncrementQty(CartItem item)
+        {
+            if (item != null)
+            {
+                item.Quantity++;
+
+                // On force la mise à jour du grand total en bas à droite
+                OnPropertyChanged(nameof(CartTotal));
+            }
+        }
+
+        [RelayCommand]
+        private void DecrementQty(CartItem item)
+        {
+            if (item != null)
+            {
+                if (item.Quantity > 1)
+                {
+                    item.Quantity--;
+                    OnPropertyChanged(nameof(CartTotal));
+                }
+                else
+                {
+                    // Si on est à 1 et qu'on clique sur "-", on retire l'article
+                    RemoveFromCart(item);
+                }
+            }
+        }
+
 
         [RelayCommand]
         private void Checkout()

@@ -21,10 +21,9 @@ namespace Shiakati.Views
     /// </summary>
     public partial class POSContainerView : UserControl
     {
-        public POSContainerView(PosContainerViewModel viewModel)
+        public POSContainerView()
         {
-            InitializeComponent();
-            DataContext = viewModel;
+            InitializeComponent();           
 
         }
     }

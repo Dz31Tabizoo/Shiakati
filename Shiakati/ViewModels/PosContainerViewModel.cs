@@ -28,6 +28,7 @@ namespace Shiakati.ViewModels
             var newTab = ActivatorUtilities.CreateInstance<POSViewModel>(_serviceProvider, tabName);
             PosTabs.Add(newTab);
             SelectedTab = newTab;
+            _tabCounter++;
         }
 
         [RelayCommand]
