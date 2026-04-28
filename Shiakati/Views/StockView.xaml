@@ -12,7 +12,7 @@
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Margin="0,0,15,0">
@@ -31,6 +31,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" Grid.Column="0">
@@ -43,6 +44,8 @@
 
                     <Button Grid.Column="1" Content="RÉINITIALISER LES FILTRES" Style="{StaticResource MaterialDesignOutlinedButton}" 
                             Command="{Binding ClearFiltersCommand}" VerticalAlignment="Center"/>
+                    <Button  Grid.Column="2" Content="RECESPTION FOURNISSEUR" Style="{StaticResource MaterialDesignOutlinedButton}" 
+                            Command="{Binding IsReseptionSuplyON}" VerticalAlignment="Center"/>
                 </Grid>
             </materialDesign:Card>
 
@@ -79,7 +82,7 @@
             </materialDesign:Card>
         </Grid>
         
-        <materialDesign:Card Grid.Column="1" UniformCornerRadius="8" Padding="15">
+        <materialDesign:Card Grid.Column="1" Width="350" UniformCornerRadius="8" Padding="15">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -98,12 +101,13 @@
                         
                         <ComboBox IsEditable="False" materialDesign:HintAssist.Hint="Categories" 
                                   Text="{Binding Categories}" ItemsSource="{Binding AllCategories}" Margin="0,0,0,15"/>
+                        <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding DraftBrand}"
+                                  materialDesign:HintAssist.Hint="Marque" Margin="0,0,0,15"/>
 
                         <ComboBox IsEditable="True" materialDesign:HintAssist.Hint="Nom du produit (Rechercher ou Saisir nouveau)" 
-                                  Text="{Binding DraftProductName}" ItemsSource="{Binding AllProductNames}" Margin="0,0,0,15"/>
+                                  Text="{Binding DraftProductName}" ItemsSource="{Binding AllProductNames}" Margin="0,0,0,22"/>
 
-                        <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding DraftBrand}"
-                                  materialDesign:HintAssist.Hint="Marque" Margin="0,0,0,20"/>
+                       
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
@@ -116,19 +120,21 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>                            
                             
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
 
-                            <ComboBox ItemsSource="{Binding AllColors}" DisplayMemberPath="Colors" SelectedItem="{Binding DraftColor}"
+                            <ComboBox IsEditable="True" ItemsSource="{Binding AllColors}" DisplayMemberPath="Colors" SelectedItem="{Binding DraftColor}"
                                       materialDesign:HintAssist.Hint="Couleur" Margin="0,0,5,0"/>
-                            
-                            <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Couleur" Text="{Binding DraftColor}" Margin="0,0,5,0"/>
-                            <TextBox Grid.Column="2" materialDesign:HintAssist.Hint="Taille (Largeur)" Text="{Binding Width}" Margin="5,0,0,0"/>
+
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AllSizes}" DisplayMemberPath="Taille largeur" SelectedItem="{Binding Width}"
+                                      materialDesign:HintAssist.Hint="Taille (largeur)" Margin="0,0,5,0"/>
+
+                            <TextBox  Grid.Column="2" materialDesign:HintAssist.Hint="Taille (longeur)" Text="{Binding DraftSize}" Margin="0,0,5,0"/>
+
+                            <TextBox  Grid.Column="3" materialDesign:HintAssist.Hint="Taille (numérique)" Text="{Binding DraftFreeNumiricSize}" Margin="0,0,5,0"/>
+
+
                         </Grid>
 
                         <Separator Style="{StaticResource MaterialDesignSeparator}"  Margin="0,0,0,10"/>
@@ -138,19 +144,31 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                        
                             <TextBox Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat" Text="{Binding DraftPurchasePrice}" Margin="0,0,5,0"/>
+                            
                             <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente" Text="{Binding DraftSalePrice}" Margin="5,0,0,0"/>
+
+                            <TextBox   Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe" Text="{Binding DraftFixedDiscount}" Margin="5,5,0,0"/>
+
                         </Grid>
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue" Text="{Binding DraftQuantity}" 
+                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue"  Text="{Binding DraftQuantity}" 
                                  FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
 
                         <CheckBox Content="Imprimer les étiquettes de code-barres" IsChecked="{Binding PrintLabelsOnSave}" 
                                   Margin="0,0,0,10" FontWeight="SemiBold"/>
 
                         <TextBlock Text="Une étiquette sera imprimée pour chaque article." FontStyle="Italic" FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+                    
                     </StackPanel>
                 </ScrollViewer>
 
