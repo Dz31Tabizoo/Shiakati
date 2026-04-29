@@ -12,6 +12,21 @@ namespace Shiakati.ViewModels
         private readonly ILogger<POSViewModel> _logger;
 
         [ObservableProperty]
+        private bool _isDiscountPinned = false;
+
+        // On peut ajouter une propriété pour le montant de la remise, même si elle n'est pas encore utilisée
+        public decimal DiscountAmount { get; private set; } = 0;
+
+        [RelayCommand]
+        private void ToggleDiscount()
+        {
+            //toogle the discount pinning
+            IsDiscountPinned = !IsDiscountPinned;
+
+            
+        }
+
+        [ObservableProperty]
         private string _tabName;
 
         [ObservableProperty]
@@ -38,6 +53,7 @@ namespace Shiakati.ViewModels
             CartItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(CartTotal));
         }
 
+        //need async + await 500 ms delay to not query the API on every keystroke
         partial void OnSearchTextChanged(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -127,7 +143,7 @@ namespace Shiakati.ViewModels
             CartItems.Clear();
         }
 
-        private void LoadFakeProducts()
+        public void LoadFakeProducts()
         {
             // On simule ce que l'API/Dapper va nous renvoyer (La jointure)
             var parentProd1 = new ProductModel { ProductID = 1, ProductName = "Qamis Blanc Premium" };

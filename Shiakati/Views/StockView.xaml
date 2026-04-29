@@ -328,9 +328,9 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat" Text="{Binding DraftPurchasePrice}" Margin="0,0,10,15"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente" Text="{Binding DraftSalePrice}" Margin="0,0,0,15"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe" Text="{Binding DraftFixedDiscount}"/>
+                            <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat" Text="{Binding DraftPurchasePrice ,StringFormat={}{0:N2} DA}" Margin="0,0,10,15"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente" Text="{Binding DraftSalePrice, StringFormat={}{0:N2} DA}" Margin="0,0,0,15"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe" Text="{Binding DraftFixedDiscount, StringFormat={}{0:N2} DA}"/>
                         </Grid>
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
