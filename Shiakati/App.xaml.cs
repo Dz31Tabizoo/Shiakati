@@ -39,7 +39,9 @@ namespace Shiakati
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<PosContainerViewModel>();
             services.AddTransient<POSViewModel>();
-            services.AddTransient<LoginView>(); 
+            services.AddTransient<LoginView>();
+            services.AddTransient<StockViewModel>();
+            services.AddTransient<StockView>();
 
             // Example: services.AddTransient<IMyService, MyService>();
         }

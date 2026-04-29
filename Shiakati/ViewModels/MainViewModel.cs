@@ -9,27 +9,36 @@ namespace Shiakati.ViewModels
         [ObservableProperty]
         private object _currentView;
 
-        public PosContainerViewModel PosContainer { get; } 
-        public MainViewModel( PosContainerViewModel posContainer)
+        // On garde les instances des ViewModels pour ne pas les recréer à chaque clic
+        public PosContainerViewModel PosContainer { get; }
+        public StockViewModel Stock { get; }
+
+        public MainViewModel(PosContainerViewModel posContainer, StockViewModel stockViewModel)
         {
             PosContainer = posContainer;
-            // set a default 
-            //CurrentView = new DashboardViewModel();
+            Stock = stockViewModel;
+
+            // Vue par défaut au démarrage
+            CurrentView = PosContainer;
         }
+
         [RelayCommand]
-        private void NavigateToDashboard()
+        private void NavigateToStock()
         {
-            //CurrentView = new DashboardViewModel();
+            // ✅ On assigne le ViewModel, pas la View !
+            CurrentView = Stock;
         }
-         [RelayCommand]
-        private void NavigateToSettings()
-        {
-            //CurrentView = new SettingsViewModel();
-        } 
+
         [RelayCommand]
         private void NavigateToPOS()
         {
-            CurrentView = this.PosContainer;
+            CurrentView = PosContainer;
+        }
+
+        [RelayCommand]
+        private void NavigateToSettings()
+        {
+            // CurrentView = Settings;
         }
     }
 }

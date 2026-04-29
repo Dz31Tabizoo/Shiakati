@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shiakati.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,7 @@ namespace Shiakati.Views
         public StockView()
         {
             InitializeComponent();
+            this.DataContext = App.ServiceProvider?.GetRequiredService<StockViewModel>();
         }
     }
 }

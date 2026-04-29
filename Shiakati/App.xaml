@@ -35,6 +35,10 @@
                         <views:POSContainerView />
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type viewModels:StockViewModel}">
+                        <views:StockView />
+                    </DataTemplate>
+
                     <DataTemplate DataType="{x:Type viewModels:POSViewModel}">
                         <views:PosView />
                     </DataTemplate>
