@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shiakati.ViewModels;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using Shiakati.ViewModels;
 
 namespace Shiakati.Views
 {
@@ -11,10 +12,10 @@ namespace Shiakati.Views
     /// </summary>
     public partial class MainView : Window
     {
-        public MainView(MainViewModel viewModel)
+        public MainView()
         {
             InitializeComponent();
-            DataContext = viewModel;
+            this.DataContext = App.ServiceProvider?.GetRequiredService<MainViewModel>();
         }
 
         [DllImport("user32.dll")]

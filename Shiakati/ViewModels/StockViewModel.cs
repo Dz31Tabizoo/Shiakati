@@ -48,7 +48,7 @@
 
         [ObservableProperty] private ProductVariantsModel _selectedStockItem;
 
-            public ObservableCollection<string> WidthsListe = new() { "XS", "S", "M", "L", "XL","XXL","XXXL","1","2","3","4","5" };
+            public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
             public ObservableCollection<ProductVariantsModel> FilteredStock { get; } = new();
             public ObservableCollection<CategoryModel> Categories { get; } = new();
             public ObservableCollection<BrandsModel> Brands { get; } = new();
@@ -126,15 +126,15 @@
             [ObservableProperty] private decimal? _draftPurchasePrice;
             [ObservableProperty] private decimal _draftSalePrice;
             [ObservableProperty] private decimal? _draftFixedDiscount;
-            [ObservableProperty] private int _draftQuantity = 1;
+            [ObservableProperty] private int? _draftQuantity = null;
             [ObservableProperty] private bool _printLabelsOnSave = true;
-            [ObservableProperty] private int _labelsToPrint = 1;
+            [ObservableProperty] private int? _labelsToPrint =null;
 
             public ObservableCollection<string> AllProductNames { get; } = new();
             public ObservableCollection<string> AllColors { get; } = new();
 
             // Lie la quantité reçue à la quantité d'étiquettes par défaut
-            partial void OnDraftQuantityChanged(int value)
+            partial void OnDraftQuantityChanged(int? value)
             {
                 LabelsToPrint = value;
             }
