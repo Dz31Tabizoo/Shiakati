@@ -124,7 +124,7 @@
             [ObservableProperty] private string _draftWidth;
             [ObservableProperty] private int? _draftLength;
             [ObservableProperty] private decimal? _draftPurchasePrice;
-            [ObservableProperty] private decimal _draftSalePrice;
+            [ObservableProperty] private decimal? _draftSalePrice = null;
             [ObservableProperty] private decimal? _draftFixedDiscount;
             [ObservableProperty] private int? _draftQuantity = null;
             [ObservableProperty] private bool _printLabelsOnSave = true;
@@ -218,6 +218,7 @@
                 DraftSKU = string.Empty;
                 // Ne pas forcément réinitialiser la catégorie/marque si l'utilisateur saisit un lot similaire
             }
+
         }
     }
 

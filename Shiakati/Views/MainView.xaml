@@ -10,14 +10,14 @@
     <Window.Resources>
         <!-- Animations -->
         <Storyboard x:Key="ExpandSidebar">
-            <DoubleAnimation Storyboard.TargetProperty="Width" To="220" Duration="0:0:0.3">
+            <DoubleAnimation Storyboard.TargetProperty="Width" To="250" Duration="0:0:0.3">
                 <DoubleAnimation.EasingFunction>
                     <QuadraticEase EasingMode="EaseOut"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
         <Storyboard x:Key="CollapseSidebar">
-            <DoubleAnimation Storyboard.TargetProperty="Width" To="70" Duration="0:0:0.3">
+            <DoubleAnimation Storyboard.TargetProperty="Width" To="120" Duration="0:0:0.3">
                 <DoubleAnimation.EasingFunction>
                     <QuadraticEase EasingMode="EaseOut"/>
                 </DoubleAnimation.EasingFunction>
@@ -101,27 +101,28 @@
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
                     <materialDesign:PackIcon Kind="DiamondStone" Foreground="{StaticResource SecondaryBrush}" 
-                                            Width="40" Height="40" HorizontalAlignment="Center"/>
+                                            Width="48" Height="48" Margin="0,10,0,0" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1">
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="CashRegister" Width="24" Height="24" Margin="13,0,0,0"/>
+                            <materialDesign:PackIcon Kind="CashRegister" Width="48" Height="48" Margin="10,0,0,0"/>
                             <TextBlock Text="Caisse" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </Button>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Margin="0,15,0,15"/>
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="StoreSettings" Width="24" Height="24" Margin="13,0,0,0"/>
+                            <materialDesign:PackIcon Kind="Warehouse" Width="48" Height="48" Margin="10,0,0,0"/>
                             <TextBlock Text="Stock" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
-                    </Button>
+                    </Button>      
                 </StackPanel>
 
-                <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10,0,10,20" Foreground="#FF6B6B">
+                <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10,0,10,20" Foreground="{StaticResource SecondaryBrush}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Logout" Width="24" Height="24" Margin="13,0,0,0"/>
+                        <materialDesign:PackIcon Kind="Logout" Width="48" Height="48" Margin="13,0,0,0"/>
                         <TextBlock Text="Déconnexion" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
