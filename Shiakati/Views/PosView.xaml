@@ -97,11 +97,27 @@
 
                 <TextBlock Grid.Row="0" Text="Ticket Actuel" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
 
+
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
-                          CanUserAddRows="False" Background="Transparent" BorderThickness="0"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        CanUserAddRows="False" Background="Transparent" BorderThickness="0"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        GridLinesVisibility="None"
+                        HorizontalAlignment="Stretch" 
+                        SelectionMode="Single">
+
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Padding" Value="10,0,0,10"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+                        </Style>
+                    </DataGrid.Resources>
+
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Article" Width="Auto" MinWidth="130">
+                        <DataGridTemplateColumn Header="Article" Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" 
@@ -163,7 +179,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Total" Width="Auto">
+                        <DataGridTemplateColumn Header="Total" Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}" 
@@ -173,12 +189,12 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn Width="Auto" >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Style="{StaticResource MaterialDesignIconButton}" 
                                             Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}" Foreground="Crimson">
+                                            CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="Crimson">
                                         <materialDesign:PackIcon Kind="CartRemove" Width="24" Height="24"/>
                                     </Button>
                                 </DataTemplate>

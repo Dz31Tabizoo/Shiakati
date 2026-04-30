@@ -146,7 +146,7 @@ namespace Shiakati.ViewModels
         public void LoadFakeProducts()
         {
             // On simule ce que l'API/Dapper va nous renvoyer (La jointure)
-            var parentProd1 = new ProductModel { ProductID = 1, ProductName = "Qamis Blanc Premium" };
+            var parentProd1 = new ProductModel { ProductID = 1, ProductName = "ثوب أعمال برايم – أبيض – أكمام سادة, قلاب" };
             var parentProd2 = new ProductModel { ProductID = 2, ProductName = "Parfum Oud Royal" };
 
             _allProducts = new List<ProductVariantsModel>

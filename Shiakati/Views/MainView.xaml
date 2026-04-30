@@ -6,8 +6,12 @@
         Background="{StaticResource BgBrush}"
         WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen">
+    
 
     <Window.Resources>
+        
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        
         <!-- Animations -->
         <Storyboard x:Key="ExpandSidebar">
             <DoubleAnimation Storyboard.TargetProperty="Width" To="250" Duration="0:0:0.3">
@@ -35,6 +39,34 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="NavToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
 
     <Grid>
@@ -57,7 +89,7 @@
                         <!-- FIX: Use MultiDataTrigger when checking Bindings -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                <!--<Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>-->
                                 <Condition Binding="{Binding ElementName=MenuToggleButton, Path=IsChecked}" Value="False"/>
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.EnterActions>
@@ -102,9 +134,9 @@
                     </ToggleButton>
                     <materialDesign:PackIcon Kind="DiamondStone" Foreground="{StaticResource SecondaryBrush}" 
                                             Width="48" Height="48" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                </StackPanel>
+                </StackPanel>                
 
-                <StackPanel Grid.Row="1">
+                <!--<StackPanel Grid.Row="1">
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="CashRegister" Width="48" Height="48" Margin="10,0,0,0"/>
@@ -118,6 +150,49 @@
                             <TextBlock Text="Stock" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </Button>      
+                </StackPanel>-->
+
+                <StackPanel Grid.Row="1">
+                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="CashRegister" Width="48" Height="48" Margin="10,0,0,0"/>
+                            <TextBlock Text="Caisse" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Margin="0,15,0,15"/>
+
+                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Warehouse" Width="48" Height="48" Margin="10,0,0,0"/>
+                            <TextBlock Text="Stock" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Margin="0,15,0,15"/>
+
+                    <ToggleButton x:Name="btnHistorique" Style="{StaticResource NavToggleButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Width="230" HorizontalAlignment="Left">
+                            <materialDesign:PackIcon Kind="History" Width="48" Height="48" Margin="25,0,0,0"/>
+                            <TextBlock Text="Historique" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
+                        </StackPanel>
+                    </ToggleButton>
+                    
+                    <StackPanel Visibility="{Binding IsChecked, ElementName=btnHistorique, Converter={StaticResource BoolToVis}}">
+                        <Button Style="{StaticResource NavButtonStyle}" Margin="30,2,10,2" Height="40">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ReceiptTextClock" Width="30" Height="30" Margin="10,0,0,0"/>
+                                <TextBlock Text="Historique Ventes" Margin="25,0,0,0" FontSize="13" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource NavButtonStyle}" Margin="30,2,10,2" Height="40">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="DatabaseClock" Width="30" Height="30" Margin="10,0,0,0"/>
+                                <TextBlock Text="Mouvement Stock" Margin="25,0,0,0" FontSize="13" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
 
                 <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10,0,10,20" Foreground="{StaticResource SecondaryBrush}">
