@@ -11,20 +11,9 @@ namespace Shiakati.ViewModels
     {
         private readonly ILogger<POSViewModel> _logger;
 
-        [ObservableProperty]
-        private bool _isDiscountPinned = false;
+       
 
-        // On peut ajouter une propriété pour le montant de la remise, même si elle n'est pas encore utilisée
-        public decimal DiscountAmount { get; private set; } = 0;
-
-        [RelayCommand]
-        private void ToggleDiscount()
-        {
-            //toogle the discount pinning
-            IsDiscountPinned = !IsDiscountPinned;
-
-            
-        }
+       
 
         [ObservableProperty]
         private string _tabName;
@@ -41,7 +30,6 @@ namespace Shiakati.ViewModels
         // Le Panier utilise notre nouveau CartItem
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
-        public decimal CartTotal => CartItems.Sum(x => x.TotalPrice);
 
         public POSViewModel(string name, ILogger<POSViewModel> logger)
         {
@@ -69,25 +57,36 @@ namespace Shiakati.ViewModels
             FilteredProducts = new ObservableCollection<ProductVariantsModel>(filtered);
         }
 
+        public decimal CartSubTotal => CartItems.Sum(x => x.RawTotal);
+
+        // Somme de toutes les remises (fixes et manuelles)
+        public decimal TotalDiscountAmount => CartItems.Sum(x => x.TotalLineDiscount);
+
+        // Le montant final à encaisser
+        public decimal CartTotal => CartSubTotal - TotalDiscountAmount;
+        private void UpdateCartTotal()
+        {
+            OnPropertyChanged(nameof(CartSubTotal));
+            OnPropertyChanged(nameof(TotalDiscountAmount));
+            OnPropertyChanged(nameof(CartTotal));
+        }
+
         [RelayCommand]
         private void AddToCart(ProductVariantsModel selectedVariant)
         {
             if (selectedVariant == null) return;
 
-            // 1. Correction de la recherche (On cherche par VariantID et on utilise .Variant)
             var existingItem = CartItems.FirstOrDefault(c => c.Variant.VariantID == selectedVariant.VariantID);
 
             if (existingItem != null)
             {
-                // 2. Utilise la propriété générée 'Quantity'
                 existingItem.Quantity++;
-                OnPropertyChanged(nameof(CartTotal));
+                UpdateCartTotal(); // On met à jour le total global
             }
             else
             {
-                // 3. Correction CS7036 : On doit passer la variante ET son info produit
-                // On suppose que selectedVariant a une propriété 'ProductInfo' (voir étape 3)
-                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
+                // On passe notre méthode UpdateCartTotal en tant que Callback !
+                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo, UpdateCartTotal));
             }
 
             SearchText = string.Empty;
@@ -99,7 +98,7 @@ namespace Shiakati.ViewModels
             if (itemToRemove != null)
             {
                 CartItems.Remove(itemToRemove);
-                OnPropertyChanged(nameof(CartTotal)); // Forcer la maj du total
+                UpdateCartTotal();
             }
         }
 
@@ -109,7 +108,7 @@ namespace Shiakati.ViewModels
             if (item != null)
             {
                 item.Quantity++;
-                OnPropertyChanged(nameof(CartTotal));
+                UpdateCartTotal();
             }
         }
 
@@ -121,7 +120,7 @@ namespace Shiakati.ViewModels
                 if (item.Quantity > 1)
                 {
                     item.Quantity--;
-                    OnPropertyChanged(nameof(CartTotal));
+                    UpdateCartTotal();
                 }
                 else
                 {
@@ -129,6 +128,7 @@ namespace Shiakati.ViewModels
                 }
             }
         }
+
 
         [RelayCommand]
         private void Checkout()
@@ -153,7 +153,7 @@ namespace Shiakati.ViewModels
         {
             new ProductVariantsModel { VariantID = 1, ProductID = 1, SKU = "123456", SalePrice = 4500, FullSize = "L", Color = "Blanc", ProductInfo = parentProd1 },
             new ProductVariantsModel { VariantID = 2, ProductID = 1, SKU = "123457", SalePrice = 4500, FullSize = "XL", Color = "Blanc", ProductInfo = parentProd1 },
-            new ProductVariantsModel { VariantID = 3, ProductID = 2, SKU = "789101", SalePrice = 8000, FullSize = "50ml", Color = "Standard", ProductInfo = parentProd2 }
+            new ProductVariantsModel { VariantID = 3, ProductID = 2, SKU = "789101", SalePrice = 8000, DiscountFixed=600 , FullSize = "50ml", Color = "Standard", ProductInfo = parentProd2 }
         };
 
             FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);

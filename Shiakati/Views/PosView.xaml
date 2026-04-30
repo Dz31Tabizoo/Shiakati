@@ -6,7 +6,7 @@
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
@@ -128,21 +128,33 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Remise" Width="Auto">
+                        <DataGridTemplateColumn Header="Remises" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
-                                                  IsChecked="{Binding IsDiscountPinned}"
-                                                  Command="{Binding ToggleDiscountCommand}"
-                                                  Width="40" Height="40"
-                                                  Background="Transparent" BorderThickness="1">
-                                        <ToggleButton.Content>
-                                            <materialDesign:PackIcon Kind="TagOutline" Width="20" Height="20" Foreground="Gray"/>
-                                        </ToggleButton.Content>
-                                        <materialDesign:ToggleButtonAssist.OnContent>
-                                            <materialDesign:PackIcon Kind="Tag" Width="20" Height="20" Foreground="#FF9800"/>
-                                        </materialDesign:ToggleButtonAssist.OnContent>
-                                    </ToggleButton>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+
+                                        <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                                                      IsChecked="{Binding IsDiscountPinned}"
+                                                      Command="{Binding ToggleDiscountCommand}"
+                                                      Width="40" Height="40"
+                                                      Background="Transparent" BorderThickness="1"
+                                                      ToolTip="Remise fixe du produit">
+                                            <ToggleButton.Content>
+                                                <materialDesign:PackIcon Kind="TagOutline" Width="20" Height="20" Foreground="Gray"/>
+                                            </ToggleButton.Content>
+                                            <materialDesign:ToggleButtonAssist.OnContent>
+                                                <materialDesign:PackIcon Kind="Tag" Width="20" Height="20" Foreground="#FF9800"/>
+                                            </materialDesign:ToggleButtonAssist.OnContent>
+                                        </ToggleButton>
+
+                                        <TextBox Text="{Binding ManualDiscount, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="70" Margin="10,0,0,0" Padding="5,5,5,5"
+                                                 materialDesign:HintAssist.Hint="DA"
+                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                 VerticalAlignment="Center" TextAlignment="Center"
+                                                 FontSize="14" FontWeight="SemiBold" Foreground="#FF9800"/>
+
+                                    </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -176,15 +188,20 @@
                     <Separator Margin="0,0,0,10"/>
                     <Grid Margin="0,5">
                         <TextBlock Text="Sous-total :" FontSize="16"/>
-                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" FontSize="16" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding CartSubTotal, StringFormat={}{0:N2} DA}" 
+                   FontSize="16" HorizontalAlignment="Right" FontWeight="SemiBold"/>
                     </Grid>
+
                     <Grid Margin="0,5">
                         <TextBlock Text="Remise :" FontSize="16" Foreground="Green"/>
-                        <TextBlock Text="0.00 DA" FontSize="16" HorizontalAlignment="Right" Foreground="Green"/>
+                        <TextBlock Text="{Binding TotalDiscountAmount, StringFormat={}-{0:N2} DA}" 
+                   FontSize="16" HorizontalAlignment="Right" Foreground="Green"/>
                     </Grid>
+
                     <Grid Margin="0,15">
                         <TextBlock Text="TOTAL À PAYER" FontSize="24" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
-                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" FontSize="32" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource SecondaryBrush}"/>
+                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" 
+                   FontSize="32" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
 
                     <Button Content="ENCAISSER (F12)" 
