@@ -42,6 +42,8 @@ namespace Shiakati
             services.AddTransient<LoginView>();
             services.AddTransient<StockViewModel>();
             services.AddTransient<StockView>();
+            services.AddTransient<SalesHistoryViewModel>();
+            services.AddTransient<SalesHistoryView>();
 
             // Example: services.AddTransient<IMyService, MyService>();
         }

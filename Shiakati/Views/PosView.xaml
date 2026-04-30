@@ -117,7 +117,7 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Article" Width="1.5*">
+                        <DataGridTemplateColumn Header="Article" Width="400">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" 
@@ -179,7 +179,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Total" Width="1.5*">
+                        <DataGridTemplateColumn Header="Total" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}" 

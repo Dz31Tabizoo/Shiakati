@@ -9,9 +9,7 @@ namespace Shiakati.ViewModels
 {
     public partial class POSViewModel : ObservableObject
     {
-        private readonly ILogger<POSViewModel> _logger;
-
-       
+        private readonly ILogger<POSViewModel> _logger;      
 
        
 
@@ -38,7 +36,52 @@ namespace Shiakati.ViewModels
 
             LoadFakeProducts();
 
-            CartItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(CartTotal));
+            CartItems.CollectionChanged += CartItems_CollectionChanged;
+        }
+
+        private void CartItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // Si de nouveaux articles sont ajoutés, on s'abonne à leurs changements
+            if (e.NewItems != null)
+            {
+                foreach (CartItem item in e.NewItems)
+                {
+                    item.PropertyChanged += CartItem_PropertyChanged;
+                }
+            }
+
+            // Si des articles sont retirés, on SE DÉSABONNE (Crucial pour éviter les fuites de mémoire !)
+            if (e.OldItems != null)
+            {
+                foreach (CartItem item in e.OldItems)
+                {
+                    item.PropertyChanged -= CartItem_PropertyChanged;
+                }
+            }
+
+            // Dans tous les cas (ajout ou retrait), le total du panier change
+            UpdateCartTotal();
+        }
+
+        // 3. Gestion des changements à l'INTÉRIEUR d'un article (ex: Quantité++, Remise manuelle)
+        private void CartItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            // On recalcule le panier total uniquement si une propriété financière de l'article a changé
+            if (e.PropertyName == nameof(CartItem.TotalPrice) ||
+                e.PropertyName == nameof(CartItem.RawTotal) ||
+                e.PropertyName == nameof(CartItem.TotalLineDiscount))
+            {
+                UpdateCartTotal();
+            }
+        }
+
+        // ... Vos propriétés CartSubTotal, TotalDiscountAmount, CartTotal restent identiques ...
+
+        private void UpdateCartTotal()
+        {
+            OnPropertyChanged(nameof(CartSubTotal));
+            OnPropertyChanged(nameof(TotalDiscountAmount));
+            OnPropertyChanged(nameof(CartTotal));
         }
 
         //need async + await 500 ms delay to not query the API on every keystroke
@@ -64,12 +107,7 @@ namespace Shiakati.ViewModels
 
         // Le montant final à encaisser
         public decimal CartTotal => CartSubTotal - TotalDiscountAmount;
-        private void UpdateCartTotal()
-        {
-            OnPropertyChanged(nameof(CartSubTotal));
-            OnPropertyChanged(nameof(TotalDiscountAmount));
-            OnPropertyChanged(nameof(CartTotal));
-        }
+
 
         [RelayCommand]
         private void AddToCart(ProductVariantsModel selectedVariant)
@@ -80,13 +118,13 @@ namespace Shiakati.ViewModels
 
             if (existingItem != null)
             {
+                // Cela va déclencher NotifyPropertyChangedFor, qui va déclencher CartItem_PropertyChanged, qui va déclencher UpdateCartTotal !
                 existingItem.Quantity++;
-                UpdateCartTotal(); // On met à jour le total global
             }
             else
             {
-                // On passe notre méthode UpdateCartTotal en tant que Callback !
-                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo, UpdateCartTotal));
+                // L'ajout dans la collection déclenche CartItems_CollectionChanged, qui va s'abonner et déclencher UpdateCartTotal !
+                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
             }
 
             SearchText = string.Empty;
@@ -97,19 +135,14 @@ namespace Shiakati.ViewModels
         {
             if (itemToRemove != null)
             {
-                CartItems.Remove(itemToRemove);
-                UpdateCartTotal();
+                CartItems.Remove(itemToRemove); // Déclenche CollectionChanged automatiquement
             }
         }
 
         [RelayCommand]
         private void IncrementQty(CartItem item)
         {
-            if (item != null)
-            {
-                item.Quantity++;
-                UpdateCartTotal();
-            }
+            if (item != null) item.Quantity++;
         }
 
         [RelayCommand]
@@ -118,17 +151,11 @@ namespace Shiakati.ViewModels
             if (item != null)
             {
                 if (item.Quantity > 1)
-                {
                     item.Quantity--;
-                    UpdateCartTotal();
-                }
                 else
-                {
-                    RemoveFromCart(item);
-                }
+                    CartItems.Remove(item);
             }
         }
-
 
         [RelayCommand]
         private void Checkout()
@@ -140,6 +167,12 @@ namespace Shiakati.ViewModels
             }
 
             MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
+            foreach (var item in CartItems)
+            {
+                item.PropertyChanged -= CartItem_PropertyChanged;
+            }
             CartItems.Clear();
         }
 

@@ -41,6 +41,13 @@
     <None Remove="Resources\Photos\shiakati bg.png" />
     <None Remove="Resources\Photos\Shiakati Dark Logo.jpg" />
     <None Remove="Resources\Photos\Shiakati Light Logo.jpg" />
+    <None Remove="ToDo.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ToDo.txt">
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -66,7 +73,6 @@
 
   <ItemGroup>
     <Folder Include="Converters\" />
-    <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
   </ItemGroup>
 

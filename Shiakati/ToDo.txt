@@ -1,0 +1,20 @@
+﻿
+
+
+Conseil : Implémentez IDisposable dans vos ViewModels et assurez-vous de désabonner les événements (comme CartItems.CollectionChanged) lors de la fermeture de l'onglet.
+
+
+
+Solution : Créez un IProductService en Singleton qui garde la liste des produits en cache. Les ViewModels ne feront que filtrer cette liste partagée.
+
+
+
+Prochaines étapes suggérées :
+
+Optimisation de la recherche : Implémentez le délai de 500ms pour ne pas saturer l'UI.
+
+Gestion du Stock : Dans StockViewModel, remplacez les MessageBox par un service de dialogue ou des notifications (Snackbars) Material Design pour une expérience utilisateur plus fluide.
+
+
+
+Validation  // Logging : Ajoutez des validations pour les entrées utilisateur et implémentez un système de logging pour suivre les erreurs et les actions importantes.

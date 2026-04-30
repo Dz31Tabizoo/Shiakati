@@ -9,7 +9,7 @@ namespace Shiakati.Models
     {
         public ProductVariantsModel Variant { get; }
         public ProductModel Product { get; }
-        private readonly Action _onPriceChanged;
+        
 
         // Prix total SANS aucune remise (SalePrice * Quantité)
         public decimal RawTotal => Variant.SalePrice * Quantity;
@@ -32,7 +32,6 @@ namespace Shiakati.Models
                 return unitDiscount * Quantity;
             }
         }
-
         public decimal TotalPrice => RawTotal - TotalLineDiscount;
 
         [ObservableProperty]
@@ -52,20 +51,18 @@ namespace Shiakati.Models
         // à chaque fois que l'utilisateur tape un chiffre dans la case ManualDiscount
         partial void OnManualDiscountChanged(decimal value)
         {
-            OnPropertyChanged(nameof(TotalPrice)); // Rafraîchit le total de cette ligne
-            _onPriceChanged?.Invoke();             // Rafraîchit le gros total en bas
-        }
-
-        
+            OnPropertyChanged(nameof(TotalPrice));
+            OnPropertyChanged(nameof(TotalLineDiscount));
+        }        
 
         public string DisplayName => $"{Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
 
-        public CartItem(ProductVariantsModel variant, ProductModel product, Action onPriceChanged)
+        public CartItem(ProductVariantsModel variant, ProductModel product)
         {
             Variant = variant;
             Product = product;
             _quantity = 1;
-            _onPriceChanged = onPriceChanged;
+            
         }
 
         [RelayCommand]
@@ -73,7 +70,7 @@ namespace Shiakati.Models
         {
             IsDiscountPinned = !IsDiscountPinned;
             OnPropertyChanged(nameof(TotalPrice));
-            _onPriceChanged?.Invoke();
+            OnPropertyChanged(nameof(TotalLineDiscount));
         }
     }
 }

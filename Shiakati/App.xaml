@@ -35,6 +35,10 @@
                         <views:POSContainerView />
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type viewModels:SalesHistoryViewModel}">
+                        <views:SalesHistoryView />
+                    </DataTemplate>
+
                     <DataTemplate DataType="{x:Type viewModels:StockViewModel}">
                         <views:StockView />
                     </DataTemplate>
