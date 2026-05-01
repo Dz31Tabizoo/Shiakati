@@ -2,6 +2,8 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Shiakati.ViewModels;
+using Shiakati.Services.Interfaces;
+using Shiakati.Services.Implementations;
 using Shiakati.Views;
 
 namespace Shiakati
@@ -44,6 +46,8 @@ namespace Shiakati
             services.AddTransient<StockView>();
             services.AddTransient<SalesHistoryViewModel>();
             services.AddTransient<SalesHistoryView>();
+
+            services.AddSingleton<IPrintService, PrintService>();   
 
             // Example: services.AddTransient<IMyService, MyService>();
         }
