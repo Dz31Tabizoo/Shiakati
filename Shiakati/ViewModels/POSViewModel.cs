@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Shiakati.Models;
+using Shiakati.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -10,8 +11,8 @@ namespace Shiakati.ViewModels
     public partial class POSViewModel : ObservableObject
     {
         private readonly ILogger<POSViewModel> _logger;      
+        private readonly IPrintService _printService;
 
-       
 
         [ObservableProperty]
         private string _tabName;
@@ -29,10 +30,11 @@ namespace Shiakati.ViewModels
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
 
-        public POSViewModel(string name, ILogger<POSViewModel> logger)
+        public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService)
         {
             TabName = name;
             _logger = logger;
+            _printService = printService;   
 
             LoadFakeProducts();
 
@@ -165,17 +167,52 @@ namespace Shiakati.ViewModels
                 MessageBox.Show("Le panier est vide !", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            string newTicketNumber = $"TK-{DateTime.Now:yyyyMMddHHmmss}";
 
             MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
-            foreach (var item in CartItems)
+
+            var receip = new ReceipModel
             {
-                item.PropertyChanged -= CartItem_PropertyChanged;
+                TicketNumber = newTicketNumber,
+                Date = DateTime.Now,
+                TotalAmount = CartTotal,
+                TotalDiscount = TotalDiscountAmount,
+                Items = CartItems.Select(c => new ReceiptItem
+                {
+                    Designation = c.DisplayName,
+                    Quantity = c.Quantity,
+                    UnitPrice = c.Variant.SalePrice,
+                }).ToList()
+
+            };
+
+            if (PrintTicket(receip))
+            {
+                // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
+                foreach (var item in CartItems)
+                {
+                    item.PropertyChanged -= CartItem_PropertyChanged;
+                }
+                CartItems.Clear();
             }
-            CartItems.Clear();
         }
 
+        private bool PrintTicket(ReceipModel receipt)
+        {
+            // Implémentation de l'impression du ticket
+            try
+            {
+                _printService.PrintReceipt(receipt);
+                MessageBox.Show("Vente validée et ticket imprimé !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'impression du ticket : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
         public void LoadFakeProducts()
         {
             // On simule ce que l'API/Dapper va nous renvoyer (La jointure)
@@ -192,6 +229,4 @@ namespace Shiakati.ViewModels
             FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);
         }
     }
-
-
 }
