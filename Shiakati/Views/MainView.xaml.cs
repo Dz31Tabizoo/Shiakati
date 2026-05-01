@@ -16,6 +16,7 @@ namespace Shiakati.Views
         {
             InitializeComponent();
             this.DataContext = App.ServiceProvider?.GetRequiredService<MainViewModel>();
+            this.WindowState = WindowState.Maximized;
         }
 
         [DllImport("user32.dll")]
