@@ -11,7 +11,11 @@ namespace Shiakati.Models
         private string? _username = string.Empty;
         [ObservableProperty]
         private string _passwordHash = string.Empty;
+
         [ObservableProperty]
         private string _role = string.Empty;
+
+        [ObservableProperty]
+        private string? _token;
     }
 }
