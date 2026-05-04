@@ -1,9 +1,11 @@
 ﻿using System.Drawing;
 using System.Drawing.Printing;
 using QRCoder;
+using System.Drawing.Imaging;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System.IO;
+using System.Windows.Controls;
 
 namespace Shiakati.Services.Implementations
 {
@@ -11,12 +13,25 @@ namespace Shiakati.Services.Implementations
     {
         private ReceipModel _currentReceip;
 
-        public void PrintReceipt(ReceipModel receipt)
+        public void PrintReceipt(ReceipModel receipt, string configuredPrinterName = "")
         {
             _currentReceip = receipt;
 
-            PrintDocument printDoc=new PrintDocument();
-            printDoc.PrintPage += PrintDoc_PrintPage;
+            using (PrintDocument printDoc = new PrintDocument())
+            {
+                printDoc.PrintPage += PrintDoc_PrintPage;
+
+                // If you have a specific thermal printer saved in your app settings, use it.
+                // If you leave it empty, Windows will automatically use the Default Printer.
+                if (!string.IsNullOrEmpty(configuredPrinterName))
+                {
+                    printDoc.PrinterSettings.PrinterName = configuredPrinterName;
+                }
+
+                // BOOM! Prints instantly, silently, with no UI conflicts.
+                printDoc.Print();
+
+            }
         }
 
         private void PrintDoc_PrintPage(object sender,PrintPageEventArgs e)
@@ -47,7 +62,7 @@ namespace Shiakati.Services.Implementations
             string logoPath = "\\Resources\\Photos\\Shiakati Black and white.png"; // Chemin vers votre logo
             if (File.Exists(logoPath))
             {
-                Image logo = Image.FromFile(logoPath);
+                System.Drawing.Image logo = System.Drawing.Image.FromFile(logoPath);
                 // On redimensionne et on centre le logo (ex: 150x150)
                 g.DrawImage(logo, (paperWidth - 150) / 2, yPos, 150, 150);
                 yPos += 160;

@@ -4,6 +4,6 @@ namespace Shiakati.Services.Interfaces
 {
     public interface IPrintService
     {
-          void PrintReceipt(ReceipModel receipt);
+          void PrintReceipt(ReceipModel receipt, string configuredPrinterName = "");
     }
 }
