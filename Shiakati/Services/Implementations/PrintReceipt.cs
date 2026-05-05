@@ -35,7 +35,7 @@ namespace Shiakati.Services.Implementations
             }
         }
 
-        private void PrintDoc_PrintPage(object sender,PrintPageEventArgs e)
+        private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
 
@@ -45,11 +45,11 @@ namespace Shiakati.Services.Implementations
             float paperWidth = 280;
 
 
-            Font titleFont = new Font("Arial", 12, FontStyle.Bold);
-            Font miniFont = new Font("Arial", 6, FontStyle.Regular);
-            Font regularFont = new Font("Arial", 9, FontStyle.Regular);
-            Font BlodFont = new Font("Arial", 9, FontStyle.Bold);
-            Font arabicFont = new Font("Arial", 12, FontStyle.Bold);
+            Font titleFont = new Font("Montserrat", 12, FontStyle.Bold);
+            Font miniFont = new Font("Montserrat", 6, FontStyle.Regular);
+            Font regularFont = new Font("Montserrat", 9, FontStyle.Regular);
+            Font BlodFont = new Font("Montserrat", 9, FontStyle.Bold);
+            Font arabicFont = new Font("Cairo", 12, FontStyle.Bold);
 
             // Formats d'alignement
             StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center };
@@ -92,23 +92,31 @@ namespace Shiakati.Services.Implementations
                 Console.WriteLine($"Logo error: {ex.Message}");
             }
 
-            
 
+            // - 
             // Titre
-            g.DrawString("شياكتي", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
-            yPos += 20;
+            g.DrawString($"شياكتي " + " Shiakati", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
+            yPos += 25;
+            g.DrawString("N° Tel: (+213) 560.80.90.90", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+            yPos += 15;
+            g.DrawString("Adresse: Rue 1er Novembre, La Cia, Chlef 02", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+            yPos += 25;
             g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-            yPos += 20;
+            yPos += 15;
             g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-            yPos += 30;
+            yPos += 22;
 
             //separation  -                                                       -  
             g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
-            yPos += 15;
+            yPos += 3;
+            g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+            yPos += 25;
+
+
 
             foreach (var item in _currentReceip.Items)
             {
-                g.DrawString(item.Designation,regularFont, Brushes.Black, leftMargin, yPos);
+                g.DrawString(item.Designation, BlodFont, Brushes.Black, leftMargin, yPos);
                 yPos += 15;
 
                 // Line: Qty x UnitPrice ...... TotalPrice
@@ -142,10 +150,10 @@ namespace Shiakati.Services.Implementations
             g.DrawString("TOTAL A PAYER :", titleFont, Brushes.Black, leftMargin, yPos);
             g.DrawString($" {_currentReceip.TotalAmount:N2} DA", titleFont, Brushes.Black, rightMargin, yPos, rightFormat);
             yPos += 30;
-
+            
             // 5. MESSAGE DE REMERCIEMENT (En Arabe)
             g.DrawString("شكرا لمروركم الطيب", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
-            yPos += 25;
+            yPos += 20;
 
             // 6. CODE QR (Généré avec QRCoder)
             using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
@@ -157,15 +165,15 @@ namespace Shiakati.Services.Implementations
                     Bitmap qrCodeImage = qrCode.GetGraphic(3);
                     // On centre le QR Code
                     g.DrawImage(qrCodeImage, (paperWidth - qrCodeImage.Width) / 2, yPos);
-                    yPos += qrCodeImage.Height + 10;
+                    yPos += qrCodeImage.Height + 5;
                 }
+
+                g.DrawString("Software: NumidixLab", miniFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+
+                // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
+                g.DrawString(" ", regularFont, Brushes.Black, leftMargin, yPos + 30);
             }
 
-            g.DrawString("Software: NumidixLab", miniFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-
-            // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
-            g.DrawString(" ", regularFont, Brushes.Black, leftMargin , yPos + 30);
         }
-
     }
 }

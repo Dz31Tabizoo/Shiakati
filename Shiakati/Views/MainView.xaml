@@ -5,13 +5,14 @@
         Title="Shiakati POS" Height="800" Width="1280"
         Background="{StaticResource BgBrush}"
         WindowStyle="None" AllowsTransparency="True"
-        WindowStartupLocation="CenterScreen">
-    
+        WindowStartupLocation="CenterScreen"
+        FontFamily ="{StaticResource PoppinsFont}">
+
 
     <Window.Resources>
-        
-            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        
+
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
         <!-- Animations -->
         <Storyboard x:Key="ExpandSidebar">
             <DoubleAnimation Storyboard.TargetProperty="Width" To="250" Duration="0:0:0.3">
@@ -120,11 +121,11 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Margin="0,20,0,30">
+                <StackPanel Grid.Row="0" Margin="0,10,0,0" Orientation="Vertical" >
                     <ToggleButton x:Name="MenuToggleButton" 
                                   Style="{StaticResource MaterialDesignActionToggleButton}"
-                                  Background="Transparent" BorderBrush="Transparent" Foreground="{StaticResource SecondaryBrush}"
-                                  HorizontalAlignment="Right" Margin="0,0,15,10">
+                                  Background="Transparent" BorderBrush="Transparent" Foreground="{StaticResource BgBrush}"
+                                  HorizontalAlignment="Right" Margin="0,0,15,0">
                         <ToggleButton.Content>
                             <materialDesign:PackIcon Kind="ArrowRight" Width="25" Height="25"/>
                         </ToggleButton.Content>
@@ -132,9 +133,15 @@
                             <materialDesign:PackIcon Kind="ArrowLeft" Width="25" Height="25"/>
                         </materialDesign:ToggleButtonAssist.OnContent>
                     </ToggleButton>
-                    <materialDesign:PackIcon Kind="DiamondStone" Foreground="{StaticResource SecondaryBrush}" 
-                                            Width="48" Height="48" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                </StackPanel>                
+
+                    <Image Source="/Resources/Photos/Shiakati beige Logo.png"                               
+                               Width="150"                           
+                               Margin="0"
+                               Stretch="UniformToFill"        />
+                    <TextBlock Text="Shiakati   شياكتي" FontFamily="{StaticResource CairoFont}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BgBrush}" HorizontalAlignment="Center" Margin="0,10" />
+
+
+                </StackPanel>
 
                 <!--<StackPanel Grid.Row="1">
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
@@ -153,6 +160,8 @@
                 </StackPanel>-->
 
                 <StackPanel Grid.Row="1">
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="CashRegister" Width="48" Height="48" Margin="10,0,0,0"/>
@@ -160,7 +169,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,15,0,15"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
 
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}">
                         <StackPanel Orientation="Horizontal">
@@ -169,7 +178,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,10,0,10"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
 
                     <ToggleButton x:Name="btnHistorique" Style="{StaticResource NavToggleButtonStyle}">
                         <StackPanel Orientation="Horizontal" Width="230" HorizontalAlignment="Left">
@@ -177,7 +186,7 @@
                             <TextBlock Text="Historique" Margin="35,0,0,0" FontSize="18" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </ToggleButton>
-                    
+
                     <StackPanel Visibility="{Binding IsChecked, ElementName=btnHistorique, Converter={StaticResource BoolToVis}}">
                         <Button  Command="{Binding NavigateToSalesHistoryCommand}" Style="{StaticResource NavButtonStyle}" Margin="20,2,10,2" Height="40">
                             <StackPanel Orientation="Horizontal">
@@ -194,22 +203,23 @@
                         </Button>
                     </StackPanel>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,15,0,5"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
 
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}" Height="60">
+                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavToSettingsCommand}" Height="60">
                         <StackPanel Orientation="Horizontal" >
                             <materialDesign:PackIcon Kind="Cogs" Width="48" Height="48" Margin="10,0,0,0"/>
                             <TextBlock Text="Paramètres" Margin="35,0,0,0" FontSize="18" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </Button>
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,10,0,5"/>
+                    
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
 
 
                 </StackPanel>
 
-                
 
-                <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10,0,10,20" Foreground="{StaticResource SecondaryBrush}">
+
+                <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10" Foreground="{StaticResource SecondaryBrush}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Logout" Width="48" Height="48" Margin="0,0,0,0"/>
                         <TextBlock Text="Déconnexion" Margin="25,0,0,0" FontSize="18" VerticalAlignment="Center"/>
@@ -231,7 +241,7 @@
                     MouseEnter="pnlControlBar_MouseEnter">
                 <Grid Margin="20,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="SHIAKATI LUXE" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" />
+                        <TextBlock Text="Shiakati شياكتي" FontFamily="{StaticResource CairoFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

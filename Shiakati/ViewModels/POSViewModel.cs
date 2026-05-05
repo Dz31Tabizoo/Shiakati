@@ -203,7 +203,9 @@ namespace Shiakati.ViewModels
             // Implémentation de l'impression du ticket
             try
             {
-                _printService.PrintReceipt(receipt);
+                // Récupérer le nom de l'imprimante depuis les paramètres
+                string printerToUse = Properties.Settings.Default.TicketPrinterName; 
+                _printService.PrintReceipt(receipt,printerToUse);
                 MessageBox.Show("Vente validée et ticket imprimé !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
             }

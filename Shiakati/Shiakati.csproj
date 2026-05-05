@@ -39,6 +39,7 @@
     <None Remove="Resources\Photos\Shiakati beige Logo horizental.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo.png" />
     <None Remove="Resources\Photos\shiakati bg.png" />
+    <None Remove="Resources\Photos\Shiakati Black and white - VERTICAL.png" />
     <None Remove="Resources\Photos\Shiakati Black and white.png" />
     <None Remove="Resources\Photos\Shiakati Dark Logo.jpg" />
     <None Remove="Resources\Photos\Shiakati Light Logo.jpg" />
@@ -46,6 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Photos\Shiakati Black and white - VERTICAL.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Photos\Shiakati Black and white.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -80,6 +84,21 @@
 
   <ItemGroup>
     <Folder Include="Converters\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -34,6 +34,15 @@ namespace Shiakati.ViewModels
 
         [RelayCommand]
         private void NavigateToSalesHistory() => CurrentView = SalesHistory;
-        
+        [RelayCommand]
+        private void ExitApplication()
+        {
+            // Logique pour fermer l'application
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        [RelayCommand]
+        private void NavToSettings() => CurrentView = new SettingsView();
+
     }
 }
