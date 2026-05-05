@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿
+using System.Drawing;
 using System.Drawing.Printing;
 using QRCoder;
 using System.Drawing.Imaging;
@@ -45,6 +46,7 @@ namespace Shiakati.Services.Implementations
 
 
             Font titleFont = new Font("Arial", 12, FontStyle.Bold);
+            Font miniFont = new Font("Arial", 6, FontStyle.Regular);
             Font regularFont = new Font("Arial", 9, FontStyle.Regular);
             Font BlodFont = new Font("Arial", 9, FontStyle.Bold);
             Font arabicFont = new Font("Arial", 12, FontStyle.Bold);
@@ -59,14 +61,38 @@ namespace Shiakati.Services.Implementations
                 FormatFlags = StringFormatFlags.DirectionRightToLeft
             };
 
-            string logoPath = "\\Resources\\Photos\\Shiakati Black and white.png"; // Chemin vers votre logo
-            if (File.Exists(logoPath))
+
+            try
             {
-                System.Drawing.Image logo = System.Drawing.Image.FromFile(logoPath);
-                // On redimensionne et on centre le logo (ex: 150x150)
-                g.DrawImage(logo, (paperWidth - 150) / 2, yPos, 150, 150);
-                yPos += 160;
+                // 1. Define the URI (Path) to the resource inside your app
+                // Note: Make sure the folder names match exactly what is in your Solution Explorer
+                Uri resourceUri = new Uri("pack://application:,,,/Resources/Photos/Shiakati Black and white.png");
+
+                // 2. Open a stream to read the file from inside the .exe
+                var streamInfo = System.Windows.Application.GetResourceStream(resourceUri);
+
+                if (streamInfo != null)
+                {
+                    // 3. Convert the Stream into a System.Drawing.Image
+                    using (System.Drawing.Image logoImage = System.Drawing.Image.FromStream(streamInfo.Stream))
+                    {
+                        float logoWidth = 160;
+                        float logoHeight = 72;
+                        float logoX = (paperWidth - logoWidth) / 2;
+
+                        g.DrawImage(logoImage, logoX, yPos, logoWidth, logoHeight);
+                        yPos += logoHeight + 10;
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                // If you misspell the folder name, it will crash here. 
+                // You can write a temporary Console.WriteLine or just ignore it so the ticket still prints without a logo.
+                Console.WriteLine($"Logo error: {ex.Message}");
+            }
+
+            
 
             // Titre
             g.DrawString("شياكتي", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
@@ -76,8 +102,8 @@ namespace Shiakati.Services.Implementations
             g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
             yPos += 30;
 
-            //separation 
-            g.DrawString("------------------------------------------------", regularFont, Brushes.Black, leftMargin, yPos);
+            //separation  -                                                       -  
+            g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
             yPos += 15;
 
             foreach (var item in _currentReceip.Items)
@@ -85,56 +111,60 @@ namespace Shiakati.Services.Implementations
                 g.DrawString(item.Designation,regularFont, Brushes.Black, leftMargin, yPos);
                 yPos += 15;
 
-                // Ligne: Qte x Prix Unitaire ............... Prix Total
-                string qtePrice = $"{item.Quantity} x {item.UnitPrice:N2} DA";
-                g.DrawString(qtePrice, regularFont, Brushes.Black, leftMargin + 10, yPos);
-                g.DrawString($"{item.TotalPrice:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
-                yPos += 15;
+                // Line: Qty x UnitPrice ...... TotalPrice
+                string leftText = $"{item.Quantity} x {item.UnitPrice:N2} DA";
+                string rightText = $"{item.TotalPrice:N2} DA";
 
-                g.DrawString("------------------------------------------------", regularFont, Brushes.Black, leftMargin, yPos);
-                yPos += 15;
+                // Draw left and right parts
+                g.DrawString(leftText, regularFont, Brushes.Black, leftMargin + 10, yPos);
+                g.DrawString(rightText, regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
 
-                // 4. TOTAUX ET REMISES
-                if (_currentReceip.TotalDiscount > 0)
-                {
-                    g.DrawString("Sous-total :", regularFont, Brushes.Black, leftMargin, yPos);
-                    g.DrawString($"{_currentReceip.TotalAmount + _currentReceip.TotalDiscount:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
-                    yPos += 15;
-
-                    g.DrawString("Remise :", regularFont, Brushes.Black, leftMargin, yPos);
-                    g.DrawString($"- {_currentReceip.TotalDiscount:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
-                    yPos += 15;
-                }
-
-                g.DrawString("TOTAL A PAYER :", titleFont, Brushes.Black, leftMargin, yPos);
-                g.DrawString($"{_currentReceip.TotalAmount:N2} DA", titleFont, Brushes.Black, rightMargin, yPos, rightFormat);
-                yPos += 30;
-
-                // 5. MESSAGE DE REMERCIEMENT (En Arabe)
-                g.DrawString("شكرا لمروركم الطيب", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
                 yPos += 25;
-
-                // 6. CODE QR (Généré avec QRCoder)
-                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-                {
-                    QRCodeData qrCodeData = qrGenerator.CreateQrCode(_currentReceip.TicketNumber, QRCodeGenerator.ECCLevel.Q);
-                    using (QRCode qrCode = new QRCode(qrCodeData))
-                    {
-                        // Le chiffre "3" définit la taille des pixels du QR
-                        Bitmap qrCodeImage = qrCode.GetGraphic(3);
-                        // On centre le QR Code
-                        g.DrawImage(qrCodeImage, (paperWidth - qrCodeImage.Width) / 2, yPos);
-                        yPos += qrCodeImage.Height + 10;
-                    }
-                }
-
-                g.DrawString("Software: NumidixLab", regularFont, Brushes.Black, leftMargin/2, yPos);
-
-                // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
-                g.DrawString(" ", regularFont, Brushes.Black, leftMargin, yPos + 30);
-            
-               
             }
+
+            //separation  - - - -  - 
+            g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+            yPos += 15;
+
+
+            // 4. TOTAUX ET REMISES
+            if (_currentReceip.TotalDiscount > 0)
+            {
+                g.DrawString("Sous-total :", regularFont, Brushes.Black, leftMargin, yPos);
+                g.DrawString($"{_currentReceip.TotalAmount + _currentReceip.TotalDiscount:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
+                yPos += 15;
+
+                g.DrawString("Remise :", regularFont, Brushes.Black, leftMargin, yPos);
+                g.DrawString($"- {_currentReceip.TotalDiscount:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
+                yPos += 15;
+            }
+
+            g.DrawString("TOTAL A PAYER :", titleFont, Brushes.Black, leftMargin, yPos);
+            g.DrawString($" {_currentReceip.TotalAmount:N2} DA", titleFont, Brushes.Black, rightMargin, yPos, rightFormat);
+            yPos += 30;
+
+            // 5. MESSAGE DE REMERCIEMENT (En Arabe)
+            g.DrawString("شكرا لمروركم الطيب", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
+            yPos += 25;
+
+            // 6. CODE QR (Généré avec QRCoder)
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(_currentReceip.TicketNumber, QRCodeGenerator.ECCLevel.Q);
+                using (QRCode qrCode = new QRCode(qrCodeData))
+                {
+                    // Le chiffre "3" définit la taille des pixels du QR
+                    Bitmap qrCodeImage = qrCode.GetGraphic(3);
+                    // On centre le QR Code
+                    g.DrawImage(qrCodeImage, (paperWidth - qrCodeImage.Width) / 2, yPos);
+                    yPos += qrCodeImage.Height + 10;
+                }
+            }
+
+            g.DrawString("Software: NumidixLab", miniFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+
+            // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
+            g.DrawString(" ", regularFont, Brushes.Black, leftMargin , yPos + 30);
         }
 
     }

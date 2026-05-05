@@ -46,7 +46,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Photos\Shiakati Black and white.png" />
+    <Resource Include="Resources\Photos\Shiakati Black and white.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="ToDo.txt">
       <Generator>MSBuild:Compile</Generator>
     </Resource>
