@@ -66,7 +66,7 @@ namespace Shiakati.Services.Implementations
             {
                 // 1. Define the URI (Path) to the resource inside your app
                 // Note: Make sure the folder names match exactly what is in your Solution Explorer
-                Uri resourceUri = new Uri("pack://application:,,,/Resources/Photos/Shiakati Black and white.png");
+                Uri resourceUri = new Uri("pack://application:,,,/Resources/Photos/Shiakati Black and white - VERTICAL.png");
 
                 // 2. Open a stream to read the file from inside the .exe
                 var streamInfo = System.Windows.Application.GetResourceStream(resourceUri);
@@ -76,8 +76,8 @@ namespace Shiakati.Services.Implementations
                     // 3. Convert the Stream into a System.Drawing.Image
                     using (System.Drawing.Image logoImage = System.Drawing.Image.FromStream(streamInfo.Stream))
                     {
-                        float logoWidth = 160;
-                        float logoHeight = 72;
+                        float logoWidth = 80;
+                        float logoHeight = 170;
                         float logoX = (paperWidth - logoWidth) / 2;
 
                         g.DrawImage(logoImage, logoX, yPos, logoWidth, logoHeight);
