@@ -219,7 +219,7 @@
 
 
 
-                <Button Grid.Row="2" Style="{StaticResource NavButtonStyle}" Margin="10" Foreground="{StaticResource SecondaryBrush}">
+                <Button Grid.Row="2" Command="{Binding LogoutCommand}" Style="{StaticResource NavButtonStyle}" Margin="10" Foreground="{StaticResource SecondaryBrush}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Logout" Width="48" Height="48" Margin="0,0,0,0"/>
                         <TextBlock Text="Déconnexion" Margin="25,0,0,0" FontSize="18" VerticalAlignment="Center"/>

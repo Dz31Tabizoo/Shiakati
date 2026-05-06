@@ -81,10 +81,13 @@ namespace Shiakati
             services.AddSingleton<PosContainerViewModel>();
             services.AddTransient<POSViewModel>();
             services.AddTransient<LoginView>();
+            services.AddTransient<LoginViewModel>();
             services.AddTransient<StockViewModel>();
             services.AddTransient<StockView>();
             services.AddTransient<SalesHistoryViewModel>();
             services.AddTransient<SalesHistoryView>();
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SettingsView>();
 
             services.AddSingleton<IPrintService, PrintService>();   
 
@@ -94,8 +97,11 @@ namespace Shiakati
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var login = ServiceProvider!.GetRequiredService<LoginView>();
-            login.Show();
+            //var login = ServiceProvider!.GetRequiredService<LoginView>();
+            //login.Show();
+
+            var maintest = ServiceProvider.GetRequiredService<MainView>();
+            maintest.Show();
         }
     }
 }

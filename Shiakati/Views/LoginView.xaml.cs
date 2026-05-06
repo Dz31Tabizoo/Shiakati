@@ -20,9 +20,10 @@ namespace Shiakati.Views
 {
     public partial class LoginView : Window
     {
-        public LoginView()
+        public LoginView(ViewModels.LoginViewModel viewModel)
         {
             InitializeComponent();
+            this.DataContext = viewModel;
         }
 
         // Permet de déplacer la fenêtre avec la souris
@@ -39,26 +40,26 @@ namespace Shiakati.Views
         }
 
         // CORRECTION : Ajout de la méthode manquante pour Click="BtnLogin_Click"
-        private void BtnLogin_Click(object sender, RoutedEventArgs e)
-        {
-            // Simulation de connexion pour le moment
-            string username = TxtUsername.Text;
-            string password = TxtPassword.Password;
+        //private void BtnLogin_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // Simulation de connexion pour le moment
+        //    string username = TxtUsername.Text;
+        //    string password = TxtPassword.Password;
 
 
-            if (username == "admin" && password == "admin")
-            {
-                var main = App.ServiceProvider!.GetRequiredService<MainView>();
-                main.Show();
-                this.Close();
-            }
+        //    if (username == "admin" && password == "admin")
+        //    {
+        //        var main = App.ServiceProvider!.GetRequiredService<MainView>();
+        //        main.Show();
+        //        this.Close();
+        //    }
 
-            else
-            {
-                // Affichage du message d'erreur défini dans ton XAML
-                TxtErrorMessage.Visibility = Visibility.Visible;
-            }
-        }
+        //    else
+        //    {
+        //        // Affichage du message d'erreur défini dans ton XAML
+        //        TxtErrorMessage.Visibility = Visibility.Visible;
+        //    }
+        //}
     }
 }
 

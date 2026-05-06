@@ -10,6 +10,10 @@
         AllowsTransparency="True"
         Background="Transparent"
         FontFamily="{StaticResource MontserratFont}">
+     
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
 
     <!-- Main Card -->
     <Border CornerRadius="22"
@@ -111,6 +115,7 @@
                 <!-- Close Button -->
                 <Button Grid.Row="0"
                         HorizontalAlignment="Right"
+                        Command="{Binding CloseApplicationCommand}"
                         Style="{StaticResource MaterialDesignIconForegroundButton}"
                         Click="BtnClose_Click"
                         Foreground="Gray">
@@ -138,16 +143,16 @@
 
                     <!-- Username -->
                     <TextBox x:Name="TxtUsername"
+                             Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              materialDesign:HintAssist.Hint="Nom d'utilisateur / اسم المستخدم"
                              materialDesign:HintAssist.Foreground="{DynamicResource PrimaryBrush}"
                              materialDesign:TextFieldAssist.UnderlineCornerRadius="10"
-                             FontSize="18"
-                             Height="60"
-                             Margin="0,0,0,22"/>
+                             FontSize="18" Height="60" Margin="0,0,0,22"/>
 
                     <!-- Password -->
                     <PasswordBox x:Name="TxtPassword"
+                                 
                                  Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}"
                                  materialDesign:HintAssist.Hint="Mot de passe / كلمة المرور"
                                  materialDesign:HintAssist.Foreground="{DynamicResource PrimaryBrush}"
@@ -158,14 +163,17 @@
 
                     <!-- Error Message -->
                     <TextBlock x:Name="TxtErrorMessage"
-                               Text="Identifiants incorrects."
+                               Text="{Binding ErrorMessage}"
                                Foreground="#E53935"
-                               Visibility="Collapsed"
+                               Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
                                Margin="5,0,0,15"/>
 
                     <!-- Login Button -->
                     <Button x:Name="BtnLogin"
                             Content="SE CONNECTER"
+                            Command="{Binding LoginCommand}"
+                            CommandParameter="{Binding ElementName=TxtPassword}"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             Background="{DynamicResource SecondaryBrush}"
                             BorderBrush="{DynamicResource SecondaryBrush}"
@@ -175,12 +183,10 @@
                             FontWeight="Bold"
                             Height="65"
                             Margin="0,15,0,0"
-                            Click="BtnLogin_Click">
+                            >
 
                         <Button.Effect>
-                            <DropShadowEffect BlurRadius="12"
-                                              ShadowDepth="2"
-                                              Opacity="0.35"/>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.35"/>
                         </Button.Effect>
 
                     </Button>

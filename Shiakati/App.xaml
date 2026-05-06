@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:views="clr-namespace:Shiakati.Views"
              xmlns:viewModels="clr-namespace:Shiakati.ViewModels"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Shiakati.Converters">
     
     <Application.Resources>
         <ResourceDictionary>
@@ -31,6 +32,11 @@
                 <ResourceDictionary Source="Resources/Styles/GlobalStyles.xaml"/>
 
                 <ResourceDictionary>
+                    
+                    <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+                        <views:SettingsView />
+                    </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type viewModels:PosContainerViewModel}">
                         <views:POSContainerView />
                     </DataTemplate>
@@ -46,6 +52,11 @@
                     <DataTemplate DataType="{x:Type viewModels:POSViewModel}">
                         <views:PosView />
                     </DataTemplate>
+                    
+                </ResourceDictionary>
+                <ResourceDictionary>
+                    <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+
                 </ResourceDictionary>
 
             </ResourceDictionary.MergedDictionaries>

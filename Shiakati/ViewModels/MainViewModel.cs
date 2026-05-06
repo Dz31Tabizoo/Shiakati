@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Shiakati.Services.Interfaces;
 using Shiakati.Views;
 
 namespace Shiakati.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
+        private readonly IAuthenticationClientService _authService;
         [ObservableProperty]
         private object _currentView;
 
@@ -15,12 +18,15 @@ namespace Shiakati.ViewModels
         public PosContainerViewModel PosContainer { get; }
         public StockViewModel Stock { get; }
 
-        public MainViewModel(PosContainerViewModel posContainer, StockViewModel stockViewModel, SalesHistoryViewModel salesHistory)
+        public SettingsViewModel Settings { get; }
+
+        public MainViewModel(IAuthenticationClientService authService, PosContainerViewModel posContainer, StockViewModel stockViewModel, SalesHistoryViewModel salesHistory,SettingsViewModel settingsViewModel )
         {
+            _authService = authService;
             PosContainer = posContainer;
             Stock = stockViewModel;
             SalesHistory = salesHistory;
-
+            Settings = settingsViewModel;
             // Vue par défaut au démarrage
             CurrentView = PosContainer;
             
@@ -42,7 +48,18 @@ namespace Shiakati.ViewModels
         }
 
         [RelayCommand]
-        private void NavToSettings() => CurrentView = new SettingsView();
+        private void NavToSettings() => CurrentView = Settings;
+
+        [RelayCommand]
+        private void Logout()
+        {
+            // Logique pour se déconnecter et revenir à la page de connexion
+            _authService.Logout(); // Appeler la méthode de déconnexion de votre service d'authentification
+            var loginView = App.ServiceProvider.GetRequiredService<LoginView>();
+            loginView.Show();
+            // Fermer la fenêtre principale
+            System.Windows.Application.Current.MainWindow.Close();
+        }
 
     }
 }
