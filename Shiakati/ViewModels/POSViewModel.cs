@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Windows;
+using Shiakati.Messages;
 
 namespace Shiakati.ViewModels
 {
@@ -13,7 +15,19 @@ namespace Shiakati.ViewModels
         private readonly ILogger<POSViewModel> _logger;      
         private readonly IPrintService _printService;
 
+        /*---------------------------------------------
+         *             Edit Properties 
+         *---------------------------------------------*/
+        [ObservableProperty]
+        private bool _isEditMode;
+        [ObservableProperty]
+        private string _editTicketNumber = string.Empty;
+        [ObservableProperty]
+        private int? _editSaleId;
 
+        /*---------------------------------------------
+         *             POS Properties 
+         *---------------------------------------------*/
         [ObservableProperty]
         private string _tabName;
 
@@ -29,7 +43,7 @@ namespace Shiakati.ViewModels
         // Le Panier utilise notre nouveau CartItem
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
-
+        // Constructeur avec injection de dépendances pour le logger et le service d'impression
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService)
         {
             TabName = name;
@@ -39,6 +53,12 @@ namespace Shiakati.ViewModels
             LoadFakeProducts();
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
+
+            WeakReferenceMessenger.Default.Register<EditSaleMessage>(this, (r, m) =>
+            {
+                // Ce message est envoyé par les CartItems lorsqu'ils changent (ex: remise manuelle)
+                loadSaleForEditing(m.Sale,m.Items);
+            });
         }
 
         private void CartItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -102,43 +122,63 @@ namespace Shiakati.ViewModels
             FilteredProducts = new ObservableCollection<ProductVariantsModel>(filtered);
         }
 
-        public decimal CartSubTotal => CartItems.Sum(x => x.RawTotal);
+        public decimal? CartSubTotal => CartItems.Sum(x => x.RawTotal);
 
         // Somme de toutes les remises (fixes et manuelles)
-        public decimal TotalDiscountAmount => CartItems.Sum(x => x.TotalLineDiscount);
+        public decimal? TotalDiscountAmount => (decimal?)CartItems.Sum(x => x.TotalLineDiscount);
 
         // Le montant final à encaisser
-        public decimal CartTotal => CartSubTotal - TotalDiscountAmount;
-
+        public decimal? CartTotal => CartSubTotal - TotalDiscountAmount;
 
         [RelayCommand]
         private void AddToCart(ProductVariantsModel selectedVariant)
         {
             if (selectedVariant == null) return;
-
             var existingItem = CartItems.FirstOrDefault(c => c.Variant.VariantID == selectedVariant.VariantID);
 
-            if (existingItem != null)
-            {
-                // Cela va déclencher NotifyPropertyChangedFor, qui va déclencher CartItem_PropertyChanged, qui va déclencher UpdateCartTotal !
-                existingItem.Quantity++;
-            }
-            else
-            {
-                // L'ajout dans la collection déclenche CartItems_CollectionChanged, qui va s'abonner et déclencher UpdateCartTotal !
-                CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
-            }
-
+            if (existingItem != null) existingItem.Quantity++;            
+            else CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
+            
             SearchText = string.Empty;
         }
 
         [RelayCommand]
         private void RemoveFromCart(CartItem itemToRemove)
         {
-            if (itemToRemove != null)
+            if (itemToRemove != null) CartItems.Remove(itemToRemove); 
+            // Déclenche CollectionChanged automatiquement            
+        }
+
+
+        public void loadSaleForEditing(SaleModel sale,IEnumerable<SaleItemModel>items)
+        {
+                if (sale == null) return;
+    
+                IsEditMode = true;
+                EditSaleId = sale.SaleID;
+                EditTicketNumber = sale.TicketNumber;
+    
+                CartItems.Clear();
+            foreach (var item in items)
             {
-                CartItems.Remove(itemToRemove); // Déclenche CollectionChanged automatiquement
+                var variant = _allProducts.FirstOrDefault(p => p.VariantID == item.VariantID);
+                if (variant != null)
+                {
+                    var cartItem = new CartItem(variant, variant.ProductInfo)
+                    {
+                        Quantity = item.Quantity                        
+                        
+                    };
+                    CartItems.Add(cartItem);
+                }
+            
             }
+        }
+
+        [RelayCommand]
+        private void CancelEdit()
+        {
+            ResetPOS();
         }
 
         [RelayCommand]
@@ -167,37 +207,59 @@ namespace Shiakati.ViewModels
                 MessageBox.Show("Le panier est vide !", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            string newTicketNumber = $"TK-{DateTime.Now:yyyyMMddHHmmss}";
 
-            MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-
-
-            var receip = new ReceipModel
+            if (IsEditMode)
             {
-                TicketNumber = newTicketNumber,
-                Date = DateTime.Now,
-                TotalAmount = CartTotal,
-                TotalDiscount = TotalDiscountAmount,
-                Items = CartItems.Select(c => new ReceiptItem
-                {
-                    Designation = c.DisplayName,
-                    Quantity = c.Quantity,
-                    UnitPrice = c.Variant.SalePrice,
-                }).ToList()
+                MessageBox.Show($"Modification de la vente {EditTicketNumber} validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            };
-
-            if (PrintTicket(receip))
+                // TODO : Ici, je met ajour salesHistory and stockMovment
+                ResetPOS();
+            }
+            else
             {
-                // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
-                foreach (var item in CartItems)
+                string newTicketNumber = $"TK-{DateTime.Now:yyyyMMddHHmmss}";
+
+                MessageBox.Show($"Vente validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+                var receip = new ReceipModel
                 {
-                    item.PropertyChanged -= CartItem_PropertyChanged;
+                    TicketNumber = newTicketNumber,
+                    Date = DateTime.Now,
+                    TotalAmount = CartTotal ?? 0,
+                    TotalDiscount = TotalDiscountAmount ?? 0,
+                    Items = CartItems.Select(c => new ReceiptItem
+                    {
+                        Designation = c.DisplayName,
+                        Quantity = c.Quantity,
+                        UnitPrice = c.Variant.SalePrice,
+                    }).ToList()
+
+                };
+
+                if (PrintTicket(receip))
+                {
+                    // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
+                    foreach (var item in CartItems)
+                    {
+                        item.PropertyChanged -= CartItem_PropertyChanged;
+                    }
+                    ResetPOS();
                 }
-                CartItems.Clear();
             }
         }
 
+        private void ResetPOS()
+        {
+            IsEditMode = false;
+            EditTicketNumber = string.Empty;
+            EditSaleId = null;
+            foreach (var item in CartItems)
+            {
+                item.PropertyChanged -= CartItem_PropertyChanged;
+            }
+            CartItems.Clear();
+        }
         private bool PrintTicket(ReceipModel receipt)
         {
             // Implémentation de l'impression du ticket

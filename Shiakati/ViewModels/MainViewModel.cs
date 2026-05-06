@@ -44,6 +44,7 @@ namespace Shiakati.ViewModels
                     new CategoryModel{CategoryID = 1,CategoryName="Cosmetic" },
                     new CategoryModel{CategoryID = 1,CategoryName="Accessoire" }
                 };
+                cacheService.Set(CacheKeys.CategoriesList, initialCategories);
             }
         }
         // ✅ On assigne le ViewModel, pas la View !

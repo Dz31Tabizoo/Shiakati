@@ -74,48 +74,55 @@
                       CanUserAddRows="False" 
                       IsReadOnly="True"
                       HeadersVisibility="All"
+                      SelectionMode="Single"
                       materialDesign:DataGridAssist.CellPadding="12"
                       materialDesign:DataGridAssist.ColumnHeaderPadding="12">
                 <DataGrid.Columns>
-
                     <DataGridTextColumn Header="N° Ticket" Binding="{Binding TicketNumber}" Width="*"/>
-
                     <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy HH:mm}" Width="*"/>
 
-                    <DataGridTextColumn Header="Montant Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="*">
+                    <DataGridTemplateColumn Header="Statut" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Padding="8,4" CornerRadius="4" 
+                            Visibility="{Binding IsVoided, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="ANNULÉE" Foreground="Red" FontWeight="Bold" FontSize="10"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-
-                    <DataGridTextColumn Header="Remise" Binding="{Binding GlobalDiscount, StringFormat={}{0:N2} DA}" Width="*"/>
 
                     <DataGridTemplateColumn Header="Actions" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
-                                            ToolTip="Voir les détails / Modifier"
-                                            Command="{Binding DataContext.ViewSaleDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}">
-                                        <materialDesign:PackIcon Kind="Edit" Foreground="{StaticResource PrimaryBrush}" />
+                                ToolTip="Modifier cette vente"
+                                Command="{Binding DataContext.EditSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}">
+                                        <materialDesign:PackIcon Kind="Pencil" Foreground="{StaticResource PrimaryBrush}" />
                                     </Button>
 
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
-                                            ToolTip="Annuler la vente / Rembourser"
-                                            Command="{Binding DataContext.VoidSaleCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}">
-                                        <materialDesign:PackIcon Kind="DeleteRestore" Foreground="Red" />
+                                ToolTip="Annuler la vente"
+                                Command="{Binding DataContext.VoidSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}"
+                                Margin="8,0,0,0">
+                                        <materialDesign:PackIcon Kind="DeleteForever" Foreground="Crimson" />
                                     </Button>
-
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
                 </DataGrid.Columns>
             </DataGrid>
         </materialDesign:Card>

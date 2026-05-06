@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
+using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System;
@@ -128,11 +130,23 @@ namespace Shiakati.ViewModels
             await LoadSalesAsync();
         }
 
+        
+
         [RelayCommand]
-        private void ViewSaleDetails(SaleModel selectedSale)
+        private async Task EditSale(SaleModel selectedSale)
         {
             if (selectedSale == null) return;
-            // TODO: Open a dialog or navigate to a details view where they can exchange items
+
+            // Fausse donnée pour la démo : On dit que ce ticket contenait le Parfum (VariantID = 3) en quantité 2
+            var fakeSaleItems = new List<SaleItemModel>
+        {
+            new SaleItemModel { VariantID = 3, Quantity = 2, DiscountAmount = 0 }
+        };
+
+            // Envoi du message au POSViewModel
+            WeakReferenceMessenger.Default.Send(new EditSaleMessage(selectedSale, fakeSaleItems));
+
+            // TODO: Demander au système de navigation de changer d'onglet (ex: NavigationService.NavigateTo("POS"))
         }
 
         [RelayCommand]
