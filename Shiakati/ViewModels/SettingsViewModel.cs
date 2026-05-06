@@ -9,24 +9,50 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Shiakati.Properties;
+using Shiakati.Services.Interfaces;
+using Shiakati.Models;
 
 namespace Shiakati.ViewModels
 {
     public partial class SettingsViewModel : ObservableObject
     {
+        private readonly ICacheService _cache;
+
         [ObservableProperty]
         private string? _selectedPrinterName;
+        [ObservableProperty]
+        private string _newCategoryName = string.Empty;
+
+        public ObservableCollection<CategoryModel> GlobalCategories
+            => _cache.Get<ObservableCollection<CategoryModel>>(CacheKeys.CategoriesList);
 
         public ObservableCollection<string> InstalledPrinters { get; } = new ();
 
         //constractor
-        public SettingsViewModel()
+        public SettingsViewModel(ICacheService cacheService)
         {
+            _cache = cacheService;
+
             LoadPrinters();
             SelectedPrinterName = Settings.Default.TicketPrinterName;
         }
 
+        [RelayCommand]
+        private void AddCategory()
+        {
+            if (string.IsNullOrWhiteSpace(NewCategoryName)) return;
+            
+                int newID = GlobalCategories.Count >0 ? GlobalCategories.Max(c => c.CategoryID) + 1 : 1;
 
+                GlobalCategories.Add(new CategoryModel
+                {
+                    CategoryID = newID,
+                    CategoryName = NewCategoryName.Trim()
+                });
+
+                NewCategoryName = string.Empty;
+            
+        }
         private void LoadPrinters()
         {
             InstalledPrinters.Clear();

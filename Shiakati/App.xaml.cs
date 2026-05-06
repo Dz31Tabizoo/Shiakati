@@ -89,9 +89,14 @@ namespace Shiakati
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();
 
-            services.AddSingleton<IPrintService, PrintService>();   
+            services.AddSingleton<IPrintService, PrintService>();
 
             // Example: services.AddTransient<IMyService, MyService>();
+
+
+            //Cache service registration
+            services.AddSingleton<ICacheService, AppCacheService>();
+
         }
 
         protected override void OnStartup(StartupEventArgs e)

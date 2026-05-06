@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
+using System.Collections.ObjectModel;
 
 namespace Shiakati.ViewModels
 {
@@ -20,7 +22,7 @@ namespace Shiakati.ViewModels
 
         public SettingsViewModel Settings { get; }
 
-        public MainViewModel(IAuthenticationClientService authService, PosContainerViewModel posContainer, StockViewModel stockViewModel, SalesHistoryViewModel salesHistory,SettingsViewModel settingsViewModel )
+        public MainViewModel(ICacheService cacheService ,IAuthenticationClientService authService, PosContainerViewModel posContainer, StockViewModel stockViewModel, SalesHistoryViewModel salesHistory,SettingsViewModel settingsViewModel )
         {
             _authService = authService;
             PosContainer = posContainer;
@@ -29,7 +31,20 @@ namespace Shiakati.ViewModels
             Settings = settingsViewModel;
             // Vue par défaut au démarrage
             CurrentView = PosContainer;
-            
+
+            // later on if empty we get data from DB andon the login and not here
+
+            if (!cacheService.Contains(CacheKeys.CategoriesList))
+            {
+                var initialCategories = new ObservableCollection<CategoryModel>
+                {
+                    new CategoryModel{CategoryID = 1,CategoryName="Thob" },
+                    new CategoryModel{CategoryID = 2,CategoryName="Pantalon" },
+                    new CategoryModel{CategoryID = 1,CategoryName="Chaussure" },
+                    new CategoryModel{CategoryID = 1,CategoryName="Cosmetic" },
+                    new CategoryModel{CategoryID = 1,CategoryName="Accessoire" }
+                };
+            }
         }
         // ✅ On assigne le ViewModel, pas la View !
         [RelayCommand]
