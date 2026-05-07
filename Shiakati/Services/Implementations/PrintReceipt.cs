@@ -45,7 +45,7 @@ namespace Shiakati.Services.Implementations
             float paperWidth = 280;
 
 
-            Font titleFont = new Font("Montserrat", 12, FontStyle.Bold);
+            Font titleFont = new Font("Montserrat",10, FontStyle.Regular);
             Font miniFont = new Font("Montserrat", 6, FontStyle.Regular);
             Font regularFont = new Font("Montserrat", 9, FontStyle.Regular);
             Font BlodFont = new Font("Montserrat", 9, FontStyle.Bold);
@@ -132,7 +132,7 @@ namespace Shiakati.Services.Implementations
 
             //separation  - - - -  - 
             g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
-            yPos += 15;
+            yPos += 20;
 
 
             // 4. TOTAUX ET REMISES
@@ -144,8 +144,12 @@ namespace Shiakati.Services.Implementations
 
                 g.DrawString("Remise :", regularFont, Brushes.Black, leftMargin, yPos);
                 g.DrawString($"- {_currentReceip.TotalDiscount:N2} DA", regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
-                yPos += 15;
+                yPos += 10;
+
+                g.DrawString("________________________", regularFont, Brushes.Black, paperWidth/2, yPos,centerFormat);
+                yPos += 25;
             }
+
 
             g.DrawString("TOTAL A PAYER :", titleFont, Brushes.Black, leftMargin, yPos);
             g.DrawString($" {_currentReceip.TotalAmount:N2} DA", titleFont, Brushes.Black, rightMargin, yPos, rightFormat);

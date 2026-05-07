@@ -25,7 +25,9 @@
                 <TextBlock Text="Choisir l'imprimante thermique :" Margin="0,0,0,5"/>
                 <ComboBox ItemsSource="{Binding InstalledPrinters}" 
                           SelectedItem="{Binding SelectedPrinterName}"
-                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          
+                          FontSize="14"
                           Height="40"/>
 
                 <TextBlock Text="Note: Si vide, l'imprimante par défaut sera utilisée." 
