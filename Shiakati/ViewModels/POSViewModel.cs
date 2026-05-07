@@ -211,9 +211,32 @@ namespace Shiakati.ViewModels
             if (IsEditMode)
             {
                 MessageBox.Show($"Modification de la vente {EditTicketNumber} validée pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                string editedTicketNumber = EditTicketNumber + " (modifiée)";
                 // TODO : Ici, je met ajour salesHistory and stockMovment
-                ResetPOS();
+                var receip = new ReceipModel
+                {
+                    TicketNumber = editedTicketNumber,
+                    Date = DateTime.Now,
+                    TotalAmount = CartTotal ?? 0,
+                    TotalDiscount = TotalDiscountAmount ?? 0,
+                    Items = CartItems.Select(c => new ReceiptItem
+                    {
+                        Designation = c.DisplayName,
+                        Quantity = c.Quantity,
+                        UnitPrice = c.Variant.SalePrice,
+                    }).ToList()
+
+                };
+
+                if (PrintTicket(receip))
+                {
+                    // Avant de Clear(), on se désabonne manuellement pour être sûr à 100% que la mémoire est libérée
+                    foreach (var item in CartItems)
+                    {
+                        item.PropertyChanged -= CartItem_PropertyChanged;
+                    }
+                    ResetPOS();
+                }
             }
             else
             {
