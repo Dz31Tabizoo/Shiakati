@@ -118,6 +118,7 @@
             // ==========================================
             // RIGHT PANE: RECEPTION FORM PROPERTIES
             // ==========================================
+
             [ObservableProperty] private CategoryModel _draftCategory;
             [ObservableProperty] private BrandsModel _draftBrand = new BrandsModel();
             [ObservableProperty] private string _draftProductName;
@@ -200,7 +201,7 @@
                             _printerService.PrintBarCode(new BarecodeLabelData
                             {
                                 BrandName = DraftBrand?.BrandName ?? "N/A",
-                                VariantName = DraftProductName,
+                                VariantName = DraftProductName + " "+ DraftColor,
                                 Barcode = DraftSKU ?? "1234567890123", // Code de secours
                                 ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth} / {DraftLength}",
                                 Price = DraftSalePrice ?? 0
