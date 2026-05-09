@@ -2,7 +2,8 @@
     using CommunityToolkit.Mvvm.ComponentModel;
     using CommunityToolkit.Mvvm.Input;
     using global::Shiakati.Models;
-    //using Shiakati.Services;
+    using Shiakati.Services.Interfaces;
+    using Shiakati.Services.Implementations;
     using System;
     using System.Collections.ObjectModel;
     using System.Threading.Tasks;
@@ -13,13 +14,15 @@
     {
     public partial class StockViewModel : ObservableObject
     {
+        private readonly IBarCodePrintService _printerService;
+
         //private readonly IStockApiService _apiService;
 
-        //public StockViewModel(IStockApiService apiService)
-        //{
-        //    _apiService = apiService;
-        //    _ = LoadInitialDataAsync(); // Fire and forget au démarrage
-        //}
+        public StockViewModel(IBarCodePrintService printerService)
+        {
+            _printerService = printerService;
+            //_ = LoadInitialDataAsync(); // Fire and forget au démarrage
+        }
 
         // ==========================================
         // UI VISIBILITY STATE
@@ -162,57 +165,63 @@
                 }
             }
 
-            [RelayCommand]
-            private async Task ReceiveStockAsync()
+        [RelayCommand]
+        private async Task ReceiveStockAsync()
+        {
+            if (string.IsNullOrWhiteSpace(DraftProductName) || DraftSalePrice <= 0)
             {
-                if (string.IsNullOrWhiteSpace(DraftProductName) || DraftSalePrice <= 0)
-                {
-                    MessageBox.Show("Veuillez remplir le nom du produit et le prix de vente minimum.");
-                    return;
-                }
-
-                //var dto = new StockReceptionDto
-                //{
-                //    CategoryId = DraftCategory?.CategoryID,
-                //    BrandId = DraftBrand?.BrandID,
-                //    ProductName = DraftProductName,
-                //    Color = DraftColor,
-                //    NumericSize = DraftNumericSize,
-                //    Length = DraftLength,
-                //    Width = DraftWidth,
-                //    PurchasePrice = DraftPurchasePrice,
-                //    SalePrice = DraftSalePrice,
-                //    FixedDiscount = DraftFixedDiscount,
-                //    Quantity = DraftQuantity
-                //};
-
-                try
-                {
-                    //bool success = await _apiService.ReceiveStockAsync(dto);
-
-                    //if (success)
-                    //{
-                    //    if (PrintLabelsOnSave && LabelsToPrint > 0)
-                    //    {
-                    //        // TODO: Appeler ici le service d'impression local
-                    //        // _printerService.PrintBarcode(..., LabelsToPrint);
-                    //    }
-
-                    //    // Rafraîchir la grille
-                    //    await ApplyFiltersAsync();
-
-                    //    // Optionnel : Réinitialiser le formulaire
-                    //    ResetDraftForm();
-                    //    MessageBox.Show("Réception enregistrée avec succès.");
-                    //}
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erreur lors de la réception: {ex.Message}");
-                }
+                MessageBox.Show("Veuillez remplir le nom du produit et le prix de vente minimum.");
+                return;
             }
 
-            private void ResetDraftForm()
+            try
+            
+            {
+                // 1. Simulation d'enregistrement en base de données
+                // bool success = await _apiService.ReceiveStockAsync(dto);
+                bool success = true; // Remplacer par l'appel API réel quand il sera prêt
+
+                if (success)
+                {
+                    // 2. Vérifier si l'utilisateur a demandé d'imprimer
+                    if (PrintLabelsOnSave && LabelsToPrint.HasValue && LabelsToPrint.Value > 0)
+                    {
+                        // Récupérer le nom de l'imprimante depuis les paramètres
+                        string printerName = Properties.Settings.Default.BarcodePrinterName;
+
+                        if (string.IsNullOrWhiteSpace(printerName))
+                        {
+                            MessageBox.Show("Aucune imprimante configurée. Allez dans les paramètres pour choisir votre imprimante d'étiquettes.",
+                                            "Impression annulée", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else
+                        {
+                            // Lancer l'impression avec le nombre exact de copies (ex: 50)
+                            _printerService.PrintBarCode(new BarecodeLabelData
+                            {
+                                BrandName = DraftBrand?.BrandName ?? "N/A",
+                                VariantName = DraftProductName,
+                                Barcode = DraftSKU ?? "1234567890123", // Code de secours
+                                ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth}x{DraftLength}",
+                                Price = DraftSalePrice ?? 0
+                            }, printerName, LabelsToPrint.Value);
+                        }
+                    }
+
+                    // 3. Mettre à jour l'interface
+                    // await ApplyFiltersAsync();
+                    MessageBox.Show("Réception enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    ResetDraftForm();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la réception: {ex.Message}");
+            }
+        }
+
+        private void ResetDraftForm()
             {
                 DraftQuantity = 1;
                 DraftSKU = string.Empty;

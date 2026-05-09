@@ -6,70 +6,101 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              FontFamily="{StaticResource PoppinsFont}"
-             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="1000">
 
-    <Grid Margin="20">
+    <Grid Margin="24">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="24"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <materialDesign:Card Grid.Column="0" Padding="20" UniformCornerRadius="10" VerticalAlignment="Top">
+        <StackPanel Grid.Column="0">
+
+            <materialDesign:Card Padding="20" UniformCornerRadius="12" Margin="0,0,0,20" materialDesign:ElevationAssist.Elevation="DP2">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <matDs:PackIcon Kind="PrinterCheck" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Text="Impression Ticket Caisse" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium"/>
+                    <ComboBox ItemsSource="{Binding InstalledPrinters}" 
+                              SelectedItem="{Binding SelectedTicketPrinterName}"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
+                              Height="45"/>
+
+                    <TextBlock Text="Note : Si vide, l'imprimante par défaut sera utilisée." 
+                               FontSize="11" Foreground="Gray" Margin="5,8,0,20" FontStyle="Italic"/>
+
+                    <Button Content="ENREGISTRER TICKET" 
+                            Command="{Binding SaveTicketPrinterSettingsCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            HorizontalAlignment="Right"
+                            Width="180"/>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Padding="20" UniformCornerRadius="12" materialDesign:ElevationAssist.Elevation="DP2">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <matDs:PackIcon Kind="BarcodeScanner" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Text="Impression Étiquettes" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium"/>
+                    <ComboBox ItemsSource="{Binding InstalledPrinters}" 
+                              SelectedItem="{Binding SelectedBarcodePrinterName}"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
+                              Height="45"/>
+
+                    <TextBlock Text="Format recommandé : 40mm x 20mm" 
+                               FontSize="11" Foreground="Gray" Margin="5,8,0,20" FontStyle="Italic"/>
+
+                    <Button Content="ENREGISTRER ÉTIQUETTES" 
+                            Command="{Binding SaveBarcodePrinterSettingsCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            HorizontalAlignment="Right"
+                            Width="180"/>
+                </StackPanel>
+            </materialDesign:Card>
+
+        </StackPanel>
+
+        <materialDesign:Card Grid.Column="2" Padding="20" UniformCornerRadius="12" VerticalAlignment="Top"  materialDesign:ElevationAssist.Elevation="DP2">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                    <matDs:PackIcon Kind="Printer" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
-                    <TextBlock Text="Paramètres d'impression" FontSize="18" FontWeight="SemiBold"/>
+                    <matDs:PackIcon Kind="ShapePlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="Gestion des Catégories" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
                 </StackPanel>
 
-                <TextBlock Text="Choisir l'imprimante thermique :" Margin="0,0,0,5"/>
-                <ComboBox ItemsSource="{Binding InstalledPrinters}" 
-                          SelectedItem="{Binding SelectedPrinterName}"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          
-                          FontSize="14"
-                          Height="40"/>
-
-                <TextBlock Text="Note: Si vide, l'imprimante par défaut sera utilisée." 
-                           FontSize="11" Foreground="Gray" Margin="0,5,0,20"/>
-
-                <Button Content="Enregistrer l'imprimante" 
-                        Command="{Binding SaveSettingsCommand}"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        HorizontalAlignment="Right"/>
-            </StackPanel>
-        </materialDesign:Card>
-
-        <materialDesign:Card Grid.Column="2" Padding="20" UniformCornerRadius="10" VerticalAlignment="Top">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                    <matDs:PackIcon Kind="CategoryPlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
-                    <TextBlock Text="Gestion des catégories" FontSize="18" FontWeight="SemiBold"/>
-                </StackPanel>
-
-                <TextBlock Text="Catégories actuelles :" Margin="0,0,0,5" FontWeight="SemiBold"/>
+                <TextBlock Text="Liste des catégories :" Margin="0,0,0,8" FontWeight="Medium"/>
                 <ListBox ItemsSource="{Binding GlobalCategories}" 
                          DisplayMemberPath="CategoryName"
-                         Height="120" 
-                         Margin="0,0,0,15"
-                         BorderThickness="1" BorderBrush="#E0E0E0">
+                         Height="200" 
+                         Margin="0,0,0,20"
+                         Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                         BorderThickness="1" BorderBrush="#EEEEEE">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                            <Setter Property="Padding" Value="10,5"/>
+                            <Setter Property="Padding" Value="12,8"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
 
-                <TextBlock Text="Ajouter une nouvelle catégorie :" Margin="0,0,0,5"/>
+                <TextBlock Text="Nouvelle catégorie :" Margin="0,0,0,8" FontWeight="Medium"/>
                 <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Ex: Chaussures, Cosmétiques..." 
+                         materialDesign:HintAssist.Hint="Ex: Chaussures, Parfums..." 
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0,0,0,20"/>
 
-                <Button Content="Ajouter la catégorie" 
+                <Button Content="AJOUTER LA CATÉGORIE" 
                         Command="{Binding AddCategoryCommand}"
                         Style="{StaticResource MaterialDesignRaisedButton}"
-                        HorizontalAlignment="Right"/>
+                        HorizontalAlignment="Right"
+                        Width="200"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>

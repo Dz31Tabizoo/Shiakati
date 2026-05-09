@@ -79,9 +79,9 @@
                 </DataGrid>
             </materialDesign:Card>
         </Grid>
-
         <materialDesign:Card Grid.Column="1" Width="380" UniformCornerRadius="8" Padding="15"
-                             Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}">
+                     Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
+                     materialDesign:ElevationAssist.Elevation="Dp3">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -96,21 +96,26 @@
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
                     <StackPanel>
+
                         <TextBlock Text="1. Informations Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
                         <ComboBox materialDesign:HintAssist.Hint="Catégorie" ItemsSource="{Binding Categories}" 
-                                  DisplayMemberPath="CategoryName" SelectedItem="{Binding DraftCategory}" Margin="0,0,0,15"/>
+                          DisplayMemberPath="CategoryName" SelectedItem="{Binding DraftCategory}" 
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15"/>
 
                         <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding DraftBrand}"
-                                  materialDesign:HintAssist.Hint="Marque" Margin="0,0,0,15"/>
+                          materialDesign:HintAssist.Hint="Marque" IsEditable="True"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15"/>
 
                         <ComboBox IsEditable="True" materialDesign:HintAssist.Hint="Nom du produit (Rechercher ou Saisir nouveau)" 
-                                  Text="{Binding DraftProductName}" ItemsSource="{Binding AllProductNames}" Margin="0,0,0,22"/>
+                          Text="{Binding DraftProductName}" ItemsSource="{Binding AllProductNames}" 
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,22"/>
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Code-barres (SKU)" IsEnabled="False" Text="{Binding DraftSKU}" Margin="0,0,0,15">
-                            <TextBox.ToolTip>Généré automatiquement</TextBox.ToolTip>
+                        <TextBox materialDesign:HintAssist.Hint="Code-barres (SKU)" IsEnabled="False" Text="{Binding DraftSKU}" 
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15">
+                            <TextBox.ToolTip>Généré automatiquement lors de l'enregistrement</TextBox.ToolTip>
                         </TextBox>
 
                         <Grid Margin="0,0,0,15">
@@ -120,10 +125,12 @@
                             </Grid.ColumnDefinitions>
 
                             <ComboBox Grid.Column="0" IsEditable="True" ItemsSource="{Binding AllColors}" SelectedItem="{Binding DraftColor}"
-                                      materialDesign:HintAssist.Hint="Couleur" Margin="0,0,10,0"/>
+                              materialDesign:HintAssist.Hint="Couleur" 
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,10,0"/>
 
                             <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Taille (numérique)" Text="{Binding DraftNumericSize}" 
-                                     Visibility="{Binding IsNumericSizeVisible, Converter={StaticResource BoolToVis}}"/>
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Visibility="{Binding IsNumericSizeVisible, Converter={StaticResource BoolToVis}}"/>
 
                             <Grid Grid.Column="1" Visibility="{Binding IsDimensionSizeVisible, Converter={StaticResource BoolToVis}}">
                                 <Grid.ColumnDefinitions>
@@ -131,8 +138,10 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox Grid.Column="0" IsEditable="False" ItemsSource="{Binding WidthsList}" SelectedItem="{Binding DraftWidth}"
-                                          materialDesign:HintAssist.Hint="Largeur" Margin="0,0,5,0"/>
-                                <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Longueur" Text="{Binding DraftLength}" Margin="5,0,0,0"/>
+                                  materialDesign:HintAssist.Hint="Largeur" 
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,5,0"/>
+                                <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Longueur" Text="{Binding DraftLength}" 
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="5,0,0,0"/>
                             </Grid>
                         </Grid>
 
@@ -148,29 +157,50 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat" Text="{Binding DraftPurchasePrice ,StringFormat={}{0:N2} DA}" Margin="0,0,10,15"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente" Text="{Binding DraftSalePrice, StringFormat={}{0:N2} DA}" Margin="0,0,0,15"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe" Text="{Binding DraftFixedDiscount, StringFormat={}{0:N2} DA}"/>
+                            <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat (DA)" 
+                             Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,10,15"/>
+
+                            <TextBox Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente (DA)" 
+                             Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15"/>
+
+                            <TextBox Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe (DA)" 
+                             Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
                         </Grid>
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue" Text="{Binding DraftQuantity}" 
-                                 FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue" 
+                         Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}" 
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         FontSize="20" FontWeight="Bold" Margin="0,0,0,15" Foreground="{StaticResource PrimaryBrush}"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <CheckBox Content="Imprimer code-barres" IsChecked="{Binding PrintLabelsOnSave}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <CheckBox Content="Imprimer code-barres" IsChecked="{Binding PrintLabelsOnSave}" 
+                              FontWeight="SemiBold" VerticalAlignment="Center"/>
 
-                            <TextBox materialDesign:HintAssist.Hint="Qté à imprimer" Text="{Binding LabelsToPrint}" Width="100" Margin="20,0,0,0"
-                                     Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center"/>
+                            <TextBox materialDesign:HintAssist.Hint="Qté à imprimer" 
+                             Text="{Binding LabelsToPrint, UpdateSourceTrigger=PropertyChanged}" 
+                             Width="100" Margin="20,0,0,0"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <TextBlock Text="Par défaut, imprime une étiquette par article reçu. Modifiez le nombre si besoin." FontStyle="Italic" FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+                        <TextBlock Text="Par défaut, imprime une étiquette par article reçu. Vous pouvez modifier ce nombre." 
+                           FontStyle="Italic" FontSize="11" Foreground="Gray" TextWrapping="Wrap" Margin="0,5,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
 
                 <Button Grid.Row="2" Content="ENREGISTRER &amp; IMPRIMER" Height="50" FontSize="16" FontWeight="Bold"
-                        Command="{Binding ReceiveStockCommand}" Margin="0,15,0,0"/>
+                Command="{Binding ReceiveStockCommand}" Margin="0,15,0,0"
+                Style="{StaticResource MaterialDesignRaisedButton}">
+                    <Button.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.2"/>
+                    </Button.Effect>
+                </Button>
+
             </Grid>
         </materialDesign:Card>
     </Grid>

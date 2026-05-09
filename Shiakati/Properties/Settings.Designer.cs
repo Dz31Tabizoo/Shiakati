@@ -34,5 +34,17 @@ namespace Shiakati.Properties {
                 this["TicketPrinterName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BarcodePrinterName {
+            get {
+                return ((string)(this["BarcodePrinterName"]));
+            }
+            set {
+                this["BarcodePrinterName"] = value;
+            }
+        }
     }
 }

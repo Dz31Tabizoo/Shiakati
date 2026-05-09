@@ -90,6 +90,7 @@ namespace Shiakati
             services.AddTransient<SettingsView>();
 
             services.AddSingleton<IPrintService, PrintService>();
+            services.AddTransient<IBarCodePrintService, BarcodePrintService>();
 
             // Example: services.AddTransient<IMyService, MyService>();
 

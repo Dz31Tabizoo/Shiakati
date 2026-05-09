@@ -13,7 +13,9 @@ namespace Shiakati.ViewModels
         private readonly ICacheService _cache;
 
         [ObservableProperty]
-        private string? _selectedPrinterName;
+        private string? _selectedTicketPrinterName;
+        [ObservableProperty]
+        private string? _selectedBarcodePrinterName;
         [ObservableProperty]
         private string _newCategoryName = string.Empty;
 
@@ -28,7 +30,8 @@ namespace Shiakati.ViewModels
             _cache = cacheService;
 
             LoadPrinters();
-            SelectedPrinterName = Settings.Default.TicketPrinterName;
+            SelectedTicketPrinterName = Settings.Default.TicketPrinterName;
+            SelectedBarcodePrinterName = Settings.Default.BarcodePrinterName;
         }
 
         [RelayCommand]
@@ -56,15 +59,24 @@ namespace Shiakati.ViewModels
             }
         }
         [RelayCommand]
-        private void SaveSettings()
+        private void SaveTicketPrinterSettings()
         {
             // Save the selected printer name to application settings
-             Properties.Settings.Default.TicketPrinterName = SelectedPrinterName;
+             Properties.Settings.Default.TicketPrinterName = SelectedTicketPrinterName;
              Properties.Settings.Default.Save();
 
             System.Windows.MessageBox.Show("Settings saved successfully!", "Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
 
+        [RelayCommand]
+        private void SaveBarcodePrinterSettings()
+        {
+            // Save the selected printer name to application settings
+            Properties.Settings.Default.BarcodePrinterName = SelectedBarcodePrinterName;
+            Properties.Settings.Default.Save();
+
+            System.Windows.MessageBox.Show("Settings saved successfully!", "Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        }
 
     }
 }

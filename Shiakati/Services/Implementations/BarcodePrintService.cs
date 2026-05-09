@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Shiakati.Models;
+using Shiakati.Services.Interfaces;
 using ZXing;
 using ZXing.Windows.Compatibility;
 using Color = System.Windows.Media.Color;
@@ -15,51 +16,64 @@ using FontFamily = System.Windows.Media.FontFamily;
 
 namespace Shiakati.Services.Implementations
 {
-    public class BarcodePrintService
+    public class BarcodePrintService : IBarCodePrintService
     {
         // Dimensions en unités WPF (96 DPI)
         private const double LabelWidth = 151.0;  // 40mm
         private const double LabelHeight = 75.0; // 20mm
         private const double Margin = 2.0;
 
-        public void PrintBarcode(BarecodeLabelData data, string printerName)
+        public void PrintBarCode(BarecodeLabelData data, string printerName = "", int copies = 1)
         {
+            if (copies <= 0) return; // Sécurité
+
             PrintDialog printDialog = new PrintDialog();
 
             // 1. Configurer l'imprimante
             if (!string.IsNullOrEmpty(printerName))
             {
                 var server = new LocalPrintServer();
-                printDialog.PrintQueue = server.GetPrintQueue(printerName);
+                try
+                {
+                    printDialog.PrintQueue = server.GetPrintQueue(printerName);
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show($"Imprimante '{printerName}' introuvable. Veuillez vérifier vos paramètres.");
+                    return;
+                }
             }
+
+            // ==========================================
+            // C'EST ICI QU'ON DÉFINIT LE NOMBRE DE COPIES
+            // Cela envoie 1 seul fichier à l'imprimante, qui va l'imprimer N fois très vite
+            // ==========================================
+            printDialog.PrintTicket.CopyCount = copies;
+            printDialog.PrintTicket.PageMediaSize = new PageMediaSize(LabelWidth, LabelHeight);
 
             // 2. Créer le visuel à imprimer
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext dc = visual.RenderOpen())
             {
-                // Fond blanc (facultatif mais recommandé pour éviter le fond transparent)
+                // Fond blanc
                 dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, LabelWidth, LabelHeight));
 
                 Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
-                double fontSize = 9.0; // Taille de police réduite pour s'adapter
+                double fontSize = 9.0;
 
-                // --- LIGNE 1 : MARQUE (3 Lettres) + NOM DU PRODUIT ---
+                // --- LIGNE 1 : MARQUE + NOM ---
                 string brandPrefix = data.BrandName.Length >= 3
                     ? data.BrandName.Substring(0, 3).ToUpper()
                     : data.BrandName.PadRight(3, 'X').ToUpper();
 
                 string fullTitle = $"{brandPrefix} {data.VariantName}";
-
-                // Logique de troncature si le texte est trop long pour la largeur (151px - marges)
                 FormattedText titleText = FormatText(fullTitle, typeface, fontSize, LabelWidth - (Margin * 2));
-
                 dc.DrawText(titleText, new System.Windows.Point(Margin, 2));
 
                 // --- LIGNE 2 : CODE-BARRES ---
-                BitmapSource barcodeImage = GenerateBarcodeImage(data.Barcode, (int)LabelWidth - 10, 35);
+                BitmapSource barcodeImage = GenerateBarCodeImage(data.Barcode, (int)LabelWidth - 10, 35);
                 if (barcodeImage != null)
                 {
-                    // Positionner le code-barres au milieu (Y = 15)
                     dc.DrawImage(barcodeImage, new Rect(5, 16, barcodeImage.PixelWidth, barcodeImage.PixelHeight));
                 }
 
@@ -67,51 +81,66 @@ namespace Shiakati.Services.Implementations
                 string bottomString = $"{data.ProductSize}   {data.Price:N2} DA";
                 FormattedText bottomText = FormatText(bottomString, typeface, fontSize, LabelWidth - (Margin * 2));
 
-                // Centrer le texte du bas
                 double bottomX = (LabelWidth - bottomText.Width) / 2;
                 dc.DrawText(bottomText, new System.Windows.Point(bottomX, 55));
             }
 
             // 3. Lancer l'impression
-            printDialog.PrintTicket.PageMediaSize = new PageMediaSize(LabelWidth, LabelHeight);
-            printDialog.PrintVisual(visual, $"Code-barres {data.Barcode}");
+            printDialog.PrintVisual(visual, $"Code-barres {data.Barcode} ({copies} copies)");
         }
-
         /// <summary>
         /// Génère le code-barres avec ZXing et le convertit en format lisible par WPF
         /// </summary>
-        private BitmapSource GenerateBarcodeImage(string content, int width, int height)
+        private BitmapSource GenerateBarCodeImage(string content, int width, int height)
         {
             var writer = new BarcodeWriter
             {
-                Format = BarcodeFormat.CODE_128, // Format standard pour les stocks
+                Format = BarcodeFormat.CODE_128,
                 Options = new ZXing.Common.EncodingOptions
                 {
                     Width = width,
                     Height = height,
-                    Margin = 0, // Enlever la marge interne pour maximiser la taille
-                    PureBarcode = true // True = on ne dessine pas le texte en dessous (on le fait nous-même si besoin)
+                    Margin = 0,
+                    PureBarcode = true
                 }
             };
 
-            var bitmap = writer.Write(content);
+            // Utiliser "using" pour libérer la mémoire de la bitmap GDI+ immédiatement
+            using (var bitmap = writer.Write(content))
+            {
+                var bitmapData = bitmap.LockBits(
+                    new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb); // Forcer le format 32 bits
 
-            // Convertir System.Drawing.Bitmap en BitmapSource pour WPF
-            var bitmapData = bitmap.LockBits(
-                new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                bitmap.PixelFormat);
+                try
+                {
+                    // Calcul précis du Stride pour un format 32 bits (4 octets par pixel)
+                    int stride = bitmapData.Stride;
+                    int bufferSize = stride * bitmapData.Height;
 
-            var bitmapSource = BitmapSource.Create(
-                bitmapData.Width, bitmapData.Height,
-                bitmap.HorizontalResolution, bitmap.VerticalResolution,
-                PixelFormats.Bgr32, null,
-                bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
+                    // Création de la BitmapSource avec les paramètres validés
+                    var bitmapSource = BitmapSource.Create(
+                        bitmapData.Width,
+                        bitmapData.Height,
+                        96, // DPI standard
+                        96,
+                        System.Windows.Media.PixelFormats.Bgr32, // Format WPF correspondant
+                        null,
+                        bitmapData.Scan0,
+                        bufferSize,
+                        stride);
 
-            bitmap.UnlockBits(bitmapData);
-            return bitmapSource;
+                    // Très important : Figer l'image pour qu'elle soit utilisable sur d'autres threads (impression)
+                    bitmapSource.Freeze();
+                    return bitmapSource;
+                }
+                finally
+                {
+                    bitmap.UnlockBits(bitmapData);
+                }
+            }
         }
-
         /// <summary>
         /// Formate le texte et le coupe automatiquement (ajoute "...") s'il dépasse la largeur max
         /// </summary>
