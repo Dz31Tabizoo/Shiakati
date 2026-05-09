@@ -176,18 +176,15 @@
             }
 
             try
-            
             {
                 // 1. Simulation d'enregistrement en base de données
-                // bool success = await _apiService.ReceiveStockAsync(dto);
-                bool success = true; // Remplacer par l'appel API réel quand il sera prêt
+                bool success = true; // Remplacer par l'appel API réel
 
                 if (success)
                 {
-                    // 2. Vérifier si l'utilisateur a demandé d'imprimer
+                    // 2. Impression des étiquettes si demandé
                     if (PrintLabelsOnSave && LabelsToPrint.HasValue && LabelsToPrint.Value > 0)
                     {
-                        // Récupérer le nom de l'imprimante depuis les paramètres
                         string printerName = Properties.Settings.Default.BarcodePrinterName;
 
                         if (string.IsNullOrWhiteSpace(printerName))
@@ -197,22 +194,29 @@
                         }
                         else
                         {
-                            // Lancer l'impression avec le nombre exact de copies (ex: 50)
-                            _printerService.PrintBarCode(new BarecodeLabelData
+                            // Nettoyer les textes pour n'utiliser que des caractères ASCII
+                            string brand = ToAscii(DraftBrand?.BrandName ?? "N/A");
+                            string name = ToAscii(DraftProductName);
+                            string color = ToAscii(DraftColor ?? "");
+                            string size = IsNumericSizeVisible
+                                            ? DraftNumericSize
+                                            : $"{DraftWidth} / {DraftLength}";
+
+                            var label = new BarecodeLabelData
                             {
-                                BrandName = DraftBrand?.BrandName ?? "N/A",
-                                VariantName = DraftProductName + " "+ DraftColor,
-                                Barcode = DraftSKU ?? "1234567890123", // Code de secours
-                                ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth} / {DraftLength}",
+                                BrandName = brand,
+                                VariantName = $"{name} {color}".Trim(),
+                                Barcode = DraftSKU ?? "1234567890123",
+                                ProductSize = size,
                                 Price = DraftSalePrice ?? 0
-                            }, printerName, LabelsToPrint.Value);
+                            };
+
+                            _printerService.PrintBarCode(label, printerName, LabelsToPrint.Value);
                         }
                     }
 
-                    // 3. Mettre à jour l'interface
-                    // await ApplyFiltersAsync();
+                    // 3. Mise à jour de l'interface
                     MessageBox.Show("Réception enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-
                     ResetDraftForm();
                 }
             }
@@ -220,6 +224,33 @@
             {
                 MessageBox.Show($"Erreur lors de la réception: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Replace common accented characters with their ASCII equivalent
+        /// (essential for ESC/POS printers that only understand ASCII).
+        /// </summary>
+        private static string ToAscii(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            return input
+                .Replace('é', 'e')
+                .Replace('è', 'e')
+                .Replace('ê', 'e')
+                .Replace('ë', 'e')
+                .Replace('à', 'a')
+                .Replace('â', 'a')
+                .Replace('ä', 'a')
+                .Replace('ô', 'o')
+                .Replace('ö', 'o')
+                .Replace('ù', 'u')
+                .Replace('û', 'u')
+                .Replace('ü', 'u')
+                .Replace('î', 'i')
+                .Replace('ï', 'i')
+                .Replace('ç', 'c')
+                // Add more as needed …
+                ;
         }
 
         private void ResetDraftForm()
