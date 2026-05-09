@@ -59,14 +59,14 @@ namespace Shiakati.Services.Implementations
                 dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, LabelWidth, LabelHeight));
 
                 Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
-                double fontSize = 9.0;
+                double fontSize = 10.0;
 
                 // --- LIGNE 1 : MARQUE + NOM ---
                 string brandPrefix = data.BrandName.Length >= 3
                     ? data.BrandName.Substring(0, 3).ToUpper()
                     : data.BrandName.PadRight(3, 'X').ToUpper();
 
-                string fullTitle = $"{brandPrefix} {data.VariantName}";
+                string fullTitle = $"   {brandPrefix} {data.VariantName}";
                 FormattedText titleText = FormatText(fullTitle, typeface, fontSize, LabelWidth - (Margin * 2));
                 dc.DrawText(titleText, new System.Windows.Point(Margin, 2));
 

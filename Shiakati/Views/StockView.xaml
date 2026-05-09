@@ -103,14 +103,22 @@
                           DisplayMemberPath="CategoryName" SelectedItem="{Binding DraftCategory}" 
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15"/>
 
-                        <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding DraftBrand}"
-                          materialDesign:HintAssist.Hint="Marque" IsEditable="True"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15"/>
+                        <ComboBox ItemsSource="{Binding Brands}" 
+                                  Text="{Binding DraftBrand.BrandName, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedItem="{Binding DraftBrand}"
+                                  DisplayMemberPath="BrandName"
+                                  materialDesign:HintAssist.Hint="Marque" 
+                                  IsEditable="True"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                                  Margin="0,0,0,15"/>
 
-                        <ComboBox IsEditable="True" materialDesign:HintAssist.Hint="Nom du produit (Rechercher ou Saisir nouveau)" 
-                          Text="{Binding DraftProductName}" ItemsSource="{Binding AllProductNames}" 
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,22"/>
-
+                        <ComboBox IsEditable="True" 
+                                  materialDesign:HintAssist.Hint="Nom du produit" 
+                                  Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}" 
+                                  ItemsSource="{Binding AllProductNames}" 
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                                  Margin="0,0,0,22"/>
+                        
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Code-barres (SKU)" IsEnabled="False" Text="{Binding DraftSKU}" 
@@ -123,10 +131,14 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
-                            <ComboBox Grid.Column="0" IsEditable="True" ItemsSource="{Binding AllColors}" SelectedItem="{Binding DraftColor}"
-                              materialDesign:HintAssist.Hint="Couleur" 
-                              Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,10,0"/>
+                            
+                            <ComboBox Grid.Column="0" 
+                                      IsEditable="True" 
+                                      ItemsSource="{Binding AllColors}" 
+                                      Text="{Binding DraftColor, UpdateSourceTrigger=PropertyChanged}"
+                                      materialDesign:HintAssist.Hint="Couleur" 
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                                      Margin="0,0,10,0"/>
 
                             <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Taille (numérique)" Text="{Binding DraftNumericSize}" 
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -137,6 +149,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+                                
                                 <ComboBox Grid.Column="0" IsEditable="False" ItemsSource="{Binding WidthsList}" SelectedItem="{Binding DraftWidth}"
                                   materialDesign:HintAssist.Hint="Largeur" 
                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,5,0"/>

@@ -51,9 +51,9 @@
 
         [ObservableProperty] private ProductVariantsModel _selectedStockItem;
 
-            public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
-            public ObservableCollection<ProductVariantsModel> FilteredStock { get; } = new();
-            public ObservableCollection<CategoryModel> Categories { get; } = new();
+        public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
+        public ObservableCollection<ProductVariantsModel> FilteredStock { get; } = new();
+        public ObservableCollection<CategoryModel> Categories { get; } = new() { new() { CategoryID = 1, CategoryName = "thob" } };
             public ObservableCollection<BrandsModel> Brands { get; } = new();
 
             // Triggers asynchrones lors du changement des filtres
@@ -119,7 +119,7 @@
             // RIGHT PANE: RECEPTION FORM PROPERTIES
             // ==========================================
             [ObservableProperty] private CategoryModel _draftCategory;
-            [ObservableProperty] private BrandsModel _draftBrand;
+            [ObservableProperty] private BrandsModel _draftBrand = new BrandsModel();
             [ObservableProperty] private string _draftProductName;
             [ObservableProperty] private string _draftSKU; // Généré auto par le backend
             [ObservableProperty] private string _draftColor;
@@ -202,7 +202,7 @@
                                 BrandName = DraftBrand?.BrandName ?? "N/A",
                                 VariantName = DraftProductName,
                                 Barcode = DraftSKU ?? "1234567890123", // Code de secours
-                                ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth}x{DraftLength}",
+                                ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth} / {DraftLength}",
                                 Price = DraftSalePrice ?? 0
                             }, printerName, LabelsToPrint.Value);
                         }
