@@ -13,6 +13,9 @@ namespace Shiakati.Services.Interfaces
     {
          
         void PrintBarCode(BarecodeLabelData data, string printerName="",int copies = 1);
-       
+
+        
+
+
     }
 }
