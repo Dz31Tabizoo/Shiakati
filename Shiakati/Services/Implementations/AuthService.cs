@@ -1,67 +1,64 @@
-﻿using Shiakati.Models;
+﻿using Microsoft.Extensions.Logging;
+using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System.Net.Http;
-using System.Net.Http.Json;     
-using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
-namespace Shiakati.Services.Implementations
+public class AuthService : IAuthenticationClientService
 {
-    public class AuthService : IAuthenticationClientService
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<AuthService> _logger;
+    public AuthSession? CurrentSession { get; private set; }
+    public bool IsLoggedIn => CurrentSession != null && !string.IsNullOrWhiteSpace(CurrentSession.Token);
+    public event Action? OnAuthenticationStateChanged;
+
+    public AuthService(HttpClient httpClient, ILogger<AuthService> logger)
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<AuthService> _logger;
-        public AuthSession? CurrentSession { get; private set; }
+        _httpClient = httpClient;
+        _logger = logger;
+    }
 
-        public bool IsLoggedIn => CurrentSession != null && !string.IsNullOrWhiteSpace(CurrentSession.Token);
+    public async Task<LoginResponseModel?> LoginAsync(string username, string password)
+    {
+        _logger.LogInformation("Login attempt for user: {Username}", username);
+        var loginData = new { Username = username, Password = password };
 
-        public event Action? OnAuthenticationStateChanged;
-
-
-        public AuthService(HttpClient httpClient, ILogger<AuthService> logger)
+        try
         {
-            _httpClient = httpClient;
-            _logger = logger;
-        }
+            var response = await _httpClient.PostAsJsonAsync("api/auth/login", loginData);
 
-        public async Task<LoginResponseModel> LoginAsync(string username, string password)
-        {
-            _logger.LogInformation("Login attempt for user: {Username}", username);
-            var loginData = new { Username = username, Password = password };
-
-            try
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.PostAsJsonAsync("api/auth/login", loginData);
-
-                if (response.IsSuccessStatusCode)
+                var result = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
+                if (result != null && !string.IsNullOrWhiteSpace(result.Token))
                 {
-                    var result = await response.Content.ReadFromJsonAsync<LoginResponseModel>();
-                    if (result != null && result.Success)
+                    CurrentSession = new AuthSession
                     {
-                        CurrentSession = new AuthSession { UserId = result.UserID, UserName = result.UserName, Token = result.Token };
-                        _logger.LogInformation("Login successful for user: {Username}", username);
-                    }
+                           // or extract later from token if needed
+                        UserName = result.Username,
+                        Token = result.Token
+                    };
+                    _logger.LogInformation("Login successful for user: {Username}", username);
                     OnAuthenticationStateChanged?.Invoke();
-
-                    return result ?? new LoginResponseModel { Success = false, Message = "Invalid response from server." };
+                    return result;
                 }
-
-                _logger.LogWarning("Login failed for user: {Username}. Status Code: {StatusCode}", username, response.StatusCode);
-                return new LoginResponseModel { Success = false, Message = "Login failed. Please check your credentials." };
-                //log positive and negative outcomes for debugging and monitoring
+                _logger.LogWarning("Login succeeded but response invalid for user: {Username}", username);
+                return null;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Login attempt failed for user: {Username}", username);
-                return new LoginResponseModel { Success = false, Message = $"An error occurred: {ex.Message}" };
 
-            }
+            _logger.LogWarning("Login failed for user: {Username}. Status code: {StatusCode}", username, response.StatusCode);
+            return null;
         }
-
-        public void Logout()
+        catch (Exception ex)
         {
-            CurrentSession = null;
-            OnAuthenticationStateChanged?.Invoke();
-            _logger.LogInformation("User {Username} logged out.", CurrentSession?.UserName);
+            _logger.LogError(ex, "Login attempt failed for user: {Username}", username);
+            return null;
         }
+    }
+
+    public void Logout()
+    {
+        CurrentSession = null;
+        OnAuthenticationStateChanged?.Invoke();
     }
 }

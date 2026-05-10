@@ -8,6 +8,7 @@ using Shiakati.Views;
 using Microsoft.Extensions.Http;
 using Shiakati.Helpers;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Shiakati
 {
@@ -17,24 +18,37 @@ namespace Shiakati
     public partial class App : Application
     {
         public static IServiceProvider? ServiceProvider { get; private set; }
+
+
+
         public App()
         {
-            //loger configuration
+            //serilog configuration
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.File("logs/shiakati_log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)             
                 .CreateLogger();
 
+            //Configuration setup
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            var configuration = builder.Build();
+
+            // Read the base URL
+            var baseUrl = configuration["ApiBaseUrl"];
 
             //DI configuration
             var services = new ServiceCollection();
-            ConfigureServices(services);
+            ConfigureServices(services, baseUrl);
             ServiceProvider = services.BuildServiceProvider();
 
+                        
         }
 
 
-        private void ConfigureServices(ServiceCollection services)
+        private void ConfigureServices(ServiceCollection services, string baseUrl)
         {
             //Logger
             services.AddLogging(configure => configure.AddSerilog());
@@ -43,19 +57,23 @@ namespace Shiakati
             // 1. Register the Handler as Transient (Required by HttpClientFactory)
             services.AddTransient<AuthenticationHandler>();
 
+
+
             // 2. Register AuthService as a Singleton (Crucial for holding CurrentUser state)
             // We use AddHttpClient which automatically injects an HttpClient into AuthService.
             // Notice we do NOT attach the AuthenticationHandler here.
             services.AddHttpClient<IAuthenticationClientService, AuthService>(client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5001/");                
+                client.BaseAddress = new Uri(baseUrl);
             });
+
+
 
             // 3. Create a Named Client for all other services that require Authentication
             // This is the client that intercepts requests and adds the Bearer token.
             services.AddHttpClient("AuthenticatedClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5001/");
+                client.BaseAddress = new Uri(baseUrl);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             })
             .AddHttpMessageHandler<AuthenticationHandler>(); // Attach the interceptor!
