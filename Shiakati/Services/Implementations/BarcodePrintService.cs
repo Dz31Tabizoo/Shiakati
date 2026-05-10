@@ -34,14 +34,16 @@ public class BarcodePrintService : IBarCodePrintService
         };
 
         // On force le rendu net
-        RenderOptions.SetEdgeMode(container, EdgeMode.Aliased);
+        RenderOptions.SetEdgeMode(container, EdgeMode.Unspecified);
+        TextOptions.SetTextFormattingMode(container, TextFormattingMode.Display);
+        TextOptions.SetTextRenderingMode(container, TextRenderingMode.Aliased);
 
         // --- Ligne 1 : Marque et Nom (Petit pour que ça rentre) ---
         container.Children.Add(new TextBlock
         {
             Text = $"{data.BrandName} {data.VariantName}".ToUpper(),
             FontSize = 9, // Taille réduite
-            FontWeight = FontWeights.Bold,
+            FontWeight = FontWeights.Regular,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0),
             TextWrapping = TextWrapping.NoWrap,
@@ -57,6 +59,8 @@ public class BarcodePrintService : IBarCodePrintService
             Margin = new Thickness(0, 2, 0, 0),
             Stretch = Stretch.Fill
         };
+        RenderOptions.SetBitmapScalingMode(barcodeImg, BitmapScalingMode.NearestNeighbor);
+
         container.Children.Add(barcodeImg);
 
         // --- Ligne 3 : Taille et Prix ---
@@ -64,7 +68,7 @@ public class BarcodePrintService : IBarCodePrintService
         {
             Text = $"{data.ProductSize} - {data.Price:N2} DA",
             FontSize = 10,
-            FontWeight = FontWeights.Bold,
+            FontWeight = FontWeights.DemiBold,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0)
         });
