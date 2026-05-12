@@ -26,13 +26,13 @@ namespace Shiakati
             //serilog configuration
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.File("logs/shiakati_log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)             
+                .WriteTo.File("logs/shiakati_log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
 
             //Configuration setup
             var builder = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true);
 
             var configuration = builder.Build();
 
@@ -44,7 +44,7 @@ namespace Shiakati
             ConfigureServices(services, baseUrl);
             ServiceProvider = services.BuildServiceProvider();
 
-                        
+
         }
 
 
@@ -112,20 +112,22 @@ namespace Shiakati
 
             // Example: services.AddTransient<IMyService, MyService>();
 
-
             //Cache service registration
             services.AddSingleton<ICacheService, AppCacheService>();
-
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //var login = ServiceProvider!.GetRequiredService<LoginView>();
-            //login.Show();
+            var login = ServiceProvider!.GetRequiredService<LoginView>();
+            login.Show();
+        }
 
-            var maintest = ServiceProvider.GetRequiredService<MainView>();
-            maintest.Show();
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Log.CloseAndFlush();
+            (ServiceProvider as IDisposable)?.Dispose();
+            base.OnExit(e);
         }
     }
 }

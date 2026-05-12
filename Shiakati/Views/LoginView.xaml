@@ -8,6 +8,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
+		MouseLeftButtonDown="Window_MouseDown"
         Background="Transparent"
         FontFamily="{StaticResource MontserratFont}">
      
@@ -116,8 +117,7 @@
                 <Button Grid.Row="0"
                         HorizontalAlignment="Right"
                         Command="{Binding CloseApplicationCommand}"
-                        Style="{StaticResource MaterialDesignIconForegroundButton}"
-                        Click="BtnClose_Click"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}"                        
                         Foreground="Gray">
 
                     <materialDesign:PackIcon Kind="Close"

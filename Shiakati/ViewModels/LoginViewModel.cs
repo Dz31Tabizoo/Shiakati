@@ -1,74 +1,81 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Shiakati;
 using Shiakati.Services.Interfaces;
-using System.Windows.Controls;
 using Shiakati.Views;
 using System.Windows;
-using CommunityToolkit.Mvvm.Input;
-using Serilog;
+using System.Windows.Controls;
 
-namespace Shiakati.ViewModels
+public partial class LoginViewModel : ObservableObject
 {
-    public partial class LoginViewModel : ObservableObject
+    private readonly IAuthenticationClientService _authService;
+    private readonly ILogger<LoginViewModel> _logger;
+
+    [ObservableProperty]
+    private string _username = string.Empty;
+
+    [ObservableProperty]
+    private string _errorMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private bool _hasError;
+
+    // Événement pour informer la vue (Code-Behind) qu'elle doit se fermer
+    public event Action? RequestClose;
+
+    // Injection cohérente du ILogger
+    public LoginViewModel(IAuthenticationClientService authService, ILogger<LoginViewModel> logger)
     {
-        private readonly IAuthenticationClientService _authService;
-        private readonly ILogger _logger = Log.ForContext<LoginViewModel>();
+        _authService = authService;
+        _logger = logger;
+    }
 
-        [ObservableProperty]
-        private string _username = string.Empty;
-        [ObservableProperty]
-        private string _errorMessage = string.Empty;
-        [ObservableProperty]
-        private bool _isLoading;
-        [ObservableProperty]
-        private bool _hasError;
+    [RelayCommand]
+    private async Task LoginAsync(object parameter)
+    {
+        var passwordBox = parameter as PasswordBox;
+        var password = passwordBox?.Password ?? string.Empty;
 
-        public LoginViewModel(IAuthenticationClientService authService)
+        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(password))
         {
-            _authService = authService;
-        }
-        [RelayCommand]
-        private async Task LoginAsync(Object parameter)
-        {
-            var passwordBox = parameter as PasswordBox;
-            var password = passwordBox?.Password ?? string.Empty;
-
-            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(password))
-            {
-                ErrorMessage = "Veuillez entrer un nom d'utilisateur et un mot de passe.";
-                HasError = true;
-                return;
-            }
-            IsLoading = true;
-            HasError = false;
-
-            var result = await _authService.LoginAsync(Username, password);
-
-            if (result.Success)
-            {
-                var mainView = App.ServiceProvider.GetRequiredService<MainView>();
-                mainView.Show();
-
-                if (passwordBox != null)
-                {
-                    Window.GetWindow(passwordBox)?.Close();
-                }
-
-
-            }
-            else
-            {
-                _logger.Error(result.Message ?? "Login failed for user {Username}", Username);
-                ErrorMessage = "Échec de la connexion. Veuillez vérifier vos informations ou Contacter l'administrateur.";
-                HasError = true;
-            }
-            IsLoading = false;
+            ErrorMessage = "Veuillez entrer un nom d'utilisateur et un mot de passe.";
+            HasError = true;
+            return;
         }
 
-        [RelayCommand]
-        private void CloseApplication()
+        IsLoading = true;
+        HasError = false;
+
+        var result = await _authService.LoginAsync(Username, password);
+
+        // Plus de risque de NullReferenceException ici
+        if (result.Success)
         {
-            Application.Current.Shutdown();
+            // Navigation vers la vue principale
+            var mainView = App.ServiceProvider.GetRequiredService<MainView>();
+            mainView.Show();
+
+            // On demande la fermeture de la fenêtre de login proprement
+            RequestClose?.Invoke();
         }
+        else
+        {
+            _logger.LogWarning(result.Message ?? "Login failed for user {Username}", Username);
+            ErrorMessage = result.Message ?? "Échec de la connexion.";
+            HasError = true;
+        }
+
+        IsLoading = false;
+    }
+
+    [RelayCommand]
+    private void CloseApplication()
+    {
+        Application.Current.Shutdown();
     }
 }
