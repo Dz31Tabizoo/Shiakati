@@ -5,6 +5,7 @@ using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Shiakati.ViewModels
 {
@@ -49,7 +50,15 @@ namespace Shiakati.ViewModels
         }
         // ✅ On assigne le ViewModel, pas la View !
         [RelayCommand]
-        private void NavigateToStock() => CurrentView = Stock;        
+        private async Task NavigateToStock()
+        {
+            CurrentView = Stock;
+
+            if (Stock.Categories.Count()==0 ||Stock.Brands.Count == 0)
+            {
+                await Stock.LoadInitialDataAsync();
+            }
+        }
 
         [RelayCommand]
         private void NavigateToPOS()=> CurrentView = PosContainer;

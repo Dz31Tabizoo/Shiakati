@@ -14,6 +14,7 @@ public class AuthService : IAuthenticationClientService
 
     public event Action? OnAuthenticationStateChanged;
 
+
     public AuthService(HttpClient httpClient, ILogger<AuthService> logger)
     {
         _httpClient = httpClient;

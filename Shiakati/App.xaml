@@ -31,6 +31,7 @@
                 <ResourceDictionary Source="Resources/Langs/fr-FR.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GlobalStyles.xaml"/>
 
+                
                 <ResourceDictionary>
                     
                     <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
@@ -47,16 +48,17 @@
 
                     <DataTemplate DataType="{x:Type viewModels:StockViewModel}">
                         <views:StockView />
+                        
+                        
                     </DataTemplate>
-
                     <DataTemplate DataType="{x:Type viewModels:POSViewModel}">
                         <views:PosView />
                     </DataTemplate>
                     
                 </ResourceDictionary>
+                
                 <ResourceDictionary>
                     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
-
                 </ResourceDictionary>
 
             </ResourceDictionary.MergedDictionaries>

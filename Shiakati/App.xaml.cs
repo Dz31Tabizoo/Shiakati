@@ -19,8 +19,6 @@ namespace Shiakati
     {
         public static IServiceProvider? ServiceProvider { get; private set; }
 
-
-
         public App()
         {
             //serilog configuration
@@ -43,57 +41,46 @@ namespace Shiakati
             var services = new ServiceCollection();
             ConfigureServices(services, baseUrl);
             ServiceProvider = services.BuildServiceProvider();
-
-
         }
-
 
         private void ConfigureServices(ServiceCollection services, string baseUrl)
         {
-            //Logger
+            // . Logging
             services.AddLogging(configure => configure.AddSerilog());
+            // . Singleton hard
+            services.AddSingleton<AuthService>();
+            // . Lie l'interface
+            services.AddSingleton<IAuthenticationClientService>(sp => sp.GetRequiredService<AuthService>());
+            
 
+            // . Service d'Auth (SANS intercepteur car il crée le token)
+            services.AddHttpClient<AuthService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            });
 
-            // 1. Register the Handler as Transient (Required by HttpClientFactory)
+            
+            // . Le Handler pour le Token
             services.AddTransient<AuthenticationHandler>();
 
-
-
-            // 2. Register AuthService as a Singleton (Crucial for holding CurrentUser state)
-            // We use AddHttpClient which automatically injects an HttpClient into AuthService.
-            // Notice we do NOT attach the AuthenticationHandler here.
-            services.AddHttpClient<IAuthenticationClientService, AuthService>(client =>
-            {
-                client.BaseAddress = new Uri(baseUrl);
-            });
-
-
-
-            // 3. Create a Named Client for all other services that require Authentication
-            // This is the client that intercepts requests and adds the Bearer token.
-            services.AddHttpClient("AuthenticatedClient", client =>
-            {
-                client.BaseAddress = new Uri(baseUrl);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-            })
-            .AddHttpMessageHandler<AuthenticationHandler>(); // Attach the interceptor!
-
-            // C'EST ICI QUE VOUS AJOUTEREZ VOS FUTURS SERVICES
+            // ---------------------------------------------------------
+            // C'EST ICI QU'ON AJOUTE LES SERVICES (Client Typé)
             // ---------------------------------------------------------
 
-            // Par exemple, quand vous créerez votre ProductService pour gérer le stock, 
-            // vous l'ajouterez comme ceci :
-            /*
-            services.AddTransient<IProductService>(provider =>
+
+
+            services.AddHttpClient<ICatalogService, CatalogService>(client =>
             {
-                var factory = provider.GetRequiredService<IHttpClientFactory>();
-                var client = factory.CreateClient("AuthenticatedClient"); // On utilise le profil sécurisé
-                return new ProductService(client);
-            });
-            */
+                client.BaseAddress = new Uri(baseUrl);
+                
+            })
+            .AddHttpMessageHandler<AuthenticationHandler>(); // Sécurité activée ! // Injection automatique du token !
 
+            
 
-            // Register your services and view models here
+            // ---------------------------------------------------------
+            // . Enregistrement des Views et ViewModels
+            // ---------------------------------------------------------
             services.AddSingleton<MainView>();
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<PosContainerViewModel>();
@@ -107,22 +94,17 @@ namespace Shiakati
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();
 
+            // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();
             services.AddTransient<IBarCodePrintService, BarcodePrintService>();
-
-            // Example: services.AddTransient<IMyService, MyService>();
-
-            //Cache service registration
             services.AddSingleton<ICacheService, AppCacheService>();
         }
-
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             var login = ServiceProvider!.GetRequiredService<LoginView>();
             login.Show();
         }
-
         protected override void OnExit(ExitEventArgs e)
         {
             Log.CloseAndFlush();
