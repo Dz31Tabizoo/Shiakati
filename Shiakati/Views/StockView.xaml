@@ -100,9 +100,13 @@
 
                         <TextBlock Text="1. Informations Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
-                        <ComboBox materialDesign:HintAssist.Hint="Catégorie" FontSize="13" ItemsSource="{Binding Categories}" 
-                          DisplayMemberPath="CategoryName" SelectedItem="{Binding DraftCategory}" 
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,0,15"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Catégorie" 
+                                  FontSize="13" 
+                                  ItemsSource="{Binding Categories}" 
+                                  DisplayMemberPath="CategoryName" 
+                                  SelectedItem="{Binding DraftCategory}" 
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                                  Margin="0,0,0,15"/>
 
                         <ComboBox ItemsSource="{Binding Brands}" 
                                   FontSize="13"
@@ -120,7 +124,7 @@
                                   Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}" 
                                   ItemsSource="{Binding Products}"  
                                   DisplayMemberPath="ProductName"
-                                  SelectedItem="{Binding SelectedProduct}"
+                                  SelectedItem="{Binding DraftProductName}"
                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
                                   Margin="0,0,0,22"/>
 

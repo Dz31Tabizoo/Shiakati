@@ -25,7 +25,6 @@ namespace Shiakati.ViewModels
             _db = db;
             _productsService = productsService;
 
-            // Toujours instancier les listes pour éviter les erreurs de Binding
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
             Products = new ObservableCollection<ProductModel>();
@@ -41,22 +40,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isLoading; // Pour afficher un Spinner si besoin
 
         [RelayCommand]
-        private void ToggleReception() => 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            IsReceptionVisible = !IsReceptionVisible;
+        private void ToggleReception() => IsReceptionVisible = !IsReceptionVisible;
 
         // ==========================================
         // FILTER PROPERTIES
@@ -68,14 +52,16 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private string _filterFullSize;
         [ObservableProperty] private ProductVariantsModel _selectedStockItem;
 
+        private List<BrandsModel> _allBrands = new();
+        private List<ProductModel> _allProducts = new();
+
         public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
         public ObservableCollection<ProductVariantsModel> FilteredStock { get; }
-        public ObservableCollection<CategoryModel> Categories { get; }
-        public ObservableCollection<BrandsModel> Brands { get; }
-        public ObservableCollection<ProductModel> Products { get; }
+        public ObservableCollection<CategoryModel> Categories { get; } = new();
+        public ObservableCollection<BrandsModel> Brands { get; } = new();
+        public ObservableCollection<ProductModel> Products { get; } = new();
 
         // Triggers asynchrones (Générés par CommunityToolkit)
-        // On wrap dans un try-catch car async void ne remonte pas les exceptions proprement
         async partial void OnSearchTextChanged(string value) => await SafeApplyFiltersAsync();
         async partial void OnSelectedCategoryChanged(CategoryModel value) => await SafeApplyFiltersAsync();
         async partial void OnSelectedBrandChanged(BrandsModel value) => await SafeApplyFiltersAsync();
@@ -123,14 +109,15 @@ namespace Shiakati.ViewModels
                 var catalog = await _db.GetInitialGatalogDataAsync();
                 var products = await _productsService.GetProductsAsync();
 
-                // On vide et on remplit pour garder la même instance de collection (Best Practice WPF)
                 Categories.Clear();
-                foreach (var cat in catalog.Categories) Categories.Add(cat);  
-                Brands.Clear();
-                foreach (var b in catalog.Brands) Brands.Add(b);                    
-                Products.Clear();
-                foreach (var p in products) Products.Add(p);
-                
+                foreach (var cat in catalog.Categories) Categories.Add(cat);
+
+                _allBrands = catalog.Brands.ToList();
+                _allProducts=products.ToList();
+
+                RefreshFilterdBrands();
+                RefreshFilterdProducts();
+
 
             }
             catch (Exception ex)
@@ -167,17 +154,33 @@ namespace Shiakati.ViewModels
         partial void OnDraftCategoryChanged(CategoryModel value)
         {
             if (value == null) return;
-            string catName = value.CategoryName.ToLower();
 
-            // Logique de visibilité simplifiée
-            bool isSpecial = catName.Contains("cosmetic") || catName.Contains("shoe") ||
-                             catName.Contains("chaussure") || catName.Contains("chaise");
+            UpdateVisibilityLogic(value);
 
-            IsNumericSizeVisible = isSpecial;
-            IsDimensionSizeVisible = !isSpecial;
+            RefreshFilterdBrands();
+            DraftBrand = null;
 
-            if (isSpecial) { DraftWidth = null; DraftLength = null; }
-            else { DraftNumericSize = null; }
+            //logic to get the right size textBox 
+
+            //if (value == null) return;
+            //string catName = value.CategoryName.ToLower();
+
+            //// Logique de visibilité simplifiée
+            //bool isSpecial = catName.Contains("cosmetic") || catName.Contains("shoe") ||
+            //                 catName.Contains("chaussure") || catName.Contains("chaise");
+
+            //IsNumericSizeVisible = isSpecial;
+            //IsDimensionSizeVisible = !isSpecial;
+
+            //if (isSpecial) { DraftWidth = null; DraftLength = null; }
+            //else { DraftNumericSize = null; }
+        }
+
+
+        partial void OnDraftBrandChanged(BrandsModel value)
+        {
+            RefreshFilterdProducts();
+            DraftProductName = null;
         }
 
         [RelayCommand]
@@ -209,6 +212,27 @@ namespace Shiakati.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Erreur lors de la réception : {ex.Message}");
+            }
+        }
+
+        private void UpdateVisibilityLogic(CategoryModel value)
+        {
+            string catName = value.CategoryName;
+
+            bool isSpecial = catName.Contains("cosmetic") || catName.Contains("shoe") ||
+                     catName.Contains("chaussure") || catName.Contains("chaise");
+
+            IsNumericSizeVisible = isSpecial;
+            IsDimensionSizeVisible = !isSpecial;
+
+            if (isSpecial)
+            {
+                DraftWidth = null;
+                DraftLength = null;
+            }
+            else
+            {
+                DraftNumericSize = null;
             }
         }
 
@@ -245,6 +269,34 @@ namespace Shiakati.ViewModels
             DraftSKU = string.Empty;
             DraftPurchasePrice = null;
             DraftSalePrice = null;
+        }
+
+        private void RefreshFilterdBrands()
+        {
+            Brands.Clear();
+
+            var filterd = (DraftCategory == null)
+                ? _allBrands 
+                : _allBrands.Where(b => b.CategoryID == DraftCategory.CategoryID );
+            foreach (var b in filterd)
+            {
+                Brands.Add(b);
+            }
+        }
+
+        private void RefreshFilterdProducts()
+        {
+            Products.Clear();
+            var query = _allProducts.AsEnumerable();
+            if (DraftCategory != null) query = query.Where(p => p.CategoryName == DraftCategory.CategoryName);
+
+            if (DraftBrand != null && !string.IsNullOrEmpty(DraftBrand.BrandName))
+                query = query.Where(p => p.BrandName == DraftBrand.BrandName);
+
+            foreach (var p in query)
+            {
+                Products.Add(p);
+            }
         }
     }
 }
