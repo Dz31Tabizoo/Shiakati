@@ -25,7 +25,8 @@ namespace Shiakati.Views
         public StockView()
         {
             InitializeComponent();
-            this.DataContext = App.ServiceProvider?.GetRequiredService<StockViewModel>();
         }
+
+       
     }
 }

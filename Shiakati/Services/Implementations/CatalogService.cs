@@ -49,6 +49,7 @@ namespace Shiakati.Services.Implementations
                 return (brands, categories);
             }catch(Exception ex)
             {
+                //add logs
                 MessageBox.Show($"{ex}");
                 return (new(),new());
             }

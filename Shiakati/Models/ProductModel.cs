@@ -9,12 +9,14 @@ namespace Shiakati.Models
         private int? _productID;
 
         [ObservableProperty]
-        private int? _brandID;
+        private string _brandName = string.Empty;
         [ObservableProperty]
         private bool _isActive;
         [ObservableProperty]
-        private string _productName;
+        private string _productName= string.Empty;
         [ObservableProperty]        
         private string? _imagePath;
+        [ObservableProperty]
+        private string? _categoryName = string.Empty;
     }
 }

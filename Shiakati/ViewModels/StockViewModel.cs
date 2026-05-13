@@ -17,15 +17,18 @@ namespace Shiakati.ViewModels
     {
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogService _db;
+        private readonly IProductsService _productsService;
 
-        public StockViewModel(IBarCodePrintService printerService, ICatalogService db)
+        public StockViewModel(IBarCodePrintService printerService, ICatalogService db,IProductsService productsService)
         {
             _printerService = printerService;
             _db = db;
+            _productsService = productsService;
 
             // Toujours instancier les listes pour éviter les erreurs de Binding
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
+            Products = new ObservableCollection<ProductModel>();
             FilteredStock = new ObservableCollection<ProductVariantsModel>();
         }
 
@@ -38,7 +41,22 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isLoading; // Pour afficher un Spinner si besoin
 
         [RelayCommand]
-        private void ToggleReception() => IsReceptionVisible = !IsReceptionVisible;
+        private void ToggleReception() => 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            IsReceptionVisible = !IsReceptionVisible;
 
         // ==========================================
         // FILTER PROPERTIES
@@ -54,6 +72,7 @@ namespace Shiakati.ViewModels
         public ObservableCollection<ProductVariantsModel> FilteredStock { get; }
         public ObservableCollection<CategoryModel> Categories { get; }
         public ObservableCollection<BrandsModel> Brands { get; }
+        public ObservableCollection<ProductModel> Products { get; }
 
         // Triggers asynchrones (Générés par CommunityToolkit)
         // On wrap dans un try-catch car async void ne remonte pas les exceptions proprement
@@ -102,16 +121,17 @@ namespace Shiakati.ViewModels
             {
                 IsLoading = true;
                 var catalog = await _db.GetInitialGatalogDataAsync();
+                var products = await _productsService.GetProductsAsync();
 
                 // On vide et on remplit pour garder la même instance de collection (Best Practice WPF)
+                Categories.Clear();
+                foreach (var cat in catalog.Categories) Categories.Add(cat);  
+                Brands.Clear();
+                foreach (var b in catalog.Brands) Brands.Add(b);                    
+                Products.Clear();
+                foreach (var p in products) Products.Add(p);
                 
-                foreach (var cat in catalog.Categories) Categories.Add(cat);
 
-                
-                foreach (var b in catalog.Brands) Brands.Add(b);
-                MessageBox.Show("charger les données du catalogue ");
-
-                Log.Information("Catalogue chargé : {CatCount} catégories, {BrandCount} marques", Categories.Count, Brands.Count);
             }
             catch (Exception ex)
             {

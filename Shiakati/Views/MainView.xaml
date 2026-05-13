@@ -238,7 +238,7 @@
             <!-- Control Bar (Draggable Area) -->
             <Border x:Name="pnlControlBar" Grid.Row="0" Background="White" 
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
-                    MouseEnter="pnlControlBar_MouseEnter">
+                    >
                 <Grid Margin="20,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Shiakati شياكتي" FontFamily="{StaticResource CairoFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" />

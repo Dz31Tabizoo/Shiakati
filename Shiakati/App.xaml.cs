@@ -76,7 +76,12 @@ namespace Shiakati
             })
             .AddHttpMessageHandler<AuthenticationHandler>(); // Sécurité activée ! // Injection automatique du token !
 
-            
+
+            services.AddHttpClient<IProductsService, ProductsService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            })
+            .AddHttpMessageHandler<AuthenticationHandler>();
 
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
@@ -87,9 +92,9 @@ namespace Shiakati
             services.AddTransient<POSViewModel>();
             services.AddTransient<LoginView>();
             services.AddTransient<LoginViewModel>();
-            services.AddTransient<StockViewModel>();
+            services.AddSingleton<StockViewModel>();
             services.AddTransient<StockView>();
-            services.AddTransient<SalesHistoryViewModel>();
+            services.AddSingleton<SalesHistoryViewModel>();
             services.AddTransient<SalesHistoryView>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();

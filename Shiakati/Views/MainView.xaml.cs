@@ -32,10 +32,7 @@ namespace Shiakati.Views
 
         }
 
-        private void pnlControlBar_MouseEnter(object sender, MouseEventArgs e)
-        {
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-        }
+       
 
 
         private void btnMaximize_Click(object sender, RoutedEventArgs e)
