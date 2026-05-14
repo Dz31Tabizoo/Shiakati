@@ -121,8 +121,8 @@ namespace Shiakati.ViewModels
             _searchText = string.Empty; // Utiliser le champ privé pour éviter de déclencher 5 appels API
             _selectedCategory = null;
             _selectedBrand = null;
-            _filterColor = string.Empty;
-            _filterFullSize = string.Empty;
+            _filterColor = null;
+            _filterFullSize = null;
 
             // On notifie les changements manuellement
             OnPropertyChanged(nameof(SearchText));
@@ -131,14 +131,10 @@ namespace Shiakati.ViewModels
             OnPropertyChanged(nameof(FilterColor));
             OnPropertyChanged(nameof(FilterFullSize));
 
-            await ApplyFiltersAsync();
+            await SafeApplyFiltersAsync();
         }
 
-        private async Task ApplyFiltersAsync()
-        {
-            // TODO: Appeler ton IStockApiService ici
-            await Task.CompletedTask;
-        }
+       
 
         public async Task LoadInitialDataAsync()
         {
@@ -198,7 +194,6 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private int? _labelsToPrint = null;
 
         partial void OnDraftQuantityChanged(int? value) => LabelsToPrint = value;
-
         partial void OnDraftCategoryChanged(CategoryModel value)
         {
             if (value == null) return;
@@ -223,8 +218,6 @@ namespace Shiakati.ViewModels
             //if (isSpecial) { DraftWidth = null; DraftLength = null; }
             //else { DraftNumericSize = null; }
         }
-
-
         partial void OnDraftBrandChanged(BrandsModel value)
         {
             RefreshFilterdProducts();
@@ -367,6 +360,50 @@ namespace Shiakati.ViewModels
             FilterSizes.Clear();
             foreach (var s in sizes) FilterSizes.Add(s);
 
+        }
+
+
+        [RelayCommand]
+        private async Task PrintFromGridAsync(ProductVariantModel item)
+        {
+            if (item == null) return;
+
+            // 1. Demander la quantité à l'utilisateur
+            // Note : Tu peux créer une petite Window de dialogue ou utiliser un InputDialog
+            string input = Microsoft.VisualBasic.Interaction.InputBox(
+                $"Combien d'étiquettes pour {item.ProductName} ?\n(Stock actuel : {item.StockQuantity})",
+                "Impression Code-barres",
+                item.StockQuantity.ToString());
+
+            if (int.TryParse(input, out int quantity) && quantity > 0)
+            {
+                // 2. Vérifier que la quantité ne dépasse pas le stock (optionnel selon ton besoin)
+                if (quantity > item.StockQuantity)
+                {
+                    MessageBox.Show("Attention : La quantité demandée dépasse le stock disponible.");
+                }
+
+                // 3. Préparer les données pour le service d'impression
+                var label = new BarecodeLabelData
+                {
+                    BrandName = ToAscii(item.BrandName ?? "N/A"),
+                    VariantName = ToAscii($"{item.ProductName} {item.Color}").Trim(),
+                    Barcode = item.Sku ?? "000000000000",
+                    ProductSize = item.FullSize,
+                    Price = item.SalePrice ?? 0,
+                };
+
+                // 4. Lancer l'impression
+                string printerName = Properties.Settings.Default.BarcodePrinterName;
+                if (!string.IsNullOrEmpty(printerName))
+                {
+                    _printerService.PrintBarCode(label, printerName, quantity);
+                }
+                else
+                {
+                    MessageBox.Show("Veuillez configurer l'imprimante dans les paramètres.");
+                }
+            }
         }
     }
 }

@@ -52,41 +52,112 @@
 
             <materialDesign:Card Grid.Row="1" Padding="15,10" UniformCornerRadius="8" Margin="0,0,0,10">
                 <WrapPanel Orientation="Horizontal">
-                    <ComboBox ItemsSource="{Binding Categories}" DisplayMemberPath="CategoryName" SelectedItem="{Binding SelectedCategory}"
-                              materialDesign:HintAssist.Hint="Catégorie" Width="150" Margin="0,0,15,10" Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                    <WrapPanel.Resources>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}">
+                            <Setter Property="FontSize" Value="18"/>
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="180"/>
+                            <Setter Property="Margin" Value="0,0,20,15"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                    </WrapPanel.Resources>
 
-                    <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding SelectedBrand}"
-                              materialDesign:HintAssist.Hint="Marque" Width="150" Margin="0,0,15,10" Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                    <ComboBox ItemsSource="{Binding Categories}" 
+              DisplayMemberPath="CategoryName" 
+              SelectedItem="{Binding SelectedCategory}"
+              materialDesign:HintAssist.Hint="Catégorie"/>
+
+                    <ComboBox ItemsSource="{Binding Brands}" 
+              DisplayMemberPath="BrandName" 
+              SelectedItem="{Binding SelectedBrand}"
+              materialDesign:HintAssist.Hint="Marque"/>
+
                     <ComboBox ItemsSource="{Binding FilterColors}" 
-                              SelectedItem="{Binding FilterColor}"
-                              materialDesign:HintAssist.Hint="Couleur" 
-                              Width="150" Margin="0,0,15,10" 
-                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+              SelectedItem="{Binding FilterColor}"
+              materialDesign:HintAssist.Hint="Couleur"/>
 
                     <ComboBox ItemsSource="{Binding FilterSizes}" 
-                              SelectedItem="{Binding FilterFullSize}"
-                              materialDesign:HintAssist.Hint="Taille" 
-                              Width="150" Margin="0,0,15,10" 
-                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
-
+              SelectedItem="{Binding FilterFullSize}"
+              materialDesign:HintAssist.Hint="Taille"/>
                 </WrapPanel>
             </materialDesign:Card>
 
             <materialDesign:Card Grid.Row="2" UniformCornerRadius="8" Padding="5">
-                <DataGrid ItemsSource="{Binding FilteredStock}" AutoGenerateColumns="False" 
-                          CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column"
-                          SelectionMode="Single" SelectedItem="{Binding SelectedStockItem}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Bold"/>
-                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
-                        <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"/>
-                        <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"/>
-                        <DataGridTextColumn Header="En Stock" Binding="{Binding StockQuantity}" ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                        <DataGridTextColumn Header="Prix Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="Crimson"/>
-                        <DataGridTextColumn Header="Prix Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <materialDesign:Card Grid.Row="2" UniformCornerRadius="8" Padding="5">
+                    <DataGrid ItemsSource="{Binding FilteredStock}" 
+              AutoGenerateColumns="False" 
+              CanUserAddRows="False" 
+              IsReadOnly="True" 
+              HeadersVisibility="Column"
+              SelectionMode="Single" 
+              SelectedItem="{Binding SelectedStockItem}"
+              RowHeight="60" 
+              FontSize="17"
+              HorizontalScrollBarVisibility="Auto"
+              VerticalScrollBarVisibility="Auto">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.CellStyle>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu FontSize="18">
+                                            <MenuItem Header="Imprimer Code-Barres" 
+                                      Height="50"
+                                      Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="Printer" Width="24" Height="24" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                            </Style>
+                        </DataGrid.RowStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Bold" Width="Auto" MinWidth="110"/>
+
+                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="2*" MinWidth="180"/>
+
+                            <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto" MinWidth="100"/>
+
+                            <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto" MinWidth="80"/>
+
+                            <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}" Width="Auto" MinWidth="80"/>
+
+                            <DataGridTextColumn Header="P. Achat" 
+                                Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" 
+                                Foreground="Crimson" 
+                                Width="Auto" 
+                                MinWidth="120"/>
+
+                            <DataGridTextColumn Header="P. Vente" 
+                                Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
+                                Foreground="Green" 
+                                FontWeight="SemiBold" 
+                                Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </materialDesign:Card>
             </materialDesign:Card>
+
         </Grid>
         <materialDesign:Card Grid.Column="1" Width="380" UniformCornerRadius="8" Padding="15"
                      Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
