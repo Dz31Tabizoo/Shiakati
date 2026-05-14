@@ -3,6 +3,7 @@
     using CommunityToolkit.Mvvm.Input;
     using global::Shiakati.Models;
     using Shiakati.Services.Interfaces;
+using Shiakati.Helpers;
     using Shiakati.Services.Implementations;
     using System;
     using System.Collections.ObjectModel;
@@ -28,7 +29,7 @@ namespace Shiakati.ViewModels
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
             Products = new ObservableCollection<ProductModel>();
-            FilteredStock = new ObservableCollection<ProductVariantsModel>();
+            FilteredStock = new RangeObservableCollection<ProductVariantsModel>();
         }
 
         // ==========================================
@@ -54,12 +55,16 @@ namespace Shiakati.ViewModels
 
         private List<BrandsModel> _allBrands = new();
         private List<ProductModel> _allProducts = new();
+        private List<ProductVariantsModel> _allStockItems = new();
 
+        public ObservableCollection<string> FilterColors { get; } = new();
+        public ObservableCollection<string> FilterSizes { get; } = new();
         public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
-        public ObservableCollection<ProductVariantsModel> FilteredStock { get; }
+        public RangeObservableCollection<ProductVariantsModel> FilteredStock { get; }
         public ObservableCollection<CategoryModel> Categories { get; } = new();
         public ObservableCollection<BrandsModel> Brands { get; } = new();
         public ObservableCollection<ProductModel> Products { get; } = new();
+
 
         // Triggers asynchrones (Générés par CommunityToolkit)
         async partial void OnSearchTextChanged(string value) => await SafeApplyFiltersAsync();
@@ -70,7 +75,41 @@ namespace Shiakati.ViewModels
 
         private async Task SafeApplyFiltersAsync()
         {
-            try { await ApplyFiltersAsync(); }
+            try 
+            {
+                // On travaille sur la liste complète en mémoire
+                var query = _allStockItems.AsEnumerable();
+
+                // 1. Recherche Textuelle
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    string search = SearchText.ToLower();
+                    query = query.Where(x => x.SKU.ToLower().Contains(search) ||
+                                             x.ProductInfo.ProductName.ToLower().Contains(search));
+                }
+
+                // 2. Filtre Catégorie
+                if (SelectedCategory != null)
+                    query = query.Where(x => x.ProductInfo.CategoryName == SelectedCategory.CategoryName);
+
+                // 3. Filtre Marque
+                if (SelectedBrand != null)
+                    query = query.Where(x => x.ProductInfo.BrandName == SelectedBrand.BrandName);
+
+                // 4. Filtre Couleur
+                if (!string.IsNullOrWhiteSpace(FilterColor))
+                    query = query.Where(x => x.Color == FilterColor);
+
+                // 5. Filtre Taille
+                if (!string.IsNullOrWhiteSpace(FilterFullSize))
+                    query = query.Where(x => x.FullSize == FilterFullSize);
+
+                // Mise à jour de l'UI en un seul coup (Bulk)
+                FilteredStock.Clear();
+                FilteredStock.AddRange(query.ToList());
+
+                await Task.CompletedTask;
+            }
             catch (Exception ex) { Log.Error(ex, "Erreur filtres"); }
         }
 
@@ -108,6 +147,13 @@ namespace Shiakati.ViewModels
                 IsLoading = true;
                 var catalog = await _db.GetInitialGatalogDataAsync();
                 var products = await _productsService.GetProductsAsync();
+                var items = await _stockService.GetItemsAsync();
+                _allStockItems = items.ToList();
+
+                FilteredStock.Clear();
+                FilteredStock.AddRange(_allStockItems);
+
+                UpdateFilterOptions();
 
                 Categories.Clear();
                 foreach (var cat in catalog.Categories) Categories.Add(cat);
@@ -297,6 +343,28 @@ namespace Shiakati.ViewModels
             {
                 Products.Add(p);
             }
+        }
+
+        private void UpdateFilterOptions()
+        {
+            var colors = _allStockItems
+                .Select(x => x.Color)
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct()
+                .OrderBy(s => s);
+
+            FilterColors.Clear();
+            foreach(var item in colors) FilterColors.Add(item);
+
+            var sizes = _allStockItems
+            .Select(x => x.FullSize)
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Distinct()
+            .OrderBy(s => s);
+
+            FilterSizes.Clear();
+            foreach (var s in sizes) FilterSizes.Add(s);
+
         }
     }
 }

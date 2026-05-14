@@ -57,9 +57,18 @@
 
                     <ComboBox ItemsSource="{Binding Brands}" DisplayMemberPath="BrandName" SelectedItem="{Binding SelectedBrand}"
                               materialDesign:HintAssist.Hint="Marque" Width="150" Margin="0,0,15,10" Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                    <ComboBox ItemsSource="{Binding FilterColors}" 
+                              SelectedItem="{Binding FilterColor}"
+                              materialDesign:HintAssist.Hint="Couleur" 
+                              Width="150" Margin="0,0,15,10" 
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
 
-                    <TextBox Text="{Binding FilterColor, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Couleur" Width="120" Margin="0,0,15,10"/>
-                    <TextBox Text="{Binding FilterFullSize, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Taille (FullSize)" Width="120" Margin="0,0,15,10"/>
+                    <ComboBox ItemsSource="{Binding FilterSizes}" 
+                              SelectedItem="{Binding FilterFullSize}"
+                              materialDesign:HintAssist.Hint="Taille" 
+                              Width="150" Margin="0,0,15,10" 
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+
                 </WrapPanel>
             </materialDesign:Card>
 
