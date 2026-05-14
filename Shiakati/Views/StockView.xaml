@@ -77,8 +77,8 @@
                           CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column"
                           SelectionMode="Single" SelectedItem="{Binding SelectedStockItem}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" FontWeight="Bold"/>
-                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductInfo.ProductName}" Width="*"/>
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
                         <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"/>
                         <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"/>
                         <DataGridTextColumn Header="En Stock" Binding="{Binding StockQuantity}" ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>

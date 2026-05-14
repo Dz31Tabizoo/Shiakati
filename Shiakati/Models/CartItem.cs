@@ -7,7 +7,7 @@ namespace Shiakati.Models
 {
     public partial class CartItem : ObservableObject
     {
-        public ProductVariantsModel? Variant { get; }
+        public ProductVariantModel? Variant { get; }
         public ProductModel? Product { get; }
         
 
@@ -19,7 +19,7 @@ namespace Shiakati.Models
         {
             get
             {
-                decimal unitDiscount = 0;
+                decimal? unitDiscount = 0;
 
                 if (IsDiscountPinned && Variant.DiscountFixed.HasValue)
                     unitDiscount += Variant.DiscountFixed.Value;
@@ -58,7 +58,7 @@ namespace Shiakati.Models
 
         public string DisplayName => $"{Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
 
-        public CartItem(ProductVariantsModel variant, ProductModel product)
+        public CartItem(ProductVariantModel variant, ProductModel product)
         {
             Variant = variant;
             Product = product;

@@ -19,17 +19,19 @@ namespace Shiakati.ViewModels
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogService _db;
         private readonly IProductsService _productsService;
+        private readonly IProductVariantsService _productVariantsService;
 
-        public StockViewModel(IBarCodePrintService printerService, ICatalogService db,IProductsService productsService)
+        public StockViewModel(IBarCodePrintService printerService, ICatalogService db,IProductVariantsService productVariantsService,IProductsService productsService)
         {
             _printerService = printerService;
             _db = db;
             _productsService = productsService;
+            _productVariantsService = productVariantsService;
 
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
             Products = new ObservableCollection<ProductModel>();
-            FilteredStock = new RangeObservableCollection<ProductVariantsModel>();
+            FilteredStock = new RangeObservableCollection<ProductVariantModel>();
         }
 
         // ==========================================
@@ -51,16 +53,16 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private BrandsModel _selectedBrand;
         [ObservableProperty] private string _filterColor;
         [ObservableProperty] private string _filterFullSize;
-        [ObservableProperty] private ProductVariantsModel _selectedStockItem;
+        [ObservableProperty] private ProductVariantModel _selectedStockItem;
 
         private List<BrandsModel> _allBrands = new();
         private List<ProductModel> _allProducts = new();
-        private List<ProductVariantsModel> _allStockItems = new();
+        private List<ProductVariantModel> _allStockItems = new();
 
         public ObservableCollection<string> FilterColors { get; } = new();
         public ObservableCollection<string> FilterSizes { get; } = new();
         public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
-        public RangeObservableCollection<ProductVariantsModel> FilteredStock { get; }
+        public RangeObservableCollection<ProductVariantModel> FilteredStock { get; }
         public ObservableCollection<CategoryModel> Categories { get; } = new();
         public ObservableCollection<BrandsModel> Brands { get; } = new();
         public ObservableCollection<ProductModel> Products { get; } = new();
@@ -84,17 +86,17 @@ namespace Shiakati.ViewModels
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     string search = SearchText.ToLower();
-                    query = query.Where(x => x.SKU.ToLower().Contains(search) ||
-                                             x.ProductInfo.ProductName.ToLower().Contains(search));
+                    query = query.Where(x => x.Sku.ToLower().Contains(search) ||
+                                             x.ProductName.ToLower().Contains(search));
                 }
 
                 // 2. Filtre Catégorie
                 if (SelectedCategory != null)
-                    query = query.Where(x => x.ProductInfo.CategoryName == SelectedCategory.CategoryName);
+                    query = query.Where(x => x.CategoryName == SelectedCategory.CategoryName);
 
                 // 3. Filtre Marque
                 if (SelectedBrand != null)
-                    query = query.Where(x => x.ProductInfo.BrandName == SelectedBrand.BrandName);
+                    query = query.Where(x => x.BrandName== SelectedBrand.BrandName);
 
                 // 4. Filtre Couleur
                 if (!string.IsNullOrWhiteSpace(FilterColor))
@@ -147,7 +149,7 @@ namespace Shiakati.ViewModels
                 IsLoading = true;
                 var catalog = await _db.GetInitialGatalogDataAsync();
                 var products = await _productsService.GetProductsAsync();
-                var items = await _stockService.GetItemsAsync();
+                var items = await _productVariantsService.GetProductVariantsAsync();
                 _allStockItems = items.ToList();
 
                 FilteredStock.Clear();

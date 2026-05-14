@@ -35,10 +35,10 @@ namespace Shiakati.ViewModels
         private string _searchText = string.Empty;
 
         // ON CHANGE ICI : On utilise ProductVariantsModel
-        private List<ProductVariantsModel> _allProducts = new();
+        private List<ProductVariantModel> _allProducts = new();
 
         [ObservableProperty]
-        private ObservableCollection<ProductVariantsModel> _filteredProducts = new();
+        private ObservableCollection<ProductVariantModel> _filteredProducts = new();
 
         // Le Panier utilise notre nouveau CartItem
         public ObservableCollection<CartItem> CartItems { get; } = new();
@@ -50,7 +50,7 @@ namespace Shiakati.ViewModels
             _logger = logger;
             _printService = printService;   
 
-            LoadFakeProducts();
+            
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
@@ -109,17 +109,17 @@ namespace Shiakati.ViewModels
         //need async + await 500 ms delay to not query the API on every keystroke
         partial void OnSearchTextChanged(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);
-                return;
-            }
+            //if (string.IsNullOrWhiteSpace(value))
+            //{
+            //    FilteredProducts = new ObservableCollection<ProductVariantModel>(_allProducts);
+            //    return;
+            //}
 
-            var filtered = _allProducts.Where(p =>
-                (p.ProductInfo?.ProductName?.Contains(value, StringComparison.OrdinalIgnoreCase) == true) ||
-                (p.SKU != null && p.SKU.Equals(value, StringComparison.OrdinalIgnoreCase))).ToList();
+            //var filtered = _allProducts.Where(p =>
+            //    (p.ProductInfo?.ProductName?.Contains(value, StringComparison.OrdinalIgnoreCase) == true) ||
+            //    (p.Sku != null && p.Sku.Equals(value, StringComparison.OrdinalIgnoreCase))).ToList();
 
-            FilteredProducts = new ObservableCollection<ProductVariantsModel>(filtered);
+            //FilteredProducts = new ObservableCollection<ProductVariantModel>(filtered);
         }
 
         public decimal? CartSubTotal => CartItems.Sum(x => x.RawTotal);
@@ -131,13 +131,13 @@ namespace Shiakati.ViewModels
         public decimal? CartTotal => CartSubTotal - TotalDiscountAmount;
 
         [RelayCommand]
-        private void AddToCart(ProductVariantsModel selectedVariant)
+        private void AddToCart(ProductVariantModel selectedVariant)
         {
             if (selectedVariant == null) return;
-            var existingItem = CartItems.FirstOrDefault(c => c.Variant.VariantID == selectedVariant.VariantID);
+            var existingItem = CartItems.FirstOrDefault(c => c.Variant.VariantId == selectedVariant.VariantId);
 
             if (existingItem != null) existingItem.Quantity++;            
-            else CartItems.Add(new CartItem(selectedVariant, selectedVariant.ProductInfo));
+            //else CartItems.Add(new CartItem(selectedVariant));
             
             SearchText = string.Empty;
         }
@@ -161,15 +161,15 @@ namespace Shiakati.ViewModels
                 CartItems.Clear();
             foreach (var item in items)
             {
-                var variant = _allProducts.FirstOrDefault(p => p.VariantID == item.VariantID);
+                var variant = _allProducts.FirstOrDefault(p => p.VariantId == item.VariantID);
                 if (variant != null)
                 {
-                    var cartItem = new CartItem(variant, variant.ProductInfo)
-                    {
-                        Quantity = item.Quantity                        
+                    //var cartItem = new CartItem(variant, variant.ProductInfo)
+                    //{
+                    //    Quantity = item.Quantity                        
                         
-                    };
-                    CartItems.Add(cartItem);
+                    //};
+                    //CartItems.Add(cartItem);
                 }
             
             }
@@ -299,21 +299,6 @@ namespace Shiakati.ViewModels
                 MessageBox.Show($"Erreur lors de l'impression du ticket : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-        }
-        public void LoadFakeProducts()
-        {
-            // On simule ce que l'API/Dapper va nous renvoyer (La jointure)
-            var parentProd1 = new ProductModel { ProductID = 1, ProductName = "ثوب أعمال برايم – أبيض – أكمام سادة, قلاب" };
-            var parentProd2 = new ProductModel { ProductID = 2, ProductName = "Parfum Oud Royal" };
-
-            _allProducts = new List<ProductVariantsModel>
-        {
-            new ProductVariantsModel { VariantID = 1, ProductID = 1, SKU = "123456", SalePrice = 4500, FullSize = "L", Color = "Blanc", ProductInfo = parentProd1 },
-            new ProductVariantsModel { VariantID = 2, ProductID = 1, SKU = "123457", SalePrice = 4500, FullSize = "XL", Color = "Blanc", ProductInfo = parentProd1 },
-            new ProductVariantsModel { VariantID = 3, ProductID = 2, SKU = "789101", SalePrice = 8000, DiscountFixed=600 , FullSize = "50ml", Color = "Standard", ProductInfo = parentProd2 }
-        };
-
-            FilteredProducts = new ObservableCollection<ProductVariantsModel>(_allProducts);
-        }
+        }        
     }
 }
