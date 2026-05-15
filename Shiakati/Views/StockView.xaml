@@ -157,6 +157,12 @@
                                 Width="Auto" 
                                 MinWidth="120"/>
 
+                            <DataGridTextColumn Header="Remise Fixe" 
+                                                Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}" 
+                                                Foreground="Orange" 
+                                                Width="Auto" 
+                                                MinWidth="120"/>
+
                             <DataGridTextColumn Header="P. Vente" 
                                 Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
                                 Foreground="Green" 

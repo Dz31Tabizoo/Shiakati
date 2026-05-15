@@ -508,7 +508,7 @@ namespace Shiakati.ViewModels
 
                     _allStockItems = items.ToList();
 
-                    FilteredStock.Clear();
+                FilteredStock.Clear();
                     FilteredStock.AddRange(_allStockItems);
 
                     Categories.Clear();
@@ -564,7 +564,15 @@ namespace Shiakati.ViewModels
                 dialog.Quantity = item.StockQuantity ?? 1;
                 if (dialog.ShowDialog() == true)
                 {
-                    // Appel service impression
+                    _printerService.PrintBarCode(new BarecodeLabelData
+                    {
+                        VariantName = item.ProductName,
+                        Barcode = item.Sku,
+                        BrandName = item.BrandName,
+                        Price = item.SalePrice.GetValueOrDefault(),
+                        ProductSize = item.FullSize
+
+                    });
                 }
             }
 
@@ -588,7 +596,6 @@ namespace Shiakati.ViewModels
                 IsNumericSizeVisible = value.CategoryName.Contains("Chaussures");
                 IsDimensionSizeVisible = !IsNumericSizeVisible;
             }
-
             partial void OnSearchTextChanged(string value) => ApplyFilters();
             partial void OnSelectedCategoryChanged(CategoryModel value) => ApplyFilters();
             partial void OnSelectedBrandChanged(BrandsModel value) => ApplyFilters();
