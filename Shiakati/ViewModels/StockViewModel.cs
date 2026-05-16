@@ -14,403 +14,7 @@ using Serilog;
 
 
 namespace Shiakati.ViewModels
-{
-    /*public partial class StockViewModel : ObservableObject
-    {
-        private readonly IBarCodePrintService _printerService;
-        private readonly ICatalogService _db;
-        private readonly IProductsService _productsService;
-        private readonly IProductVariantsService _productVariantsService;
-
-        public StockViewModel(IBarCodePrintService printerService, ICatalogService db,IProductVariantsService productVariantsService,IProductsService productsService)
-        {
-            _printerService = printerService;
-            _db = db;
-            _productsService = productsService;
-            _productVariantsService = productVariantsService;
-
-            Categories = new ObservableCollection<CategoryModel>();
-            Brands = new ObservableCollection<BrandsModel>();
-            Products = new ObservableCollection<ProductModel>();
-            FilteredStock = new RangeObservableCollection<ProductVariantModel>();
-        }
-
-        // ==========================================
-        // UI STATE
-        // ==========================================
-        [ObservableProperty] private bool _isReceptionVisible;
-        [ObservableProperty] private bool _isNumericSizeVisible = false;
-        [ObservableProperty] private bool _isDimensionSizeVisible = true;
-        [ObservableProperty] private bool _isLoading; // Pour afficher un Spinner si besoin
-
-        [RelayCommand]
-        private void ToggleReception() => IsReceptionVisible = !IsReceptionVisible;
-
-        // ==========================================
-        // FILTER PROPERTIES
-        // ==========================================
-        [ObservableProperty] private string _searchText;
-        [ObservableProperty] private CategoryModel _selectedCategory;
-        [ObservableProperty] private BrandsModel _selectedBrand;
-        [ObservableProperty] private string _filterColor;
-        [ObservableProperty] private string _filterFullSize;
-        [ObservableProperty] private ProductVariantModel _selectedStockItem;
-
-        private List<BrandsModel> _allBrands = new();
-        private List<ProductModel> _allProducts = new();
-        private List<ProductVariantModel> _allStockItems = new();
-
-        public ObservableCollection<string> FilterColors { get; } = new();
-        public ObservableCollection<string> FilterSizes { get; } = new();
-        public ObservableCollection<string> WidthsList { get; } = new() { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4", "5" };
-        public RangeObservableCollection<ProductVariantModel> FilteredStock { get; }
-        public ObservableCollection<CategoryModel> Categories { get; } = new();
-        public ObservableCollection<BrandsModel> Brands { get; } = new();
-        public ObservableCollection<ProductModel> Products { get; } = new();
-
-
-        // Triggers asynchrones (Générés par CommunityToolkit)
-        async partial void OnSearchTextChanged(string value) => await SafeApplyFiltersAsync();
-        async partial void OnSelectedCategoryChanged(CategoryModel value) => await SafeApplyFiltersAsync();
-        async partial void OnSelectedBrandChanged(BrandsModel value) => await SafeApplyFiltersAsync();
-        async partial void OnFilterColorChanged(string value) => await SafeApplyFiltersAsync();
-        async partial void OnFilterFullSizeChanged(string value) => await SafeApplyFiltersAsync();
-
-        private async Task SafeApplyFiltersAsync()
-        {
-            try 
-            {
-                // On travaille sur la liste complète en mémoire
-                var query = _allStockItems.AsEnumerable();
-
-                // 1. Recherche Textuelle
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    string search = SearchText.ToLower();
-                    query = query.Where(x => x.Sku.ToLower().Contains(search) ||
-                                             x.ProductName.ToLower().Contains(search));
-                }
-
-                // 2. Filtre Catégorie
-                if (SelectedCategory != null)
-                    query = query.Where(x => x.CategoryName == SelectedCategory.CategoryName);
-
-                // 3. Filtre Marque
-                if (SelectedBrand != null)
-                    query = query.Where(x => x.BrandName== SelectedBrand.BrandName);
-
-                // 4. Filtre Couleur
-                if (!string.IsNullOrWhiteSpace(FilterColor))
-                    query = query.Where(x => x.Color == FilterColor);
-
-                // 5. Filtre Taille
-                if (!string.IsNullOrWhiteSpace(FilterFullSize))
-                    query = query.Where(x => x.FullSize == FilterFullSize);
-
-                // Mise à jour de l'UI en un seul coup (Bulk)
-                FilteredStock.Clear();
-                FilteredStock.AddRange(query.ToList());
-
-                await Task.CompletedTask;
-            }
-            catch (Exception ex) { Log.Error(ex, "Erreur filtres"); }
-        }
-
-        [RelayCommand]
-        private async Task ClearFiltersAsync()
-        {
-            _searchText = string.Empty; // Utiliser le champ privé pour éviter de déclencher 5 appels API
-            _selectedCategory = null;
-            _selectedBrand = null;
-            _filterColor = null;
-            _filterFullSize = null;
-
-            // On notifie les changements manuellement
-            OnPropertyChanged(nameof(SearchText));
-            OnPropertyChanged(nameof(SelectedCategory));
-            OnPropertyChanged(nameof(SelectedBrand));
-            OnPropertyChanged(nameof(FilterColor));
-            OnPropertyChanged(nameof(FilterFullSize));
-
-            await SafeApplyFiltersAsync();
-        }
-
-       
-
-        public async Task LoadInitialDataAsync()
-        {
-            if (IsLoading) return;
-
-            try
-            {
-                IsLoading = true;
-                var catalog = await _db.GetInitialGatalogDataAsync();
-                var products = await _productsService.GetProductsAsync();
-                var items = await _productVariantsService.GetProductVariantsAsync();
-                _allStockItems = items.ToList();
-
-                FilteredStock.Clear();
-                FilteredStock.AddRange(_allStockItems);
-
-                UpdateFilterOptions();
-
-                Categories.Clear();
-                foreach (var cat in catalog.Categories) Categories.Add(cat);
-
-                _allBrands = catalog.Brands.ToList();
-                _allProducts=products.ToList();
-
-                RefreshFilterdBrands();
-                RefreshFilterdProducts();
-
-
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Erreur lors du chargement initial du catalogue");
-                MessageBox.Show("Impossible de charger les données du catalogue. Vérifiez votre connexion au serveur.");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        // ==========================================
-        // RECEPTION FORM
-        // ==========================================
-        [ObservableProperty] private CategoryModel _draftCategory;
-        [ObservableProperty] private BrandsModel _draftBrand = new BrandsModel();
-        [ObservableProperty] private string _draftProductName;
-        [ObservableProperty] private string _draftSKU;
-        [ObservableProperty] private string _draftColor;
-        [ObservableProperty] private string _draftNumericSize;
-        [ObservableProperty] private string _draftWidth;
-        [ObservableProperty] private int? _draftLength;
-        [ObservableProperty] private decimal? _draftPurchasePrice;
-        [ObservableProperty] private decimal? _draftSalePrice = null;
-        [ObservableProperty] private decimal? _draftFixedDiscount;
-        [ObservableProperty] private int? _draftQuantity = null;
-        [ObservableProperty] private bool _printLabelsOnSave = true;
-        [ObservableProperty] private int? _labelsToPrint = null;
-
-        partial void OnDraftQuantityChanged(int? value) => LabelsToPrint = value;
-        partial void OnDraftCategoryChanged(CategoryModel value)
-        {
-            if (value == null) return;
-
-            UpdateVisibilityLogic(value);
-
-            RefreshFilterdBrands();
-            DraftBrand = null;
-
-            //logic to get the right size textBox 
-
-            //if (value == null) return;
-            //string catName = value.CategoryName.ToLower();
-
-            //// Logique de visibilité simplifiée
-            //bool isSpecial = catName.Contains("cosmetic") || catName.Contains("shoe") ||
-            //                 catName.Contains("chaussure") || catName.Contains("chaise");
-
-            //IsNumericSizeVisible = isSpecial;
-            //IsDimensionSizeVisible = !isSpecial;
-
-            //if (isSpecial) { DraftWidth = null; DraftLength = null; }
-            //else { DraftNumericSize = null; }
-        }
-        partial void OnDraftBrandChanged(BrandsModel value)
-        {
-            RefreshFilterdProducts();
-            DraftProductName = null;
-        }
-
-        [RelayCommand]
-        private async Task ReceiveStockAsync()
-        {
-            if (string.IsNullOrWhiteSpace(DraftProductName) || (DraftSalePrice ?? 0) <= 0)
-            {
-                MessageBox.Show("Veuillez remplir le nom du produit et le prix de vente.");
-                return;
-            }
-
-            try
-            {
-                // Simulation API
-                await Task.Delay(500);
-                bool success = true;
-
-                if (success)
-                {
-                    if (PrintLabelsOnSave && LabelsToPrint > 0)
-                    {
-                        PrintLabels();
-                    }
-
-                    MessageBox.Show("Réception enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                    ResetDraftForm();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur lors de la réception : {ex.Message}");
-            }
-        }
-
-        private void UpdateVisibilityLogic(CategoryModel value)
-        {
-            string catName = value.CategoryName;
-
-            bool isSpecial = catName.Contains("cosmetic") || catName.Contains("shoe") ||
-                     catName.Contains("chaussure") || catName.Contains("chaise");
-
-            IsNumericSizeVisible = isSpecial;
-            IsDimensionSizeVisible = !isSpecial;
-
-            if (isSpecial)
-            {
-                DraftWidth = null;
-                DraftLength = null;
-            }
-            else
-            {
-                DraftNumericSize = null;
-            }
-        }
-
-        private void PrintLabels()
-        {
-            string printerName = Properties.Settings.Default.BarcodePrinterName;
-            if (string.IsNullOrWhiteSpace(printerName)) return;
-
-            var label = new BarecodeLabelData
-            {
-                BrandName = ToAscii(DraftBrand?.BrandName ?? "N/A"),
-                VariantName = ToAscii($"{DraftProductName} {DraftColor}").Trim(),
-                Barcode = DraftSKU ?? "1234567890123",
-                ProductSize = IsNumericSizeVisible ? DraftNumericSize : $"{DraftWidth} / {DraftLength}",
-                Price = DraftSalePrice ?? 0
-            };
-
-            _printerService.PrintBarCode(label, printerName, LabelsToPrint ?? 1);
-        }
-
-        private static string ToAscii(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return input;
-            return input.Replace('é', 'e').Replace('è', 'e').Replace('ê', 'e')
-                        .Replace('à', 'a').Replace('â', 'a').Replace('ô', 'o')
-                        .Replace('ù', 'u').Replace('û', 'u').Replace('î', 'i')
-                        .Replace('ç', 'c');
-        }
-
-        private void ResetDraftForm()
-        {
-            DraftProductName = string.Empty;
-            DraftQuantity = 1;
-            DraftSKU = string.Empty;
-            DraftPurchasePrice = null;
-            DraftSalePrice = null;
-        }
-
-        private void RefreshFilterdBrands()
-        {
-            Brands.Clear();
-
-            var filterd = (DraftCategory == null)
-                ? _allBrands 
-                : _allBrands.Where(b => b.CategoryID == DraftCategory.CategoryID );
-            foreach (var b in filterd)
-            {
-                Brands.Add(b);
-            }
-        }
-
-        private void RefreshFilterdProducts()
-        {
-            Products.Clear();
-            var query = _allProducts.AsEnumerable();
-            if (DraftCategory != null) query = query.Where(p => p.CategoryName == DraftCategory.CategoryName);
-
-            if (DraftBrand != null && !string.IsNullOrEmpty(DraftBrand.BrandName))
-                query = query.Where(p => p.BrandName == DraftBrand.BrandName);
-
-            foreach (var p in query)
-            {
-                Products.Add(p);
-            }
-        }
-
-        private void UpdateFilterOptions()
-        {
-            var colors = _allStockItems
-                .Select(x => x.Color)
-                .Where(c => !string.IsNullOrWhiteSpace(c))
-                .Distinct()
-                .OrderBy(s => s);
-
-            FilterColors.Clear();
-            foreach(var item in colors) FilterColors.Add(item);
-
-            var sizes = _allStockItems
-            .Select(x => x.FullSize)
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .Distinct()
-            .OrderBy(s => s);
-
-            FilterSizes.Clear();
-            foreach (var s in sizes) FilterSizes.Add(s);
-
-        }
-
-
-        [RelayCommand]
-        private async Task PrintFromGridAsync(ProductVariantModel item)
-        {
-            if (item == null) return;
-
-            // 1. Demander la quantité à l'utilisateur
-            // Note : Tu peux créer une petite Window de dialogue ou utiliser un InputDialog
-            string input = Microsoft.VisualBasic.Interaction.InputBox(
-                $"Combien d'étiquettes pour {item.ProductName} ?\n(Stock actuel : {item.StockQuantity})",
-                "Impression Code-barres",
-                item.StockQuantity.ToString());
-
-            if (int.TryParse(input, out int quantity) && quantity > 0)
-            {
-                // 2. Vérifier que la quantité ne dépasse pas le stock (optionnel selon ton besoin)
-                if (quantity > item.StockQuantity)
-                {
-                    MessageBox.Show("Attention : La quantité demandée dépasse le stock disponible.");
-                }
-
-                // 3. Préparer les données pour le service d'impression
-                var label = new BarecodeLabelData
-                {
-                    BrandName = ToAscii(item.BrandName ?? "N/A"),
-                    VariantName = ToAscii($"{item.ProductName} {item.Color}").Trim(),
-                    Barcode = item.Sku ?? "000000000000",
-                    ProductSize = item.FullSize,
-                    Price = item.SalePrice ?? 0,
-                };
-
-                // 4. Lancer l'impression
-                string printerName = Properties.Settings.Default.BarcodePrinterName;
-                if (!string.IsNullOrEmpty(printerName))
-                {
-                    _printerService.PrintBarCode(label, printerName, quantity);
-                }
-                else
-                {
-                    MessageBox.Show("Veuillez configurer l'imprimante dans les paramètres.");
-                }
-            }
-        }
-    }*/
-
-
-
-
+{   
     public partial class StockViewModel : ObservableObject
     {
         // ===========================================================
@@ -503,7 +107,10 @@ namespace Shiakati.ViewModels
             try
             {
                 IsLoading = true;
-                var catalog = await _cacheService.GetOrLoadAsync(CacheKeys.Catalog,()=> _catalogDb.GetInitialGatalogDataAsync());
+                var catalog = await _cacheService.GetOrLoadAsync<(List<BrandsModel> Brands, List<CategoryModel> Categories)>(
+                                    CacheKeys.Catalog,
+                                    () => _catalogDb.GetInitialGatalogDataAsync());
+
                 var prods = await _cacheService.GetOrLoadAsync(CacheKeys.Products, _productsService.GetProductsAsync);
                 var items = await _cacheService.GetOrLoadAsync(CacheKeys.StockVariants, _stockService.GetProductVariantsAsync);
 
@@ -514,12 +121,15 @@ namespace Shiakati.ViewModels
                                         .Distinct()
                                         .OrderBy(c => c)
                                         .ToList();
+                var distinctSizes = _allStockItems.Select(i => i.FullSize)
+                                                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                                                    .Distinct()
+                                                    .OrderBy(s => s)
+                                                    .ToList();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    AllColors.Clear();
-                    foreach(var c in distinctColors) AllColors.Add(c);
-
+                   
                     FilteredStock.Clear();
                     FilteredStock.AddRange(_allStockItems);
 
@@ -532,7 +142,7 @@ namespace Shiakati.ViewModels
                     Products.Clear();
                     foreach (var p in prods) Products.Add(p);
 
-                    UpdateFilterOptions();
+                    UpdateFilterOptions(distinctColors,distinctSizes);
                 });
             }
             catch
@@ -640,13 +250,18 @@ namespace Shiakati.ViewModels
             FilteredStock.AddRange(filtered);
         }
 
-        private void UpdateFilterOptions()
+        private void UpdateFilterOptions(List<string> distinctColors,List<string> distinctSizes)
         {
-            FilterColors.Clear();
-            foreach (var col in _allStockItems.Select(i => i.Color).Distinct()) FilterColors.Add(col);
+            AllColors.Clear();
+            foreach (var c in distinctColors) AllColors.Add(c);
 
+            
+            FilterColors.Clear();
+            foreach (var c in distinctColors) FilterColors.Add(c);
+
+            
             FilterSizes.Clear();
-            foreach (var sz in _allStockItems.Select(i => i.FullSize).Distinct()) FilterSizes.Add(sz);
+            foreach (var s in distinctSizes) FilterSizes.Add(s);
         }
 
         [RelayCommand]   private void StockAddingFiledsClear()
