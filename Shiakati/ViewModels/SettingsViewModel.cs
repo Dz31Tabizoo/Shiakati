@@ -20,7 +20,7 @@ namespace Shiakati.ViewModels
         private string _newCategoryName = string.Empty;
 
         public ObservableCollection<CategoryModel> GlobalCategories
-            => _cache.Get<ObservableCollection<CategoryModel>>(CacheKeys.CategoriesList);
+            => _cache.Get<ObservableCollection<CategoryModel>>(CacheKeys.Catalog);
 
         public ObservableCollection<string> InstalledPrinters { get; } = new ();
 

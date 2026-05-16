@@ -8,7 +8,8 @@ namespace Shiakati
 {
     public static class CacheKeys
     {
-        public const string CategoriesList = "CATEGORIES_LIST";
-        public const string GlobalSettings = "GLOBAL_SETTINGS";
+        public const string Catalog = "CatalogData";
+        public const string Products = "ProductsList";
+        public const string StockVariants = "StockVariantsList";
     }
 }

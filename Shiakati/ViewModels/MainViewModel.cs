@@ -12,6 +12,7 @@ namespace Shiakati.ViewModels
     public partial class MainViewModel : ObservableObject
     {
         private readonly IAuthenticationClientService _authService;
+        private readonly ICacheService _cacheService;
         [ObservableProperty]
         private object _currentView;
 
@@ -20,10 +21,14 @@ namespace Shiakati.ViewModels
         public SalesHistoryViewModel SalesHistory { get; }
         public PosContainerViewModel PosContainer { get; }
         public StockViewModel Stock { get; }
-
         public SettingsViewModel Settings { get; }
 
-        public MainViewModel(ICacheService cacheService ,IAuthenticationClientService authService, PosContainerViewModel posContainer, StockViewModel stockViewModel, SalesHistoryViewModel salesHistory,SettingsViewModel settingsViewModel )
+        public MainViewModel(ICacheService cacheService ,
+                            IAuthenticationClientService authService,
+                            PosContainerViewModel posContainer, 
+                            StockViewModel stockViewModel, 
+                            SalesHistoryViewModel salesHistory,
+                            SettingsViewModel settingsViewModel )
         {
             _authService = authService;
             PosContainer = posContainer;
@@ -33,31 +38,15 @@ namespace Shiakati.ViewModels
             // Vue par défaut au démarrage
             CurrentView = PosContainer;
 
-            // later on if empty we get data from DB andon the login and not here
-
-            if (!cacheService.Contains(CacheKeys.CategoriesList))
-            {
-                var initialCategories = new ObservableCollection<CategoryModel>
-                {
-                    new CategoryModel{CategoryID = 1,CategoryName="Thob" },
-                    new CategoryModel{CategoryID = 2,CategoryName="Pantalon" },
-                    new CategoryModel{CategoryID = 1,CategoryName="Chaussure" },
-                    new CategoryModel{CategoryID = 1,CategoryName="Cosmetic" },
-                    new CategoryModel{CategoryID = 1,CategoryName="Accessoire" }
-                };
-                cacheService.Set(CacheKeys.CategoriesList, initialCategories);
-            }
+          
+           
         }
         // ✅ On assigne le ViewModel, pas la View !
         [RelayCommand]
         private async Task NavigateToStock()
         {
             CurrentView = Stock;
-
-            if (Stock.Categories.Count()==0 ||Stock.Brands.Count == 0)
-            {
-                await Stock.LoadInitialDataAsync();
-            }
+            await Stock.LoadInitialDataAsync();
         }
 
         [RelayCommand]

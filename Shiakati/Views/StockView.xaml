@@ -72,7 +72,7 @@
               SelectedItem="{Binding SelectedBrand}"
               materialDesign:HintAssist.Hint="Marque"/>
 
-                    <ComboBox ItemsSource="{Binding FilterColors}" 
+                    <ComboBox ItemsSource="{Binding AllColors}" 
               SelectedItem="{Binding FilterColor}"
               materialDesign:HintAssist.Hint="Couleur"/>
 
@@ -177,6 +177,16 @@
         <materialDesign:Card Grid.Column="1" Width="380" UniformCornerRadius="8" Padding="15"
                      Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
                      materialDesign:ElevationAssist.Elevation="Dp3">
+            <materialDesign:Card.Style>
+        <Style TargetType="materialDesign:Card" BasedOn="{StaticResource {x:Type materialDesign:Card}}">
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                    <Setter Property="Background" Value="#FFFDE7"/> </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </materialDesign:Card.Style>
+            
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -311,14 +321,38 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <Button Grid.Row="2" Content="ENREGISTRER &amp; IMPRIMER" Height="50" FontSize="16" FontWeight="Bold"
-                Command="{Binding ReceiveStockCommand}" Margin="0,15,0,0"
-                Style="{StaticResource MaterialDesignRaisedButton}">
-                    <Button.Effect>
-                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.2"/>
-                    </Button.Effect>
-                </Button>
+                <Grid Grid.Row="2" Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                    </Grid.ColumnDefinitions>
 
+                    <Button Grid.Column="0" Content="EFFACER" Height="50" FontSize="15" FontWeight="SemiBold"
+                    Command="{Binding StockAddingFiledsClearCommand}" Margin="0,0,10,0"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+                    <Button Grid.Column="1" Height="50" FontSize="12" FontWeight="SemiBold"
+                            
+                    Command="{Binding ReceiveStockCommand}">
+                        <Button.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.2"/>
+                        </Button.Effect>
+
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Setter Property="Content" Value="ENREGISTRER &amp; IMPRIMER"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                                        <Setter Property="Content" Value="MODIFIER L'ARTICLE"/>
+                                        <Setter Property="Background" Value="#F57C00"/>
+                                        <Setter Property="BorderBrush" Value="#F57C00"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
             </Grid>
         </materialDesign:Card>
     </Grid>
