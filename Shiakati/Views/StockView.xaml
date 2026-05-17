@@ -215,7 +215,7 @@
 
                         <ComboBox ItemsSource="{Binding Brands}" 
                                   FontSize="13"
-                                  Text="{Binding DraftBrand.BrandName, UpdateSourceTrigger=PropertyChanged}"
+                                  Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedItem="{Binding DraftBrand}"
                                   DisplayMemberPath="BrandName"
                                   materialDesign:HintAssist.Hint="Marque" 
@@ -229,7 +229,7 @@
                                   Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}" 
                                   ItemsSource="{Binding Products}"  
                                   DisplayMemberPath="ProductName"
-                                  SelectedItem="{Binding DraftProductName}"
+                                  SelectedItem="{Binding DraftSelectedProduct}"
                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
                                   Margin="0,0,0,22"/>
 

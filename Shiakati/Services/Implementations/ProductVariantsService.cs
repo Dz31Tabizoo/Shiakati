@@ -38,5 +38,21 @@ namespace Shiakati.Services.Implementations
                 return new();
             }
         }
+
+        
+        public async Task<bool> AddProductVariantAsync(AddVariantRequest request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/Stock/Add", request);
+                return response.IsSuccessStatusCode;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"{ex}");
+                return false;
+            }
+        }
+        
     }
 }
