@@ -43,10 +43,10 @@ public class BarcodePrintService : IBarCodePrintService
         container.Children.Add(new TextBlock
         {
             Text = $"{data.BrandName} {data.VariantName}".ToUpper(),
-            FontSize = 7.5,
+            FontSize = 10,
             FontWeight = FontWeights.Regular,
             TextAlignment = TextAlignment.Center,
-            Margin = new Thickness(0, 2, 0, 0),
+            Margin = new Thickness(0, 2, 0, 2),
             TextWrapping = TextWrapping.NoWrap
         });
 
@@ -70,10 +70,10 @@ public class BarcodePrintService : IBarCodePrintService
         container.Children.Add(new TextBlock
         {
             Text = $"{data.ProductSize} - {data.Price:N2} DA",
-            FontSize = 7.5,
+            FontSize = 10,
             FontWeight = FontWeights.DemiBold,
             TextAlignment = TextAlignment.Center,
-            Margin = new Thickness(0, 2, 0, 0)
+            Margin = new Thickness(0, 3, 0, 0)
         });
 
         // Force layout at label size

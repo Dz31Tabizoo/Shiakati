@@ -46,7 +46,7 @@ namespace Shiakati.ViewModels
         private async Task NavigateToStock()
         {
             CurrentView = Stock;
-            await Stock.LoadInitialDataAsync();
+            await Stock.LoadInitialDataAsync(true);
         }
 
         [RelayCommand]

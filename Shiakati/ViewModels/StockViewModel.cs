@@ -103,10 +103,11 @@ namespace Shiakati.ViewModels
         // ===========================================================
         // VI. COMMANDS
         // ===========================================================
-
-        public async Task LoadInitialDataAsync()
+         
+        public async Task LoadInitialDataAsync(bool forceRefresh = false)
         {
-            if (IsLoading || _allStockItems.Any()) return;
+            if (IsLoading || (!forceRefresh && _allStockItems.Any())) 
+                return;
             try
             {
                 IsLoading = true;
@@ -225,15 +226,10 @@ namespace Shiakati.ViewModels
             var request = new AddVariantRequest
             {
                 CategoryId = DraftCategory.CategoryID,
-
-                // Si l'utilisateur a choisi une marque existante : on prend son ID
                 BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
-
-                // Si aucune marque sélectionnée mais du texte saisi : c'est une nouvelle marque
                 BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
-
                 ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
-                Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU, // Null pour laisser l'API l'auto-générer
+                Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU,
                 Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
                 PurchasePrice = DraftPurchasePrice,
                 SalePrice = DraftSalePrice,
@@ -241,7 +237,7 @@ namespace Shiakati.ViewModels
                 StockQuantity = DraftQuantity.GetValueOrDefault()
             };
 
-            // Gestion dynamique des tailles selon le mode d'affichage
+            // Gestion dynamique des tailles
             if (IsNumericSizeVisible)
             {
                 request.Length = hasNumericSize ? numericSize : null;
@@ -255,17 +251,16 @@ namespace Shiakati.ViewModels
 
             try
             {
-                IsLoading = true;
+                IsLoading = true; // On affiche le spinner pendant l'écriture en DB
 
                 // 🔥 APPEL DE TON SERVICE HTTP
                 bool isSuccess = await _stockService.AddProductVariantAsync(request);
 
                 if (isSuccess)
                 {
-                    // 💡 Invalidation stratégique du Cache
+                    // Invalidation du Cache
                     _cacheService.Remove(CacheKeys.StockVariants);
 
-                    // Si l'utilisateur a créé une nouvelle marque, on invalide aussi le catalogue
                     if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
                     {
                         _cacheService.Remove(CacheKeys.Catalog);
@@ -273,8 +268,15 @@ namespace Shiakati.ViewModels
 
                     _allStockItems.Clear();
 
-                    // Rechargement immédiat des nouvelles données depuis l'API
-                    await LoadInitialDataAsync();
+                    // On attend que la DB locale applique les modifications
+                    await Task.Delay(400);
+
+                    // 💡 LA CORRECTION EST ICI : 
+                    // On libère le flag IsLoading de la sauvegarde pour que LoadInitialDataAsync puisse s'exécuter !
+                    IsLoading = false;
+
+                    // Rechargement immédiat (qui va remettre IsLoading à true le temps du téléchargement)
+                    await LoadInitialDataAsync(forceRefresh: true);
 
                     MessageBox.Show(IsEditMode ? "Stock modifié avec succès !" : "Stock enregistré avec succès !",
                                     "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -285,19 +287,18 @@ namespace Shiakati.ViewModels
                 }
                 else
                 {
+                    IsLoading = false; // Ne pas oublier de le couper ici aussi en cas d'échec serveur
                     MessageBox.Show("Le serveur a refusé l'enregistrement de l'article. Vérifiez les données.",
                                     "Erreur Serveur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
+                IsLoading = false; // Ne pas oublier de le couper ici aussi en cas de crash réseau
                 MessageBox.Show($"Une erreur est survenue lors de l'envoi : {ex.Message}",
                                 "Erreur réseau", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                IsLoading = false;
-            }
+            // On enlève le "IsLoading = false" du finally global pour éviter les conflits d'état avec le rechargement
         }
 
         // ===========================================================
@@ -317,6 +318,8 @@ namespace Shiakati.ViewModels
         partial void OnFilterColorChanged(string value) => ApplyFilters();
         partial void OnFilterFullSizeChanged(string value) => ApplyFilters();
 
+        // ===========================================================
+
         private void ApplyFilters()
         {
             if (_allStockItems == null) return;
@@ -332,7 +335,6 @@ namespace Shiakati.ViewModels
             FilteredStock.Clear();
             FilteredStock.AddRange(filtered);
         }
-
         private void UpdateFilterOptions(List<string> distinctColors,List<string> distinctSizes)
         {
             AllColors.Clear();
@@ -346,7 +348,7 @@ namespace Shiakati.ViewModels
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
         }
-
+                
         [RelayCommand]   private void StockAddingFiledsClear()
         {
             ClearDraft();
@@ -372,8 +374,7 @@ namespace Shiakati.ViewModels
             DraftSelectedProduct = null;
         }
 
-        //get sizes and save new and save edit and  PosView Product + ...
-        //CartItem fix and useit
+        
     }
 
 }
