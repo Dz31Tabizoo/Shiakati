@@ -1,136 +1,136 @@
 ﻿using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ZXing;
 using ZXing.Common;
-
-
-using System.Printing;
+using ZXing.Windows.Compatibility;
 
 public class BarcodePrintService : IBarCodePrintService
 {
-    
+    // Label dimensions
+    private const double LabelWidthMm = 40.0;
+    private const double LabelHeightMm = 20.0;
+
+    // Printer hardware resolution (Xprinter XP-237B: 8 dpmm = 203 DPI)
+    private const double PrinterDpi = 203.0;
 
     public void PrintBarCode(BarecodeLabelData data, string printerName = "", int copies = 1)
     {
         if (copies <= 0) return;
 
-        // 1. Définir les dimensions exactes en unités WPF (96 DPI)
-        // 40mm = ~151 units, 20mm = ~75 units
-        double width = (40.0 / 25.4) * 96.0;
-        double height = (20.0 / 25.4) * 96.0;
+        // --- Layout at 96 DPI (WPF logical pixels), matching label size exactly ---
+        double layoutWidth = LabelWidthMm / 25.4 * 96.0;   // 151 px
+        double layoutHeight = LabelHeightMm / 25.4 * 96.0; // 76 px
 
-        // 2. Créer un conteneur (StackPanel) pour organiser le texte et le code-barres
         var container = new StackPanel
         {
-            Width = width,
-            Height = height,
+            Width = layoutWidth,
+            Height = layoutHeight,
             Background = Brushes.White,
             Orientation = Orientation.Vertical,
             VerticalAlignment = VerticalAlignment.Top,
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        // On force le rendu net
-        RenderOptions.SetEdgeMode(container, EdgeMode.Unspecified);
         TextOptions.SetTextFormattingMode(container, TextFormattingMode.Display);
         TextOptions.SetTextRenderingMode(container, TextRenderingMode.Aliased);
 
-        // --- Ligne 1 : Marque et Nom (Petit pour que ça rentre) ---
+        // --- Line 1: Brand + Name ---
         container.Children.Add(new TextBlock
         {
             Text = $"{data.BrandName} {data.VariantName}".ToUpper(),
-            FontSize = 9, // Taille réduite
+            FontSize = 7.5,
             FontWeight = FontWeights.Regular,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0),
-            TextWrapping = TextWrapping.NoWrap,
-            MaxWidth = width - 10
+            TextWrapping = TextWrapping.NoWrap
         });
 
-        // --- Ligne 2 : Code-barres ---
-        // On génère le code-barres (réutilise votre méthode GenerateBarcode96Dpi)
+        // --- Line 2: Barcode (generated at 203 DPI, downscaled slightly to fit) ---
+        int barcodePixelWidth = (int)(LabelWidthMm / 25.4 * PrinterDpi); // 319 px at 203 DPI
+        int barcodePixelHeight = 70; // plenty of height for a clean scan
+
         var barcodeImg = new Image
         {
-            Source = GenerateBarcode96Dpi(data.Barcode, (int)width - 20, 30),
-            Height = 35,
-            Margin = new Thickness(0, 2, 0, 0),
-            Stretch = Stretch.Fill
+            Source = GenerateBarcode(data.Barcode, barcodePixelWidth, barcodePixelHeight),
+            Width = layoutWidth - 6,            // almost full label width (145 px)
+            Height = 32,                        // ~8.5 mm on the label
+            Margin = new Thickness(0, 1, 0, 0),
+            Stretch = Stretch.Fill              // uniform downscale from 319×70 → 145×32
         };
-        RenderOptions.SetBitmapScalingMode(barcodeImg, BitmapScalingMode.NearestNeighbor);
+        RenderOptions.SetBitmapScalingMode(barcodeImg, BitmapScalingMode.HighQuality);
 
         container.Children.Add(barcodeImg);
 
-        // --- Ligne 3 : Taille et Prix ---
+        // --- Line 3: Size + Price ---
         container.Children.Add(new TextBlock
         {
             Text = $"{data.ProductSize} - {data.Price:N2} DA",
-            FontSize = 10,
+            FontSize = 7.5,
             FontWeight = FontWeights.DemiBold,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 0)
         });
 
-        // 3. ÉTAPE CRUCIALE : Forcer le layout de WPF avant l'impression
-        container.Measure(new Size(width, height));
-        container.Arrange(new Rect(0, 0, width, height));
+        // Force layout at label size
+        container.Measure(new Size(layoutWidth, layoutHeight));
+        container.Arrange(new Rect(0, 0, layoutWidth, layoutHeight));
         container.UpdateLayout();
 
-        // 4. Lancement de l'impression
-        PrintDialog pd = new PrintDialog();
+        // --- Print ---
+        var pd = new PrintDialog();
         if (!string.IsNullOrEmpty(printerName))
-        {
             pd.PrintQueue = new LocalPrintServer().GetPrintQueue(printerName);
-        }
 
-        // Configurer le ticket d'impression
-        pd.PrintTicket.PageMediaSize = new PageMediaSize(40, 20);
+        // Page size: 40 mm × 20 mm in 1/100 mm units
+        pd.PrintTicket.PageMediaSize = new PageMediaSize(
+            PageMediaSizeName.Unknown,
+            (int)(LabelWidthMm * 10),   // 400
+            (int)(LabelHeightMm * 10)); // 200
         pd.PrintTicket.PageOrientation = PageOrientation.Portrait;
         pd.PrintTicket.CopyCount = copies;
 
-        // Imprimer le conteneur
-        pd.PrintVisual(container, "Label");
+        pd.PrintVisual(container, "Shiakati Label");
     }
-    private BitmapSource GenerateBarcode96Dpi(string content, int width, int height)
+
+    /// <summary>
+    /// Creates a barcode bitmap with quiet zone, at the given pixel size.
+    /// </summary>
+    private BitmapSource GenerateBarcode(string content, int width, int height)
     {
-        // On précise <System.Drawing.Bitmap> ici
-        var writer = new ZXing.BarcodeWriter<System.Drawing.Bitmap>
+        var writer = new BarcodeWriter<System.Drawing.Bitmap>
         {
-            Format = ZXing.BarcodeFormat.CODE_128,
-            // On ajoute le Renderer pour dire à ZXing de produire une Bitmap
-            Renderer = new ZXing.Windows.Compatibility.BitmapRenderer(),
-            Options = new ZXing.Common.EncodingOptions
+            Format = BarcodeFormat.CODE_128,
+            Renderer = new BitmapRenderer(),
+            Options = new EncodingOptions
             {
                 Width = width,
                 Height = height,
-                Margin = 0,
-                PureBarcode = true // Pour ne pas avoir le texte sous le code (on le gère nous-mêmes)
+                Margin = 10,            // required quiet zone for fast scanning
+                PureBarcode = true
             }
         };
 
         using (var bitmap = writer.Write(content))
         {
-            // Conversion de System.Drawing.Bitmap vers WPF BitmapSource
             IntPtr hBitmap = bitmap.GetHbitmap();
             try
             {
                 return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
+                    hBitmap, IntPtr.Zero, Int32Rect.Empty,
                     BitmapSizeOptions.FromEmptyOptions());
             }
             finally
             {
-                // Très important pour éviter les fuites de mémoire (Memory Leaks)
                 DeleteObject(hBitmap);
             }
         }
     }
 
-    // Ajoutez cette importation native en haut de votre classe pour DeleteObject
     [System.Runtime.InteropServices.DllImport("gdi32.dll")]
     public static extern bool DeleteObject(IntPtr hObject);
 }

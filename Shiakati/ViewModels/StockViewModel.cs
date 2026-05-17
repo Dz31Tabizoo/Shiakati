@@ -189,6 +189,7 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private async Task PrintFromGridAsync(ProductVariantModel item)
         {
+            string printerToUse = Properties.Settings.Default.BarcodePrinterName;
             if (item == null) return;
             var dialog = new Shiakati.Views.PrintQuantityDialog { Owner = App.Current.MainWindow };
             dialog.Quantity = item.StockQuantity ?? 1;
@@ -202,7 +203,7 @@ namespace Shiakati.ViewModels
                     Price = item.SalePrice.GetValueOrDefault(),
                     ProductSize = item.FullSize
 
-                });
+                } , printerToUse,dialog.Quantity );
             }
         }
 
@@ -229,9 +230,9 @@ namespace Shiakati.ViewModels
                 BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
 
                 // Si aucune marque sélectionnée mais du texte saisi : c'est une nouvelle marque
-                BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftBrand?.BrandName : null,
+                BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
 
-                ProductName = DraftProductName.Trim(),
+                ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
                 Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU, // Null pour laisser l'API l'auto-générer
                 Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
                 PurchasePrice = DraftPurchasePrice,
