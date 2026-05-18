@@ -47,7 +47,8 @@ public class BarcodePrintService : IBarCodePrintService
             FontWeight = FontWeights.Regular,
             TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 2, 0, 2),
-            TextWrapping = TextWrapping.NoWrap
+            TextWrapping = TextWrapping.NoWrap,
+            FontFamily = new FontFamily("Arial") // common font for better printer compatibility
         });
 
         // --- Line 2: Barcode (generated at 203 DPI, downscaled slightly to fit) ---

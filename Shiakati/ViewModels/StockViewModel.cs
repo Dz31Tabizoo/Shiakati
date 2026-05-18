@@ -1,16 +1,16 @@
-﻿
-    using CommunityToolkit.Mvvm.ComponentModel;
-    using CommunityToolkit.Mvvm.Input;
-    using global::Shiakati.Models;
-    using Shiakati.Services.Interfaces;
-using Shiakati.Helpers;
-    using Shiakati.Services.Implementations;
-    using System;
-    using System.Collections.ObjectModel;
-using Shiakati.ViewModels;
-    using System.Threading.Tasks;
-    using System.Windows;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using global::Shiakati.Models;
 using Serilog;
+using Shiakati.Helpers;
+using Shiakati.Services.Implementations;
+using Shiakati.Services.Interfaces;
+using Shiakati.ViewModels;
+using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 
 namespace Shiakati.ViewModels
@@ -196,7 +196,7 @@ namespace Shiakati.ViewModels
             dialog.Quantity = item.StockQuantity ?? 1;
             if (dialog.ShowDialog() == true)
             {
-                _printerService.PrintBarCode(new BarecodeLabelData
+                 _printerService.PrintBarCode(new BarecodeLabelData
                 {
                     VariantName = item.ProductName,
                     Barcode = item.Sku,
@@ -253,7 +253,7 @@ namespace Shiakati.ViewModels
             {
                 IsLoading = true; // On affiche le spinner pendant l'écriture en DB
 
-                // 🔥 APPEL DE TON SERVICE HTTP
+                // 🔥 APPEL SERVICE HTTP
                 bool isSuccess = await _stockService.AddProductVariantAsync(request);
 
                 if (isSuccess)
@@ -271,7 +271,6 @@ namespace Shiakati.ViewModels
                     // On attend que la DB locale applique les modifications
                     await Task.Delay(400);
 
-                    // 💡 LA CORRECTION EST ICI : 
                     // On libère le flag IsLoading de la sauvegarde pour que LoadInitialDataAsync puisse s'exécuter !
                     IsLoading = false;
 
@@ -280,6 +279,9 @@ namespace Shiakati.ViewModels
 
                     MessageBox.Show(IsEditMode ? "Stock modifié avec succès !" : "Stock enregistré avec succès !",
                                     "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                                       
+
+                    await PrintBarCodeOnReciveStock(request.ProductName,LabelsToPrint);
 
                     IsReceptionVisible = false;
                     IsEditMode = false;
@@ -298,7 +300,20 @@ namespace Shiakati.ViewModels
                 MessageBox.Show($"Une erreur est survenue lors de l'envoi : {ex.Message}",
                                 "Erreur réseau", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            // On enlève le "IsLoading = false" du finally global pour éviter les conflits d'état avec le rechargement
+        }
+
+        private async Task PrintBarCodeOnReciveStock(string newProduct, int stockQuantity)
+        {
+            var newItem = _allStockItems.FirstOrDefault(x => x.ProductName == newProduct);
+            var label = new BarecodeLabelData { 
+                Barcode = newItem.Sku,
+                BrandName = newItem.BrandName,
+                VariantName = newItem.ProductName,
+                ProductSize = newItem.FullSize,
+                Price = newItem.SalePrice?? 0,
+            };
+
+            _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, stockQuantity);
         }
 
         // ===========================================================
