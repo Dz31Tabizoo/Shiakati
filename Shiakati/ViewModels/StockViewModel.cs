@@ -211,6 +211,7 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private async Task ReceiveStockAsync()
         {
+            if (!IsFormValid()) return;
             // Sécurité de base : validation des champs obligatoires
             if (DraftCategory == null || string.IsNullOrWhiteSpace(DraftProductName))
             {
@@ -320,18 +321,18 @@ namespace Shiakati.ViewModels
         // VII. HELPERS & TRIGGERS
         // ===========================================================
 
-        partial void OnDraftCategoryChanged(CategoryModel value)
-        {
-            if (value == null) return;
-            // Exemple : Si catégorie Chaussures -> Numérique, sinon Dimensions
-            IsNumericSizeVisible = value.CategoryName.Contains("Chaussures");
-            IsDimensionSizeVisible = !IsNumericSizeVisible;
-        }
+       
         partial void OnSearchTextChanged(string value) => ApplyFilters();
         partial void OnSelectedCategoryChanged(CategoryModel value) => ApplyFilters();
         partial void OnSelectedBrandChanged(BrandsModel value) => ApplyFilters();
         partial void OnFilterColorChanged(string value) => ApplyFilters();
         partial void OnFilterFullSizeChanged(string value) => ApplyFilters();
+        partial void OnDraftCategoryChanged(CategoryModel value)
+        {
+            if (value == null) return;
+            IsDimensionSizeVisible = value.CategoryName.Contains("Thob") || value.CategoryName.Contains("Pantalon") || value.CategoryName.Contains("Sous");
+            IsNumericSizeVisible= !IsDimensionSizeVisible;
+        }
 
         // ===========================================================
 
@@ -389,7 +390,92 @@ namespace Shiakati.ViewModels
             DraftSelectedProduct = null;
         }
 
-        
+        private bool IsFormValid()
+        {
+            // 1. Validation de la Catégorie (Selection obligatoire)
+            if (DraftCategory == null)
+            {
+                MessageBox.Show("Veuillez sélectionner une catégorie.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 2. Validation de la Marque (Soit sélectionnée, soit saisie textuelle)
+            bool hasSelectedBrand = DraftBrand != null && DraftBrand.BrandID > 0;
+            bool hasTypedBrand = !string.IsNullOrWhiteSpace(DraftNewBrandName);
+
+            if (!hasSelectedBrand && !hasTypedBrand)
+            {
+                MessageBox.Show("Veuillez sélectionner une marque existante ou saisir un nouveau nom de marque.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 3. Validation du Produit (Soit sélectionné, soit saisie textuelle)
+            bool hasSelectedProduct = DraftSelectedProduct != null;
+            bool hasTypedProduct = !string.IsNullOrWhiteSpace(DraftProductName);
+
+            if (!hasSelectedProduct && !hasTypedProduct)
+            {
+                MessageBox.Show("Veuillez sélectionner un produit existant ou saisir un nouveau nom de produit.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 4. Validation des Prix (Doivent être renseignés et supérieurs à 0)
+            if (DraftPurchasePrice == null || DraftPurchasePrice <= 0)
+            {
+                MessageBox.Show("Veuillez saisir un prix d'achat valide supérieur à 0 DA.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (DraftSalePrice == null || DraftSalePrice <= 0)
+            {
+                MessageBox.Show("Veuillez saisir un prix de vente valide supérieur à 0 DA.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (DraftSalePrice < DraftPurchasePrice)
+            {
+                var result = MessageBox.Show("Le prix de vente est inférieur au prix d'achat. Voulez-vous continuer ?",
+                                             "Attention", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No) return false;
+            }
+
+            // 5. Validation des Tailles Dynamiques (Optionnel mais sécurise ton XAML)
+            if (IsNumericSizeVisible && string.IsNullOrWhiteSpace(DraftNumericSize))
+            {
+                MessageBox.Show("Veuillez renseigner la taille numérique de l'article.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            else if (IsDimensionSizeVisible && ((string.IsNullOrWhiteSpace(DraftWidth) && string.IsNullOrWhiteSpace(DraftLength?.ToString()))))
+            {
+                MessageBox.Show("Veuillez renseigner la largeur et la longueur de l'article.",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 6. Validation de la Quantité reçue (Doit être supérieure à 0)
+            if (DraftQuantity == null || DraftQuantity <= 0)
+            {
+                MessageBox.Show("Veuillez saisir une quantité reçue valide (minimum 1 unité).",
+                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (LabelsToPrint > 50)
+            {
+                var result = MessageBox.Show("La quantité reçue est très élevée. Êtes-vous sûr de vouloir Imprimer autant d'unités ?",
+                                             "Attention", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No) return false;
+            }
+
+
+            // Tout est correct
+            return true;
+        }
     }
 
 }

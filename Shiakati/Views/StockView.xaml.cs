@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Text.RegularExpressions;
 
 namespace Shiakati.Views
 {
@@ -27,6 +28,38 @@ namespace Shiakati.Views
             InitializeComponent();
         }
 
-       
+        private void OnlyDigits_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Regex pour autoriser UNIQUEMENT les chiffres [0-9]
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void OnlyDigits_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // Bloque la touche Espace car PreviewTextInput ne la détecte pas
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Sécurité : Si l'utilisateur tente de copier-coller du texte (ex: "abc")
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                Regex regex = new Regex("[^0-9]+");
+                if (regex.IsMatch(text))
+                {
+                    e.CancelCommand(); // Annule le copier-coller
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
     }
 }

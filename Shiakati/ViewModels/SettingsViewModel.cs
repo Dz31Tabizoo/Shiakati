@@ -33,12 +33,11 @@ namespace Shiakati.ViewModels
             SelectedBarcodePrinterName = Settings.Default.BarcodePrinterName;
             _ = LoadCategoriesAsync();
         }
-
         private async Task LoadCategoriesAsync()
         {
             try
             {
-                // On utilise la même logique infaillible que le StockViewModel
+                _cache.Clear();
                 var catalog = await _cache.GetOrLoadAsync<(List<BrandsModel> Brands, List<CategoryModel> Categories)>(
               CacheKeys.Catalog,
               () => _catalogDb.GetInitialGatalogDataAsync());
@@ -58,22 +57,20 @@ namespace Shiakati.ViewModels
             }
                 
         }
-
-        [RelayCommand]
-        private void AddCategory()
+        [RelayCommand] private async Task AddCategory()
         {
             if (string.IsNullOrWhiteSpace(NewCategoryName)) return;
             
-                int newID = GlobalCategories.Count >0 ? GlobalCategories.Max(c => c.CategoryID) + 1 : 1;
-
-                GlobalCategories.Add(new CategoryModel
-                {
-                    CategoryID = newID,
-                    CategoryName = NewCategoryName.Trim()
-                });
-
-                NewCategoryName = string.Empty;
+            var newCategory = new CategoryModel
+            {
+                CategoryName = NewCategoryName.Trim()
+            };
             
+
+            await _catalogDb.AddCategoryModelAsync(newCategory);
+            
+            await LoadCategoriesAsync();
+            NewCategoryName = string.Empty;
         }
         private void LoadPrinters()
         {
@@ -83,8 +80,7 @@ namespace Shiakati.ViewModels
                 InstalledPrinters.Add(printer);
             }
         }
-        [RelayCommand]
-        private void SaveTicketPrinterSettings()
+        [RelayCommand] private void SaveTicketPrinterSettings()
         {
             // Save the selected printer name to application settings
              Properties.Settings.Default.TicketPrinterName = SelectedTicketPrinterName;
@@ -92,9 +88,7 @@ namespace Shiakati.ViewModels
 
             System.Windows.MessageBox.Show("Settings saved successfully!", "Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
-
-        [RelayCommand]
-        private void SaveBarcodePrinterSettings()
+        [RelayCommand] private void SaveBarcodePrinterSettings()
         {
             // Save the selected printer name to application settings
             Properties.Settings.Default.BarcodePrinterName = SelectedBarcodePrinterName;

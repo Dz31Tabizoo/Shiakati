@@ -24,27 +24,26 @@ namespace Shiakati.Services.Implementations
                 var response = await _http.GetAsync("api/brands/GetCatalog");
                 response.EnsureSuccessStatusCode();
 
-                var dtos = await response.Content.ReadFromJsonAsync<List<BrdCatgResponseDto>>();
+                var catalogContainer = await response.Content.ReadFromJsonAsync<BrdCatgResponseDto>();
 
-                if (dtos == null) return (new(), new());
+                if (catalogContainer == null) return (new(), new());
 
                 // 1. Mapping des Marques
-                var brands = dtos.Select(d => new BrandsModel
-                {
-                    BrandID = d.BrandId,
-                    BrandName = d.BrandName,
-                    CategoryID = d.CategoryId
-                }).ToList();
+                var brands = catalogContainer.Brands.Select(c => new BrandsModel
+                    {
+                        BrandID = c.BrandID,
+                        BrandName = c.BrandName,
+                        CategoryID = c.CategoryID,
+                        CategoryName = c.CategoryName
+                    }).ToList();
 
                 // 2. Extraction des Catégories uniques
-                var categories = dtos
-                    .Where(d => d.CategoryId.HasValue)
-                    .GroupBy(d => d.CategoryId)
-                    .Select(group => new CategoryModel
+                var categories = catalogContainer.Categories.Select(c => new CategoryModel
                     {
-                        CategoryID = group.Key!.Value,
-                        CategoryName = group.First().CategoryName ?? "Inconnu"
-                    }).ToList();
+                        CategoryID = c.CategoryID,
+                        CategoryName = c.CategoryName,
+                        IconPath = c.IconPath
+                }).ToList();
 
                 return (brands, categories);
             }catch(Exception ex)
@@ -54,6 +53,25 @@ namespace Shiakati.Services.Implementations
                 return (new(),new());
             }
 
+        }
+
+
+        public async Task<CategoryModel> AddCategoryModelAsync(CategoryModel category)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/categories", category);
+                response.EnsureSuccessStatusCode();
+
+                var createdCategory = await response.Content.ReadFromJsonAsync<CategoryModel>();
+                return createdCategory ?? new CategoryModel();
+            }
+            catch (Exception ex)
+            {
+                //add logs
+                MessageBox.Show($"{ex}");
+                return new CategoryModel();
+            }
         }
     }
 }

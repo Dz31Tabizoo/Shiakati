@@ -12,6 +12,9 @@ namespace Shiakati.Models
 
         [ObservableProperty]
         private int? _categoryID;
+
+        [ObservableProperty]
+        private string? _categoryName;
     }   
 
 }

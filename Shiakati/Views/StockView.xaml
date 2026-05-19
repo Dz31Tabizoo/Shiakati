@@ -286,16 +286,25 @@
                             </Grid.RowDefinitions>
 
                             <TextBox FontSize="13" Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat (DA)" 
-                             Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,10,15"/>
+                                     Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,10,15"
+                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
+                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
+                                     DataObject.Pasting="TextBox_Pasting"/>
 
                             <TextBox FontSize="13" Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente (DA)" 
-                             Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15"/>
+                                     Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15"
+                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
+                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
+                                     DataObject.Pasting="TextBox_Pasting"/>
 
                             <TextBox FontSize="13" Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe (DA)" 
-                             Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                     Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
+                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
+                                     DataObject.Pasting="TextBox_Pasting"/>
                         </Grid>
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>

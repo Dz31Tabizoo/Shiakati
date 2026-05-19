@@ -8,9 +8,7 @@ namespace Shiakati.Models
 {
     public class BrdCatgResponseDto
     {
-        public int BrandId { get; set; }
-        public string BrandName { get; set; } = string.Empty;
-        public int? CategoryId { get; set; }
-        public string? CategoryName { get; set; }
+        public List<BrandsModel> Brands { get; set; } = new();
+        public List<CategoryModel> Categories { get; set; } = new();
     }
 }
