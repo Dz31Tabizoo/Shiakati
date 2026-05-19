@@ -73,6 +73,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isNumericSizeVisible;
         [ObservableProperty] private bool _isDimensionSizeVisible = true;
         [ObservableProperty] private bool _printLabelsOnSave = true;
+        [ObservableProperty] private bool _isNonActiveItemsVisible = false;
 
         // ===========================================================
         // IV. FILTERS & SELECTION
@@ -139,7 +140,15 @@ namespace Shiakati.ViewModels
                 {
                    
                     FilteredStock.Clear();
-                    FilteredStock.AddRange(_allStockItems);
+                    if (IsNonActiveItemsVisible)
+                    {
+                        FilteredStock.AddRange(_allStockItems);
+                    }
+                    else
+                    {
+                        var activeItems = _allStockItems.Where(i => i.IsActive == true).ToList();
+                        FilteredStock.AddRange(activeItems);
+                    }
 
                     Categories.Clear();
                     foreach (var c in catalog.Categories) Categories.Add(c);
@@ -285,11 +294,9 @@ namespace Shiakati.ViewModels
 
                 if (success)
                 {
-                    _cacheService.Remove(CacheKeys.StockVariants);
-                    _cacheService.Remove(CacheKeys.Catalog); // might have changed brands/products
-                    await Task.Delay(300);
-                    await LoadInitialDataAsync(forceRefresh: true);
+                    await ForceReloadAllDataAsync();
                     MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await PrintBarCodeOnReciveStock(updateRequest.ProductName, LabelsToPrint);
                     IsReceptionVisible = false;
                     IsEditMode = false;
                     ClearDraft();
@@ -351,6 +358,54 @@ namespace Shiakati.ViewModels
             }
         }
 
+        
+        [RelayCommand]
+        private async Task DeleteStockItemAsync(ProductVariantModel item)
+        {
+            if (item == null) return;
+
+            var result = MessageBox.Show(
+                $"Êtes-vous sûr de vouloir supprimer définitivement l'article :\n\"{item.ProductName}\" (SKU: {item.Sku}) ?",
+                "Confirmation de suppression",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.No) return;
+
+            try
+            {
+                IsLoading = true;
+
+                var updateRequest = new UpdateVariantRequest
+                {
+                    VariantId = item.VariantId,
+                    IsActive = false
+                };
+
+                bool success = await _stockService.UpdateProductVariantAsync(updateRequest);
+
+                if (success)
+                {
+                    // On utilise la méthode centralisée qui s'occupe de vider le cache et recharger
+                    await ForceReloadAllDataAsync();
+
+                    MessageBox.Show("Article supprimé du stock avec succès !", "Suppression réussie", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de la suppression de l'article en base de données.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Une erreur critique est survenue: {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
         private async Task PrintBarCodeOnReciveStock(string newProduct, int stockQuantity)
         {
             var newItem = _allStockItems.FirstOrDefault(x => x.ProductName == newProduct);
@@ -363,6 +418,21 @@ namespace Shiakati.ViewModels
             };
 
             _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, stockQuantity);
+        }
+
+        private async Task ForceReloadAllDataAsync()
+        {
+            // 1. On vide le cache pour forcer l'application à demander des données fraîches
+            _cacheService.Remove(CacheKeys.StockVariants);
+            _cacheService.Remove(CacheKeys.Catalog);
+            _cacheService.Remove(CacheKeys.Products);
+
+            // 2. Un petit délai de sécurité (300ms) pour laisser le temps à l'API/Base de données
+            // de bien terminer l'écriture de la modification/suppression
+            await Task.Delay(300);
+
+            // 3. On appelle ta méthode existante de chargement en activant le rafraîchissement forcé
+            await LoadInitialDataAsync(forceRefresh: true);
         }
 
         // ===========================================================
@@ -400,6 +470,10 @@ namespace Shiakati.ViewModels
             FilteredBrands.Refresh();
 
         }
+        partial void OnIsNonActiveItemsVisibleChanged(bool value)
+        {
+            ApplyFilters();
+        }
 
         // ===========================================================
 
@@ -408,13 +482,20 @@ namespace Shiakati.ViewModels
             if (_allStockItems == null) return;
 
             var filtered = _allStockItems.Where(i =>
+                // 1. Filtre d'activité (Soft Delete)
+                (IsNonActiveItemsVisible || i.IsActive == true ) &&
+
+                // 2. Filtres textuels (Recherche par Nom ou SKU)
                 (string.IsNullOrEmpty(SearchText) || i.ProductName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) || i.Sku.Contains(SearchText)) &&
+
+                // 3. Filtres par ComboBox
                 (SelectedCategory == null || i.CategoryName == SelectedCategory.CategoryName) &&
                 (SelectedBrand == null || i.BrandName == SelectedBrand.BrandName) &&
                 (string.IsNullOrEmpty(FilterColor) || i.Color == FilterColor) &&
                 (string.IsNullOrEmpty(FilterFullSize) || i.FullSize == FilterFullSize)
             ).ToList();
 
+            // Mise à jour synchrone de la collection liée au DataGrid
             FilteredStock.Clear();
             FilteredStock.AddRange(filtered);
         }
@@ -431,7 +512,9 @@ namespace Shiakati.ViewModels
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
         }                
-        [RelayCommand]   private void StockAddingFiledsClear()
+        
+        [RelayCommand] 
+        private void StockAddingFiledsClear()
         {
             ClearDraft();
         }
