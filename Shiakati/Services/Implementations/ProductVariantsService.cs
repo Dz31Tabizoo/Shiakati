@@ -27,7 +27,7 @@ namespace Shiakati.Services.Implementations
             try
             {
                 var option = new JsonSerializerOptions {PropertyNameCaseInsensitive = true };
-                var response = await _httpClient.GetAsync("api/ProductVariants");
+                var response = await _httpClient.GetAsync("api/productVariants");
                 response.EnsureSuccessStatusCode();
 
                 return await response.Content.ReadFromJsonAsync<List<ProductVariantModel>>(option) ?? new();
@@ -44,7 +44,7 @@ namespace Shiakati.Services.Implementations
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("api/Stock/Add", request);
+                var response = await _httpClient.PostAsJsonAsync("api/stock/add", request);
                 return response.IsSuccessStatusCode;
             }
             catch(Exception ex)
@@ -53,6 +53,22 @@ namespace Shiakati.Services.Implementations
                 return false;
             }
         }
+
+        public async Task<bool> UpdateProductVariantAsync(UpdateVariantRequest request)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("api/stock/update", request);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex}");
+                return false;
+            }
+        }
+
         
+
     }
 }

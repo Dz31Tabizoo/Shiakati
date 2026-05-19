@@ -8,8 +8,10 @@ using Shiakati.Services.Interfaces;
 using Shiakati.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 
@@ -38,6 +40,7 @@ namespace Shiakati.ViewModels
             // Initialisation des collections
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
+            FilteredBrands = CollectionViewSource.GetDefaultView(Brands);
             Products = new ObservableCollection<ProductModel>();
             FilteredStock = new RangeObservableCollection<ProductVariantModel>();
             FilterColors = new ObservableCollection<string>();
@@ -51,6 +54,7 @@ namespace Shiakati.ViewModels
         // ===========================================================
         public ObservableCollection<CategoryModel> Categories { get; }
         public ObservableCollection<BrandsModel> Brands { get; }
+        public ICollectionView FilteredBrands { get; private set; }
         public ObservableCollection<ProductModel> Products { get; }
         public RangeObservableCollection<ProductVariantModel> FilteredStock { get; }
         public ObservableCollection<string> FilterColors { get; }
@@ -176,15 +180,43 @@ namespace Shiakati.ViewModels
             IsEditMode = true;
             IsReceptionVisible = true;
 
-            DraftSKU = item.Sku;
-            DraftProductName = item.ProductName;
-            DraftPurchasePrice = item.PurchasePrice;
-            DraftSalePrice = item.SalePrice;
-            DraftQuantity = item.StockQuantity;
-            DraftColor = item.Color;
+            // Hierarchy
+            
             DraftCategory = Categories.FirstOrDefault(c => c.CategoryName == item.CategoryName);
             DraftBrand = Brands.FirstOrDefault(b => b.BrandName == item.BrandName);
-            // Logique pour les tailles à ajouter selon ton modèle
+            DraftNewBrandName = string.Empty;
+
+            // Product
+            DraftProductName = item.ProductName;
+            DraftSelectedProduct = Products.FirstOrDefault(p => p.ProductName == item.ProductName && p.BrandName == item.BrandName);
+
+            // variant details
+            DraftSKU = item.Sku;
+            DraftPurchasePrice = item.PurchasePrice;
+            DraftSalePrice = item.SalePrice;
+            DraftFixedDiscount = item.DiscountFixed;
+            DraftQuantity = item.StockQuantity;
+            DraftColor = item.Color;
+
+            if (IsDimensionSizeVisible) // e.g., trousers, thobes
+            {
+                DraftWidth = item.Width;
+                DraftLength = item.Length?.ToString();
+                DraftNumericSize = string.Empty;
+            }
+            else if (IsNumericSizeVisible) // shoes, etc.
+            {
+                DraftNumericSize = item.Length?.ToString() ?? string.Empty;
+                DraftWidth = string.Empty;
+                DraftLength = string.Empty;
+            }
+            else
+            {
+                DraftNumericSize = string.Empty;
+                DraftWidth = string.Empty;
+                DraftLength = string.Empty;
+            }
+
         }
 
         [RelayCommand]
@@ -212,94 +244,110 @@ namespace Shiakati.ViewModels
         private async Task ReceiveStockAsync()
         {
             if (!IsFormValid()) return;
-            // Sécurité de base : validation des champs obligatoires
-            if (DraftCategory == null || string.IsNullOrWhiteSpace(DraftProductName))
-            {
-                MessageBox.Show("Veuillez sélectionner au moins une catégorie et saisir un nom de produit.",
-                                "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
             int numericSize = 0;
             bool hasNumericSize = int.TryParse(DraftNumericSize, out numericSize);
 
-            // Préparation de la requête pour l'API
-            var request = new AddVariantRequest
+            if (IsEditMode && SelectedStockItem != null)
             {
-                CategoryId = DraftCategory.CategoryID,
-                BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
-                BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
-                ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
-                Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU,
-                Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
-                PurchasePrice = DraftPurchasePrice,
-                SalePrice = DraftSalePrice,
-                DiscountFixed = DraftFixedDiscount,
-                StockQuantity = DraftQuantity.GetValueOrDefault()
-            };
-
-            // Gestion dynamique des tailles
-            if (IsNumericSizeVisible)
-            {
-                request.Length = hasNumericSize ? numericSize : null;
-                request.Width = null;
-            }
-            else if (IsDimensionSizeVisible)
-            {
-                request.Length = int.TryParse(DraftLength?.ToString(), out int length) ? length : null;
-                request.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
-            }
-
-            try
-            {
-                IsLoading = true; // On affiche le spinner pendant l'écriture en DB
-
-                // 🔥 APPEL SERVICE HTTP
-                bool isSuccess = await _stockService.AddProductVariantAsync(request);
-
-                if (isSuccess)
+                // ─────── UPDATE ───────
+                var updateRequest = new UpdateVariantRequest
                 {
-                    // Invalidation du Cache
+                    VariantId = SelectedStockItem.VariantId,
+                    // Category (optional, only if changed)
+                    CategoryId = DraftCategory?.CategoryID,
+                    // Brand
+                    BrandId = (DraftBrand != null && DraftBrand.BrandID > 0) ? DraftBrand.BrandID : null,
+                    BrandName = (DraftBrand == null || DraftBrand.BrandID <= 0) && !string.IsNullOrWhiteSpace(DraftNewBrandName)
+                                  ? DraftNewBrandName : null,
+                    // Product
+                    ProductId = DraftSelectedProduct?.ProductID,
+                    ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
+                    // Variant fields
+                    Color = DraftColor,
+                    PurchasePrice = DraftPurchasePrice,
+                    SalePrice = DraftSalePrice,
+                    DiscountFixed = DraftFixedDiscount,
+                    StockQuantity = DraftQuantity
+                };
+
+                if (IsNumericSizeVisible)
+                {
+                    updateRequest.Length = hasNumericSize ? numericSize : null;
+                    updateRequest.Width = null;
+                }
+                else if (IsDimensionSizeVisible)
+                {
+                    updateRequest.Length = int.TryParse(DraftLength?.ToString(), out int l) ? l : null;
+                    updateRequest.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
+                }
+
+                bool success = await _stockService.UpdateProductVariantAsync(updateRequest);
+
+                if (success)
+                {
                     _cacheService.Remove(CacheKeys.StockVariants);
-
-                    if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
-                    {
-                        _cacheService.Remove(CacheKeys.Catalog);
-                    }
-
-                    _allStockItems.Clear();
-
-                    // On attend que la DB locale applique les modifications
-                    await Task.Delay(400);
-
-                    // On libère le flag IsLoading de la sauvegarde pour que LoadInitialDataAsync puisse s'exécuter !
-                    IsLoading = false;
-
-                    // Rechargement immédiat (qui va remettre IsLoading à true le temps du téléchargement)
+                    _cacheService.Remove(CacheKeys.Catalog); // might have changed brands/products
+                    await Task.Delay(300);
                     await LoadInitialDataAsync(forceRefresh: true);
-
-                    MessageBox.Show(IsEditMode ? "Stock modifié avec succès !" : "Stock enregistré avec succès !",
-                                    "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                                       
-
-                    await PrintBarCodeOnReciveStock(request.ProductName,LabelsToPrint);
-
+                    MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                     IsReceptionVisible = false;
                     IsEditMode = false;
                     ClearDraft();
                 }
                 else
                 {
-                    IsLoading = false; // Ne pas oublier de le couper ici aussi en cas d'échec serveur
-                    MessageBox.Show("Le serveur a refusé l'enregistrement de l'article. Vérifiez les données.",
-                                    "Erreur Serveur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Erreur lors de la modification.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                IsLoading = false; // Ne pas oublier de le couper ici aussi en cas de crash réseau
-                MessageBox.Show($"Une erreur est survenue lors de l'envoi : {ex.Message}",
-                                "Erreur réseau", MessageBoxButton.OK, MessageBoxImage.Error);
+                // ─────── ADD (existing code) ───────
+                var request = new AddVariantRequest
+                {
+                    CategoryId = DraftCategory.CategoryID,
+                    BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
+                    BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
+                    ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
+                    Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU,
+                    Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
+                    PurchasePrice = DraftPurchasePrice,
+                    SalePrice = DraftSalePrice,
+                    DiscountFixed = DraftFixedDiscount,
+                    StockQuantity = DraftQuantity.GetValueOrDefault()
+                };
+
+                if (IsNumericSizeVisible)
+                {
+                    request.Length = hasNumericSize ? numericSize : null;
+                    request.Width = null;
+                }
+                else if (IsDimensionSizeVisible)
+                {
+                    request.Length = int.TryParse(DraftLength?.ToString(), out int length) ? length : null;
+                    request.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
+                }
+
+                bool isSuccess = await _stockService.AddProductVariantAsync(request);
+
+                if (isSuccess)
+                {
+                    _cacheService.Remove(CacheKeys.StockVariants);
+                    if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
+                        _cacheService.Remove(CacheKeys.Catalog);
+                    await Task.Delay(300);
+                    IsLoading = false;
+                    await LoadInitialDataAsync(forceRefresh: true);
+                    MessageBox.Show("Stock enregistré avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await PrintBarCodeOnReciveStock(request.ProductName, LabelsToPrint);
+                    IsReceptionVisible = false;
+                    IsEditMode = false;
+                    ClearDraft();
+                }
+                else
+                {
+                    IsLoading = false;
+                    MessageBox.Show("Erreur lors de l'enregistrement.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -321,7 +369,6 @@ namespace Shiakati.ViewModels
         // VII. HELPERS & TRIGGERS
         // ===========================================================
 
-       
         partial void OnSearchTextChanged(string value) => ApplyFilters();
         partial void OnSelectedCategoryChanged(CategoryModel value) => ApplyFilters();
         partial void OnSelectedBrandChanged(BrandsModel value) => ApplyFilters();
@@ -330,8 +377,28 @@ namespace Shiakati.ViewModels
         partial void OnDraftCategoryChanged(CategoryModel value)
         {
             if (value == null) return;
-            IsDimensionSizeVisible = value.CategoryName.Contains("Thob") || value.CategoryName.Contains("Pantalon") || value.CategoryName.Contains("Sous");
-            IsNumericSizeVisible= !IsDimensionSizeVisible;
+
+            // 1. Logique de visibilité des tailles
+            IsDimensionSizeVisible = value.CategoryName.Contains("Thob") ||
+                                     value.CategoryName.Contains("Pantalon") ||
+                                     value.CategoryName.Contains("Sous");
+            IsNumericSizeVisible = !IsDimensionSizeVisible;
+
+            // 2. Filtrage des marques
+            FilteredBrands.Filter = (obj) =>
+            {
+                if (obj is BrandsModel brand)
+                {
+                    // Affiche la marque si elle appartient à la catégorie, 
+                    // ou si elle n'est liée à aucune catégorie (si c'est ton besoin)
+                    return brand.CategoryID == value.CategoryID;
+                }
+                return false;
+            };
+
+            // On notifie la vue que le filtre a changé
+            FilteredBrands.Refresh();
+
         }
 
         // ===========================================================
@@ -363,8 +430,7 @@ namespace Shiakati.ViewModels
             
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
-        }
-                
+        }                
         [RelayCommand]   private void StockAddingFiledsClear()
         {
             ClearDraft();
@@ -389,7 +455,6 @@ namespace Shiakati.ViewModels
             DraftNewBrandName = string.Empty;
             DraftSelectedProduct = null;
         }
-
         private bool IsFormValid()
         {
             // 1. Validation de la Catégorie (Selection obligatoire)

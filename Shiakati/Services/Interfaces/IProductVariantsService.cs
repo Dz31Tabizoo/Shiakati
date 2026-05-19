@@ -11,5 +11,10 @@ namespace Shiakati.Services.Interfaces
     {
         Task<List<ProductVariantModel>> GetProductVariantsAsync();
         Task<bool> AddProductVariantAsync(AddVariantRequest request);
+
+        Task<bool> UpdateProductVariantAsync(UpdateVariantRequest request);
+
+        
+
     }
 }

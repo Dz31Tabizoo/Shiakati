@@ -213,7 +213,7 @@
                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
                                   Margin="0,0,0,15"/>
 
-                        <ComboBox ItemsSource="{Binding Brands}" 
+                        <ComboBox ItemsSource="{Binding FilteredBrands}" 
                                   FontSize="13"
                                   Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedItem="{Binding DraftBrand}"
