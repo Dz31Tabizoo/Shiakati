@@ -111,7 +111,7 @@ namespace Shiakati.ViewModels
          
         public async Task LoadInitialDataAsync(bool forceRefresh = false)
         {
-            if (IsLoading || (!forceRefresh && _allStockItems.Any())) 
+            if (!forceRefresh && (IsLoading || _allStockItems.Any())) 
                 return;
             try
             {
@@ -193,7 +193,7 @@ namespace Shiakati.ViewModels
             
             DraftCategory = Categories.FirstOrDefault(c => c.CategoryName == item.CategoryName);
             DraftBrand = Brands.FirstOrDefault(b => b.BrandName == item.BrandName);
-            DraftNewBrandName = string.Empty;
+            DraftNewBrandName = DraftNewBrandName;
 
             // Product
             DraftProductName = item.ProductName;
@@ -420,26 +420,20 @@ namespace Shiakati.ViewModels
             _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, stockQuantity);
         }
 
-        private async Task ForceReloadAllDataAsync()
+        [RelayCommand]
+        private void StockAddingFiledsClear()
         {
-            // 1. On vide le cache pour forcer l'application à demander des données fraîches
-            _cacheService.Remove(CacheKeys.StockVariants);
-            _cacheService.Remove(CacheKeys.Catalog);
-            _cacheService.Remove(CacheKeys.Products);
-
-            // 2. Un petit délai de sécurité (300ms) pour laisser le temps à l'API/Base de données
-            // de bien terminer l'écriture de la modification/suppression
-            await Task.Delay(300);
-
-            // 3. On appelle ta méthode existante de chargement en activant le rafraîchissement forcé
-            await LoadInitialDataAsync(forceRefresh: true);
+            ClearDraft();
         }
 
         // ===========================================================
         // VII. HELPERS & TRIGGERS
         // ===========================================================
 
-        partial void OnSearchTextChanged(string value) => ApplyFilters();
+         partial void OnSearchTextChanged(string value)
+        {
+            Task.Delay(500).ContinueWith(_ => ApplyFilters());
+        }
         partial void OnSelectedCategoryChanged(CategoryModel value) => ApplyFilters();
         partial void OnSelectedBrandChanged(BrandsModel value) => ApplyFilters();
         partial void OnFilterColorChanged(string value) => ApplyFilters();
@@ -473,6 +467,20 @@ namespace Shiakati.ViewModels
         partial void OnIsNonActiveItemsVisibleChanged(bool value)
         {
             ApplyFilters();
+        }
+        private async Task ForceReloadAllDataAsync()
+        {
+            // 1. On vide le cache pour forcer l'application à demander des données fraîches
+            _cacheService.Remove(CacheKeys.StockVariants);
+            _cacheService.Remove(CacheKeys.Catalog);
+            _cacheService.Remove(CacheKeys.Products);
+
+            // 2. Un petit délai de sécurité (300ms) pour laisser le temps à l'API/Base de données
+            // de bien terminer l'écriture de la modification/suppression
+            await Task.Delay(300);
+
+            // 3. On appelle ta méthode existante de chargement en activant le rafraîchissement forcé
+            await LoadInitialDataAsync(forceRefresh: true);
         }
 
         // ===========================================================
@@ -511,13 +519,7 @@ namespace Shiakati.ViewModels
             
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
-        }                
-        
-        [RelayCommand] 
-        private void StockAddingFiledsClear()
-        {
-            ClearDraft();
-        }
+        }                               
         private void ClearDraft()
         {
             IsEditMode = false; // 💡 CRITIQUE : Repasse l'UI en mode normal (Fond blanc, bouton bleu)
