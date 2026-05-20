@@ -285,6 +285,7 @@
                      Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
                      materialDesign:ElevationAssist.Elevation="Dp3">
             <materialDesign:Card.Style>
+                
         <Style TargetType="materialDesign:Card" BasedOn="{StaticResource {x:Type materialDesign:Card}}">
             <Setter Property="Background" Value="White"/>
             <Style.Triggers>
@@ -303,8 +304,39 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
-                    <materialDesign:PackIcon Kind="TruckDeliveryOutline" Width="28" Height="28" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="Réception Fournisseur" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                    <materialDesign:PackIcon Width="28" Height="28" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="Kind" Value="TruckDeliveryOutline"/>
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                                        <Setter Property="Kind" Value="Edit"/>
+                                        <Setter Property="Foreground" Value="#C2410C"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
+
+                    <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Réception Fournisseur"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                                        <Setter Property="Text" Value="Modification d'article"/>
+                                        <Setter Property="Foreground" Value="#7C2D12"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
                 </StackPanel>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
@@ -443,7 +475,7 @@
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="EFFACER" Height="50" FontSize="15" FontWeight="SemiBold"
+                    <Button Grid.Column="0" Content="ANNULER" Height="50" FontSize="15" FontWeight="SemiBold"
                     Command="{Binding StockAddingFiledsClearCommand}" Margin="0,0,10,0"
                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
