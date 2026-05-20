@@ -3,38 +3,64 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:Shiakati.Views"
-             FontFamily="{StaticResource MontserratFont}">
+             FontFamily="{StaticResource MontserratFont}"
+             Background="{DynamicResource MaterialDesignPaper}">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-  <!-- Here we can add horizontal stackpanel and add features to caisse-->
-        <Button Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,10,0"
-                Command="{Binding AddNewTabCommand}"
-                Style="{StaticResource MaterialDesignFlatButton}" Foreground="{StaticResource PrimaryBrush}">
-            <StackPanel Orientation="Horizontal">
-                <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center"/>
-                <TextBlock Text="Nouveau Client" Margin="5,0,0,0"/>
-            </StackPanel>
-        </Button>
 
+        <!-- Top bar: brand / action -->
+        <Border Grid.Row="0" Padding="10,8" Background="{DynamicResource MaterialDesignCardBackground}">
+            <Grid>
+                <TextBlock Text="POINT DE VENTE" FontSize="18" FontWeight="Bold" 
+                           Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
+
+                <Button HorizontalAlignment="Right" 
+                        Command="{Binding AddNewTabCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Background="{StaticResource SecondaryBrush}"
+                        Foreground="White" FontWeight="SemiBold">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center"/>
+                        <TextBlock Text="Nouvelle vente" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Tab control with modern header styling -->
         <TabControl Grid.Row="1" 
                     ItemsSource="{Binding PosTabs}" 
                     SelectedItem="{Binding SelectedTab}"
-                    Style="{StaticResource MaterialDesignTabControl}">
+                    Style="{StaticResource MaterialDesignTabControl}"
+                    Background="Transparent">
 
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Margin="1">
-                        <TextBlock Text="{Binding TabName}" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                        <!-- Icon left of tab name -->
+                        <materialDesign:PackIcon Kind="Receipt" 
+                                                 Width="16" Height="16" 
+                                                 VerticalAlignment="Center" 
+                                                 Foreground="{StaticResource PrimaryBrush}" 
+                                                 Margin="0,0,6,0"/>
 
+                        <TextBlock Text="{Binding TabName}" 
+                                   VerticalAlignment="Center" 
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Margin="0,0,8,0"/>
+
+                        <!-- Close button -->
                         <Button Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
                                 CommandParameter="{Binding}"
                                 Style="{StaticResource MaterialDesignIconForegroundButton}" 
-                                Width="24" Height="24" Margin="10,-8,0,0" ToolTip="Fermer le ticket">
-                            <materialDesign:PackIcon Kind="Close" Width="16" Height="16"/>
+                                Width="20" Height="20" Margin="0,-2,0,0"
+                                ToolTip="Fermer la vente">
+                            <materialDesign:PackIcon Kind="Close" Width="12" Height="12"/>
                         </Button>
                     </StackPanel>
                 </DataTemplate>

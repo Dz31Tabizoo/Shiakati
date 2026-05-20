@@ -1,18 +1,21 @@
-﻿<UserControl x:Class="Shiakati.Views.PosView"
+﻿    <UserControl x:Class="Shiakati.Views.PosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:Shiakati.Converters"
              d:DesignHeight="768" d:DesignWidth="1024"
              FontFamily="{StaticResource MontserratFont}"
              Background="{DynamicResource MaterialDesignPaper}">
 
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </UserControl.Resources>
+        <UserControl.Resources>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:CommonEqualityConverter x:Key="CommonEqualityConverter" />
 
+
+        </UserControl.Resources>        
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -40,26 +43,45 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <ScrollViewer Grid.Row="1"
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Disabled"
-                          Margin="0,0,0,15"
-                          materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
-                          materialDesign:ScrollViewerAssist.SupportHorizontalScroll="True"
-                          PanningMode="HorizontalOnly">
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="TOUT" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,10,0"/>
-                    <Button Content="THOBES" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                    <Button Content="Pantalon" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                    <Button Content="CHAUSSURES" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                    <Button Content="Accessoires" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                    <Button Content="Sadjadat" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-                </StackPanel>
-            </ScrollViewer>
+            
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+                <ComboBox materialDesign:HintAssist.Hint="Catégorie"
+              FontSize="13"
+              MinWidth="120"
+              ItemsSource="{Binding Categories}"
+              SelectedItem="{Binding SelectedCategory}"
+              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+              Margin="0,0,10,0"/>
 
+                <ComboBox materialDesign:HintAssist.Hint="Marque"
+              FontSize="13"
+              MinWidth="120"
+              ItemsSource="{Binding Brands}"
+              SelectedItem="{Binding SelectedBrand}"
+              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+              Margin="0,0,10,0"/>
+
+                <ComboBox materialDesign:HintAssist.Hint="Couleur"
+              FontSize="13"
+              MinWidth="100"
+              ItemsSource="{Binding FilterColors}"
+              SelectedItem="{Binding SelectedColor}"
+              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+              Margin="0,0,10,0"/>
+
+                <ComboBox materialDesign:HintAssist.Hint="Taille"
+              FontSize="13"
+              MinWidth="100"
+              ItemsSource="{Binding FilterSizes}"
+              SelectedItem="{Binding SelectedSize}"
+              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+            </StackPanel>
+
+            <!-- Product grid (unchanged) -->
             <ListBox Grid.Row="2" ItemsSource="{Binding FilteredProducts}" 
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     Background="Transparent" BorderThickness="0">
+                     Background="Transparent" BorderThickness="0"
+                     HorizontalContentAlignment="Stretch">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" />
@@ -70,22 +92,58 @@
                         <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                 CommandParameter="{Binding}"
                                 Style="{StaticResource MaterialDesignFlatButton}" 
-                                Padding="0" Margin="5" Height="140" Width="140">
-                            <materialDesign:Card UniformCornerRadius="10" Background="White" Width="140" Height="140">
-                                <Grid>
+                                Padding="0" Margin="6" Height="130" Width="160">
+                            <materialDesign:Card UniformCornerRadius="8" Background="White" Width="160" Height="130">
+                                <Grid Margin="12">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <materialDesign:PackIcon Grid.Row="0" Kind="TshirtCrew" Width="60" Height="60" 
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                                           Foreground="{StaticResource PrimaryBrush}" Opacity="0.5"/>
-                                    <Border Grid.Row="1" Background="{StaticResource BgBrush}" Padding="5">
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding ProductInfo.ProductName}" FontWeight="Bold" FontSize="13" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="{StaticResource SecondaryBrush}" FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </Border>
+
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding BrandName}" 
+                                               Foreground="#888888" 
+                                               FontSize="11" 
+                                               FontWeight="Medium" 
+                                               TextTrimming="CharacterEllipsis" 
+                                               Margin="0,0,0,4"/>
+
+                                    <TextBlock Grid.Row="1" 
+                                               Text="{Binding ProductName}" 
+                                               FontSize="14" 
+                                               FontWeight="SemiBold" 
+                                               TextWrapping="Wrap" 
+                                               TextTrimming="CharacterEllipsis" 
+                                               VerticalAlignment="Top"
+                                               MaxHeight="40"
+                                               LineHeight="18"/>
+
+                                    <Grid Grid.Row="2" Margin="0,8,0,0" VerticalAlignment="Bottom">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0" 
+                                                Background="{StaticResource BgBrush}" 
+                                                CornerRadius="4" 
+                                                Padding="6,2" 
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding FullSize}" 
+                                                       FontSize="12" 
+                                                       FontWeight="Bold" 
+                                                       Foreground="{StaticResource PrimaryBrush}"/>
+                                        </Border>
+
+                                        <TextBlock Grid.Column="1" 
+                                                   Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
+                                                   FontSize="15" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="{StaticResource SecondaryBrush}" 
+                                                   HorizontalAlignment="Right" 
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
                                 </Grid>
                             </materialDesign:Card>
                         </Button>
@@ -93,6 +151,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+
+        <!-- Cart & checkout (unchanged) -->
         <materialDesign:Card Grid.Column="1" UniformCornerRadius="15" Background="White">
             <Grid Margin="15">
                 <Grid.RowDefinitions>
@@ -103,29 +163,29 @@
                 </Grid.RowDefinitions>
 
                 <materialDesign:Card Grid.Row="0" Background="#FFF3E0" Foreground="#E65100" Padding="10" Margin="0,0,0,10"
-                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
+                                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
                     <Grid>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="AlertCircleOutline" Width="24" Height="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding EditTicketNumber, StringFormat='MODIFICATION DU TICKET : {0}'}" 
-                               FontWeight="Bold" VerticalAlignment="Center" FontSize="16"/>
+                                       FontWeight="Bold" VerticalAlignment="Center" FontSize="16"/>
                         </StackPanel>
                         <Button Content="ANNULER" 
-                        Command="{Binding CancelEditCommand}"
-                        Style="{StaticResource MaterialDesignFlatButton}" 
-                        Foreground="#E65100" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                Command="{Binding CancelEditCommand}"
+                                Style="{StaticResource MaterialDesignFlatButton}" 
+                                Foreground="#E65100" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     </Grid>
                 </materialDesign:Card>
 
                 <TextBlock Grid.Row="1" Text="Ticket Actuel" FontSize="20" FontWeight="Bold" 
-                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
+                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
 
                 <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
-                            CanUserAddRows="False" Background="Transparent" BorderThickness="0"
-                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                            GridLinesVisibility="None"
-                            HorizontalAlignment="Stretch" 
-                            SelectionMode="Single">
+                          CanUserAddRows="False" Background="Transparent" BorderThickness="0"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          GridLinesVisibility="None"
+                          HorizontalAlignment="Stretch" 
+                          SelectionMode="Single">
 
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -143,7 +203,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" 
-                               FontSize="15" TextWrapping="Wrap" Margin="0,0"/>
+                                               FontSize="15" TextWrapping="Wrap" Margin="0,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -153,16 +213,16 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Button Style="{StaticResource MaterialDesignIconButton}" 
-                                Width="32" Height="32" Padding="5"
-                                Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}" Margin ="0,0,5,0">
+                                                Width="32" Height="32" Padding="5"
+                                                Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" Margin ="0,0,5,0">
                                             <materialDesign:PackIcon Kind="MinusCircle"/>
                                         </Button>
                                         <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" Margin="5,0" FontWeight="Bold"/>
                                         <Button Style="{StaticResource MaterialDesignIconButton}" 
-                                Width="32" Height="32" Padding="0"
-                                Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}" Margin ="5,0,0,0">
+                                                Width="32" Height="32" Padding="0"
+                                                Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" Margin ="5,0,0,0">
                                             <materialDesign:PackIcon Kind="PlusCircle"/>
                                         </Button>
                                     </StackPanel>
@@ -174,13 +234,12 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-
                                         <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
-                                      IsChecked="{Binding IsDiscountPinned}"
-                                      Command="{Binding ToggleDiscountCommand}"
-                                      Width="40" Height="40"
-                                      Background="Transparent" BorderThickness="1"
-                                      ToolTip="Remise fixe du produit">
+                                                      IsChecked="{Binding IsDiscountPinned}"
+                                                      Command="{Binding ToggleDiscountCommand}"
+                                                      Width="40" Height="40"
+                                                      Background="Transparent" BorderThickness="1"
+                                                      ToolTip="Remise fixe du produit">
                                             <ToggleButton.Content>
                                                 <materialDesign:PackIcon Kind="TagOutline" Width="20" Height="20" Foreground="Gray"/>
                                             </ToggleButton.Content>
@@ -188,14 +247,12 @@
                                                 <materialDesign:PackIcon Kind="Tag" Width="20" Height="20" Foreground="#FF9800"/>
                                             </materialDesign:ToggleButtonAssist.OnContent>
                                         </ToggleButton>
-
                                         <TextBox Text="{Binding ManualDiscount, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="70" Margin="10,0,0,0" Padding="5,5,5,5"
-                                 materialDesign:HintAssist.Hint="DA"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 VerticalAlignment="Center" TextAlignment="Center"
-                                 FontSize="14" FontWeight="SemiBold" Foreground="#FF9800"/>
-
+                                                 Width="70" Margin="10,0,0,0" Padding="5,5,5,5"
+                                                 materialDesign:HintAssist.Hint="DA"
+                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                 VerticalAlignment="Center" TextAlignment="Center"
+                                                 FontSize="14" FontWeight="SemiBold" Foreground="#FF9800"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -205,18 +262,18 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}" 
-                               VerticalAlignment="Center" FontWeight="Bold" 
-                               Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
+                                               VerticalAlignment="Center" FontWeight="Bold" 
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Width="Auto" >
+                        <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Style="{StaticResource MaterialDesignIconButton}" 
-                            Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="Crimson">
+                                            Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="Crimson">
                                         <materialDesign:PackIcon Kind="CartRemove" Width="24" Height="24"/>
                                     </Button>
                                 </DataTemplate>
@@ -238,7 +295,7 @@
                     <Grid Margin="0,10">
                         <TextBlock Text="TOTAL" FontSize="24" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
                         <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" FontSize="32" FontWeight="Bold" 
-                           HorizontalAlignment="Right" Foreground="{StaticResource SecondaryBrush}"/>
+                                   HorizontalAlignment="Right" Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
 
                     <Button Command="{Binding CheckoutCommand}" Height="70" FontSize="24" FontWeight="Bold">

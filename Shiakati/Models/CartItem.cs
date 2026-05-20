@@ -2,24 +2,24 @@
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 
-
 namespace Shiakati.Models
 {
     public partial class CartItem : ObservableObject
     {
         public ProductVariantModel? Variant { get; }
         public ProductModel? Product { get; }
-        
 
         // Prix total SANS aucune remise (SalePrice * Quantité)
-        public decimal? RawTotal => Variant.SalePrice * Quantity;
+        public decimal? RawTotal => (Variant?.SalePrice ?? 0) * (Quantity ?? 0);
 
         // Montant total économisé sur CETTE ligne (RemiseFixe + RemiseManuelle) * Quantité
         public decimal? TotalLineDiscount
         {
             get
             {
-                decimal? unitDiscount = 0;
+                decimal unitDiscount = 0;
+
+                if (Variant == null) return 0;
 
                 if (IsDiscountPinned && Variant.DiscountFixed.HasValue)
                     unitDiscount += Variant.DiscountFixed.Value;
@@ -28,11 +28,13 @@ namespace Shiakati.Models
                     unitDiscount += ManualDiscount.Value;
 
                 // On s'assure de ne pas dépasser le prix de l'article
-                if (unitDiscount > Variant.SalePrice) unitDiscount = Variant.SalePrice;
+                if (unitDiscount > (Variant.SalePrice ?? 0))
+                    unitDiscount = Variant.SalePrice ?? 0;
 
-                return unitDiscount * Quantity;
+                return unitDiscount * (Quantity ?? 0);
             }
         }
+
         public decimal? TotalPrice => RawTotal - TotalLineDiscount;
 
         [ObservableProperty]
@@ -44,26 +46,24 @@ namespace Shiakati.Models
         [ObservableProperty]
         private bool _isDiscountPinned = false;
 
-        // NOUVEAU : Propriété pour la remise manuelle
         [ObservableProperty]
         private decimal? _manualDiscount;
 
-        // MAGIE DU TOOLKIT : Cette méthode est appelée automatiquement 
-        // à chaque fois que l'utilisateur tape un chiffre dans la case ManualDiscount
         partial void OnManualDiscountChanged(decimal? value)
         {
             OnPropertyChanged(nameof(TotalPrice));
             OnPropertyChanged(nameof(TotalLineDiscount));
-        }        
+        }
 
-        public string DisplayName => $"{Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
+        // Priorise les données dénormalisées du Variant, sinon fallback sur l'objet Product
+        public string DisplayName => $"{Variant?.ProductName ?? Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
 
-        public CartItem(ProductVariantModel variant, ProductModel product)
+        // Constructeur flexible : accepte un Variant seul ou avec son Produit parent
+        public CartItem(ProductVariantModel variant, ProductModel? product = null)
         {
             Variant = variant;
             Product = product;
-            _quantity = 1;
-            
+            Quantity = 1;
         }
 
         [RelayCommand]
@@ -75,4 +75,3 @@ namespace Shiakati.Models
         }
     }
 }
-
