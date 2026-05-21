@@ -6,6 +6,7 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -22,6 +23,8 @@ namespace Shiakati.ViewModels
 
         public SalesHistoryViewModel SalesHistory { get; }
         public PosContainerViewModel PosContainer { get; }
+
+        public StockMovementsViewModel StockMovements { get; }
         public StockViewModel Stock { get; }
         public SettingsViewModel Settings { get; }
 
@@ -30,8 +33,10 @@ namespace Shiakati.ViewModels
                             PosContainerViewModel posContainer, 
                             StockViewModel stockViewModel, 
                             SalesHistoryViewModel salesHistory,
-                            SettingsViewModel settingsViewModel )
+                            SettingsViewModel settingsViewModel,
+                            StockMovementsViewModel stockMovementsViewModel)
         {
+            StockMovements = stockMovementsViewModel;
             _authService = authService;
             PosContainer = posContainer;
             Stock = stockViewModel;
@@ -46,39 +51,37 @@ namespace Shiakati.ViewModels
             });
 
         }
-        // ✅ On assigne le ViewModel, pas la View !
-        [RelayCommand]
-        private async Task NavigateToStock()
+        
+        [RelayCommand] private async Task NavigateToStock()
         {
             CurrentView = Stock;
             await Stock.LoadInitialDataAsync(true);
         }
-
-        [RelayCommand]
-        private void NavigateToPOS()=> CurrentView = PosContainer;
-
-        [RelayCommand]
-        private void NavigateToSalesHistory() => CurrentView = SalesHistory;
-        [RelayCommand]
-        private void ExitApplication()
+        [RelayCommand] private void NavigateToPOS()=> CurrentView = PosContainer;
+        [RelayCommand] private void NavigateToSalesHistory() => CurrentView = SalesHistory;
+        [RelayCommand] private void ExitApplication()
         {
             // Logique pour fermer l'application
             System.Windows.Application.Current.Shutdown();
         }
-
-        [RelayCommand]
-        private void NavToSettings() => CurrentView = Settings;
-
-        [RelayCommand]
-        private void Logout()
+        [RelayCommand] private void NavToSettings() => CurrentView = Settings;
+        [RelayCommand] private void Logout()
         {
-            // Logique pour se déconnecter et revenir à la page de connexion
-            _authService.Logout(); // Appeler la méthode de déconnexion de votre service d'authentification
+            _authService.Logout();
+
             var loginView = App.ServiceProvider.GetRequiredService<LoginView>();
+
+            // Subscribe to login success BEFORE showing
+            loginView.LoginSucceeded += () =>
+            {
+                System.Windows.Application.Current.MainWindow?.Show();
+            };
+
+            // Hide main window, show login
+            System.Windows.Application.Current.MainWindow?.Hide();
             loginView.Show();
-            // Fermer la fenêtre principale
-            System.Windows.Application.Current.MainWindow.Close();
         }
+        [RelayCommand] private void NavigateToStockMovements() => CurrentView = StockMovements;
 
     }
 }

@@ -95,6 +95,12 @@ namespace Shiakati
             })
             .AddHttpMessageHandler<AuthenticationHandler>();
 
+            services.AddHttpClient<IStockMovementService, StockMovementService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            })
+             .AddHttpMessageHandler<AuthenticationHandler>();
+
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
             // ---------------------------------------------------------
@@ -110,11 +116,14 @@ namespace Shiakati
             services.AddTransient<SalesHistoryView>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();
+            services.AddTransient<StockMovementsViewModel>();
+            services.AddTransient<StockMovementsView>();
 
             // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();
             services.AddTransient<IBarCodePrintService, BarcodePrintService>();
             services.AddSingleton<ICacheService, AppCacheService>();
+            
         }
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -130,3 +139,8 @@ namespace Shiakati
         }
     }
 }
+
+// Service
+
+
+// ViewModel & View

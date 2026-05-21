@@ -143,24 +143,8 @@
 
                 </StackPanel>
 
-                <!--<StackPanel Grid.Row="1">
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="CashRegister" Width="48" Height="48" Margin="10,0,0,0"/>
-                            <TextBlock Text="Caisse" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Button>
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Margin="0,15,0,15"/>
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Warehouse" Width="48" Height="48" Margin="10,0,0,0"/>
-                            <TextBlock Text="Stock" Margin="35,0,0,0" FontSize="15" VerticalAlignment="Center" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Button>      
-                </StackPanel>-->
-
                 <StackPanel Grid.Row="1">
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,0,0,8"/>
 
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToPOSCommand}">
                         <StackPanel Orientation="Horizontal">
@@ -169,7 +153,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
 
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToStockCommand}">
                         <StackPanel Orientation="Horizontal">
@@ -178,7 +162,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
 
                     <ToggleButton x:Name="btnHistorique" Style="{StaticResource NavToggleButtonStyle}">
                         <StackPanel Orientation="Horizontal" Width="230" HorizontalAlignment="Left">
@@ -195,7 +179,8 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource NavButtonStyle}" Margin="20,2,10,2" Height="40">
+                        <Button Style="{StaticResource NavButtonStyle}" Margin="20,2,10,2" Height="40"
+                                Command="{Binding NavigateToStockMovementsCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="DatabaseClock" Width="30" Height="30" Margin="10,0,0,0"/>
                                 <TextBlock Text="Mouvement Stock" Margin="25,0,0,0" FontSize="13" VerticalAlignment="Center"/>
@@ -203,7 +188,7 @@
                         </Button>
                     </StackPanel>
 
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
 
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavToSettingsCommand}" Height="60">
                         <StackPanel Orientation="Horizontal" >
@@ -211,8 +196,8 @@
                             <TextBlock Text="Paramètres" Margin="35,0,0,0" FontSize="18" VerticalAlignment="Center" FontWeight="Medium"/>
                         </StackPanel>
                     </Button>
-                    
-                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,5"/>
+
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
 
 
                 </StackPanel>

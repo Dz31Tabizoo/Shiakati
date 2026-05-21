@@ -34,6 +34,7 @@
                 
                 <ResourceDictionary>
                     
+                    
                     <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
                         <views:SettingsView />
                     </DataTemplate>
@@ -55,6 +56,10 @@
                         <views:PosView />
                     </DataTemplate>
                     
+                    <DataTemplate DataType="{x:Type viewModels:StockMovementsViewModel}">
+                        <views:StockMovementsView />
+                    </DataTemplate>
+
                 </ResourceDictionary>
                 
                 <ResourceDictionary>

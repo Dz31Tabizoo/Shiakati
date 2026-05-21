@@ -13,6 +13,8 @@ public partial class LoginViewModel : ObservableObject
     private readonly IAuthenticationClientService _authService;
     private readonly ILogger<LoginViewModel> _logger;
 
+    public event Action? LoginCompleted;
+
     [ObservableProperty]
     private string _username = string.Empty;
 
@@ -71,6 +73,12 @@ public partial class LoginViewModel : ObservableObject
         }
 
         IsLoading = false;
+    }
+
+    private void OnLoginSuccess()
+    {
+        LoginCompleted?.Invoke();
+        RequestClose?.Invoke();
     }
 
     [RelayCommand]

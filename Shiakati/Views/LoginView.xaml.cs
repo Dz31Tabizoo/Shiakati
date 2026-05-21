@@ -20,6 +20,8 @@ namespace Shiakati.Views
 {
     public partial class LoginView : Window
     {
+        public event Action? LoginSucceeded;
+
         public LoginView(LoginViewModel viewModel)
         {
             InitializeComponent();
@@ -32,18 +34,23 @@ namespace Shiakati.Views
                     this.Close();
                 });
             };
+
+            // Forward the login success from ViewModel to the event
+            viewModel.LoginCompleted += () =>
+            {
+                LoginSucceeded?.Invoke();
+            };
         }
 
-        // Permet de déplacer la fenêtre avec la souris
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
 
-       
 
-        
+
+
     }
 }
 
