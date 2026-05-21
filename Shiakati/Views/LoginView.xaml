@@ -11,7 +11,7 @@
 		MouseLeftButtonDown="Window_MouseDown"
         Background="Transparent"
         FontFamily="{StaticResource MontserratFont}">
-     
+
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
@@ -64,33 +64,29 @@
                                    Foreground="{DynamicResource BgBrush}"
                                    HorizontalAlignment="Center"/>
 
-                        <TextBlock Text="أسلوب حياتي"
-                                   FontSize="20"
-                                   FontFamily="{StaticResource CairoFont}"
-                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,-13,0,5"/>
+                        
 
                         <!-- Logo -->
                         <Image Source="/Resources/Photos/Shiakati beige Logo.png"
                                Width="230"
                                Height="300"
                                Stretch="Fill"
-                               Margin="0,0,0,10"/>
+                               Margin="0,0,0,25"/>
 
                         <!-- Footer Logo -->
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
-                                    Opacity="1">
+                                    Opacity="1"
+                                    Margin="0,10,0,0">
 
                             <Image Source="/Resources/Photos/NumidixLogoSQR.png"
-                                   Width="60"
-                                   Height="60"
+                                   Width="50"
+                                   Height="50"
                                    Margin="3"
                                    Stretch="Uniform"/>
 
                             <TextBlock Text="Numidix Lab"
-                                       FontSize="24"
+                                       FontSize="20"
                                        FontFamily="{StaticResource PoppinsFont}"
                                        Foreground="{DynamicResource BgBrush}"
                                        VerticalAlignment="Center"
@@ -105,7 +101,7 @@
 
             <!-- RIGHT PANEL -->
             <Grid Grid.Column="1"
-                  Margin="60">
+                  Margin="40">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -184,9 +180,11 @@
                             Height="65"
                             Margin="0,15,0,0"
                             >
-
+                        <Button.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=TxtPassword}"/>
+                        </Button.InputBindings>
                         <Button.Effect>
-                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.35"/>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.25"/>
                         </Button.Effect>
 
                     </Button>
@@ -198,7 +196,7 @@
                            Text="Shiakati POS v1.0 © 2026"
                            Foreground="#BDBDBD"
                            HorizontalAlignment="Center"
-                           Margin="0,20,0,0"/>
+                           Margin="0,0,0,0"/>
 
             </Grid>
 

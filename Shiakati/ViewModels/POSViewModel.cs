@@ -18,10 +18,11 @@ namespace Shiakati.ViewModels
         private readonly IProductsService _productsService;
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
+        private readonly ISaleService _saleService;
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogService catalogDb, IProductsService productsService,
-                            IProductVariantsService stockService, ICacheService cacheService)
+                            IProductVariantsService stockService, ICacheService cacheService, ISaleService saleService)
         {
             TabName = name;
             _logger = logger;
@@ -30,6 +31,7 @@ namespace Shiakati.ViewModels
             _productsService = productsService;
             _stockService = stockService;
             _cacheService = cacheService;
+            _saleService = saleService;
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
@@ -148,6 +150,25 @@ namespace Shiakati.ViewModels
          * Search & Filter Logic
          *---------------------------------------------*/
 
+        [RelayCommand]
+        private async Task ProcessScanOrSearchAsync()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+                return;
+
+            // 1. Check if the text is an exact SKU match
+            var exactMatch = _allProducts.FirstOrDefault(p =>
+                p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase));
+
+            if (exactMatch != null)
+            {
+                // It's a barcode – add directly to cart
+                AddToCart(exactMatch);
+                SearchText = string.Empty;  // clear for the next scan
+                return;
+            }
+        }
+
         partial void OnSearchTextChanged(string value) => ApplyFilters();
 
         [RelayCommand]
@@ -185,28 +206,24 @@ namespace Shiakati.ViewModels
             SelectedCategory = ToggleValue(SelectedCategory, category);
             ApplyFilters();
         }
-
         [RelayCommand]
         private void ToggleBrand(string brand)
         {
             SelectedBrand = ToggleValue(SelectedBrand, brand);
             ApplyFilters();
         }
-
         [RelayCommand]
         private void ToggleColor(string color)
         {
             SelectedColor = ToggleValue(SelectedColor, color);
             ApplyFilters();
         }
-
         [RelayCommand]
         private void ToggleSize(string size)
         {
             SelectedSize = ToggleValue(SelectedSize, size);
             ApplyFilters();
         }
-
         private string? ToggleValue(string? current, string value)
         {
             return string.Equals(current, value, StringComparison.OrdinalIgnoreCase) ? null : value;
@@ -220,7 +237,6 @@ namespace Shiakati.ViewModels
         partial void OnSelectedBrandChanged(string value) => ApplyFilters();
         partial void OnSelectedColorChanged(string value) => ApplyFilters();
         partial void OnSelectedSizeChanged(string value) => ApplyFilters();
-
         private void CartItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -233,7 +249,6 @@ namespace Shiakati.ViewModels
             }
             UpdateCartTotal();
         }
-
         private void CartItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is nameof(CartItem.TotalPrice) or nameof(CartItem.RawTotal) or nameof(CartItem.TotalLineDiscount) or nameof(CartItem.Quantity))
@@ -241,7 +256,6 @@ namespace Shiakati.ViewModels
                 UpdateCartTotal();
             }
         }
-
         private void UpdateCartTotal()
         {
             OnPropertyChanged(nameof(CartSubTotal));
@@ -271,24 +285,59 @@ namespace Shiakati.ViewModels
 
             SearchText = string.Empty;
         }
-
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
-
-        [RelayCommand]
-        private void IncrementQty(CartItem item)
+        [RelayCommand] private void IncrementQty(CartItem item)
         {
             if (item != null) item.Quantity = (item.Quantity ?? 0) + 1;
         }
-
-        [RelayCommand]
-        private void DecrementQty(CartItem item)
+        [RelayCommand] private void DecrementQty(CartItem item)
         {
             if (item == null) return;
             if ((item.Quantity ?? 0) > 1) item.Quantity--;
             else CartItems.Remove(item);
         }
-
         [RelayCommand] private void CancelEdit() => ResetPOS();
+        /* [RelayCommand] private async Task CheckoutAsync()
+         {
+             if (CartItems.Count == 0)
+             {
+                 MessageBox.Show("Le panier est vide !", "Action requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+                 return;
+             }
+
+             IsLoading = true;
+             try
+             {
+                 string finalTicketNumber = IsEditMode ? $"{EditTicketNumber} (modifiée)" : $"TK-{DateTime.Now:yyyyMMddHHmmss}";
+
+                 var receipt = new ReceipModel
+                 {
+                     TicketNumber = finalTicketNumber,
+                     Date = DateTime.Now,
+                     TotalAmount = CartTotal ?? 0,
+                     TotalDiscount = TotalDiscountAmount ?? 0,
+                     Items = CartItems.Select(c => new ReceiptItem
+                     {
+                         Designation = c.DisplayName,
+                         Quantity = c.Quantity ?? 0,
+                         UnitPrice = c.Variant?.SalePrice ?? 0,
+                     }).ToList()
+                 };
+
+                 // await _saleService.SaveTransactionAsync(receipt); 
+
+                 if (PrintTicket(receipt))
+                 {
+                     string actionMsg = IsEditMode ? "Modification de la vente validée" : "Vente validée";
+                     MessageBox.Show($"{actionMsg} pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                     ResetPOS();
+                 }
+             }
+             finally
+             {
+                 IsLoading = false;
+             }
+         }*/
 
         [RelayCommand]
         private async Task CheckoutAsync()
@@ -302,29 +351,55 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                string finalTicketNumber = IsEditMode ? $"{EditTicketNumber} (modifiée)" : $"TK-{DateTime.Now:yyyyMMddHHmmss}";
-
-                var receipt = new ReceipModel
+                // Build the sale request – NO ticket number here
+                var saleRequest = new SaleRequest
                 {
-                    TicketNumber = finalTicketNumber,
-                    Date = DateTime.Now,
-                    TotalAmount = CartTotal ?? 0,
-                    TotalDiscount = TotalDiscountAmount ?? 0,
-                    Items = CartItems.Select(c => new ReceiptItem
+                    GlobalDiscount = 0,                     // or from UI if you add it later
+
+                    Items = CartItems.Select(c => new SaleItemDto
                     {
-                        Designation = c.DisplayName,
-                        Quantity = c.Quantity ?? 0,
-                        UnitPrice = c.Variant?.SalePrice ?? 0,
+                        VariantId = c.Variant!.VariantId,
+                        Quantity = c.Quantity ?? 1,
+                        FixedDiscountApplied = c.IsDiscountPinned,
+                        ManualDiscountAmount = c.ManualDiscount
                     }).ToList()
                 };
 
-                // await _saleService.SaveTransactionAsync(receipt); 
-
-                if (PrintTicket(receipt))
+                // Call the API
+                var result = await _saleService.CreateSaleAsync(saleRequest); // you need to add this method
+                if (result != null)
                 {
-                    string actionMsg = IsEditMode ? "Modification de la vente validée" : "Vente validée";
-                    MessageBox.Show($"{actionMsg} pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    // Now we have the real ticket number from the server
+                    var receipt = new ReceipModel
+                    {
+                        TicketNumber = result.TicketNumber,
+                        Date = DateTime.Now,
+                        TotalAmount = CartTotal ?? 0,
+                        TotalDiscount = TotalDiscountAmount ?? 0,
+                        Items = CartItems.Select(c => new ReceiptItem
+                        {
+                            Designation = c.DisplayName,
+                            Quantity = c.Quantity ?? 0,
+                            UnitPrice = c.Variant?.SalePrice ?? 0
+                        }).ToList()
+                    };
+
+                    if (PrintTicket(receipt))
+                    {
+                        MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}",
+                                        "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                        
+                    }
+                    // Refresh cache / stock
+                    _cacheService.Remove(CacheKeys.StockVariants);
+                    _ = LoadProductsAsync();
                     ResetPOS();
+
+
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de l'enregistrement de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             finally

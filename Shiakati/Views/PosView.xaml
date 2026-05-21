@@ -9,13 +9,16 @@
              d:DesignHeight="768" d:DesignWidth="1024"
              FontFamily="{StaticResource MontserratFont}"
              Background="{DynamicResource MaterialDesignPaper}">
+        
+    <UserControl.InputBindings>
+        <KeyBinding Key="F12" Command="{Binding CheckoutCommand}" />
+    </UserControl.InputBindings>
 
-        <UserControl.Resources>
+    <UserControl.Resources>
             <BooleanToVisibilityConverter x:Key="BoolToVis"/>
             <converters:CommonEqualityConverter x:Key="CommonEqualityConverter" />
-
-
         </UserControl.Resources>        
+        
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -37,7 +40,7 @@
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                              Width="400" FontSize="18" VerticalAlignment="Center">
                         <TextBox.InputBindings>
-                            <KeyBinding Key="Return" Command="{Binding SearchCommand}"/>
+                            <KeyBinding Key="Return" Command="{Binding ProcessScanOrSearchCommand}"/>
                         </TextBox.InputBindings>
                     </TextBox>
                 </StackPanel>
@@ -304,9 +307,10 @@
                                 <Setter Property="Content" Value="ENCAISSER (F12)"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
                                 <Setter Property="BorderBrush" Value="{x:Null}"/>
+
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                                        <Setter Property="Content" Value="METTRE À JOUR"/>
+                                        <Setter Property="Content" Value="METTRE À JOUR (F12)"/>
                                         <Setter Property="Background" Value="#FF9800"/>
                                     </DataTrigger>
                                 </Style.Triggers>

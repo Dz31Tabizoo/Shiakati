@@ -89,6 +89,12 @@ namespace Shiakati
             })
                 .AddHttpMessageHandler<AuthenticationHandler>();
 
+            services.AddHttpClient<ISaleService, SaleService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            })
+            .AddHttpMessageHandler<AuthenticationHandler>();
+
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
             // ---------------------------------------------------------
