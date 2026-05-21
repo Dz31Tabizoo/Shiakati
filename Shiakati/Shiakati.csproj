@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\Icons\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\logo.ico" />
+    <None Remove="Resources\Icons\NumidixLogoSQR256.ico" />
+    <None Remove="Resources\Icons\NumidixLogoSQR32.ico" />
+    <None Remove="Resources\Icons\NumidixLogoSQR64.ico" />
     <None Remove="Resources\Photos\NumidixLogoSQR.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo horiz.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo horizental.png" />
@@ -47,6 +52,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Icons\logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\logo.ico" />
+    <Resource Include="Resources\Icons\NumidixLogoSQR256.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\NumidixLogoSQR32.ico" />
+    <Resource Include="Resources\Icons\NumidixLogoSQR64.ico" />
     <Resource Include="Resources\Photos\Shiakati Black and white - VERTICAL.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
