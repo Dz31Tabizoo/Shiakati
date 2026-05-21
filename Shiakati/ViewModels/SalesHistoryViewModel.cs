@@ -66,23 +66,29 @@ namespace Shiakati.ViewModels
         private async Task EditSale(SaleModel selectedSale)
         {
             if (selectedSale?.SaleID == null) return;
+
             var sale = await _saleService.GetSaleAsync(selectedSale.SaleID.Value);
             if (sale == null)
             {
                 MessageBox.Show("Vente introuvable.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
             var items = sale.Items.Select(i => new SaleItemModel
             {
+                SaleItemID = i.SaleItemId,   // important for updating existing items
                 VariantID = i.VariantId,
                 Quantity = i.Quantity,
                 DiscountAmount = i.DiscountAmount
             }).ToList();
 
+            // 1. Navigate to the POS container (makes it visible)
+            WeakReferenceMessenger.Default.Send(new NavigateToPosMessage());
+
+            // 2. Send the edit data – it will be received by the active POS tab
             WeakReferenceMessenger.Default.Send(new EditSaleMessage(
                 new SaleModel { SaleID = sale.SaleId, TicketNumber = sale.TicketNumber },
                 items));
-            WeakReferenceMessenger.Default.Send(new SwitchTabMessage("POS"));
         }
 
         [RelayCommand]

@@ -416,7 +416,6 @@ namespace Shiakati.ViewModels
          * Helper Methods 
          *---------------------------------------------*/
 
-
         public void LoadSaleForEditing(SaleModel sale, IEnumerable<SaleItemModel> items)
         {
             if (sale == null || items == null) return;

@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
@@ -38,8 +40,11 @@ namespace Shiakati.ViewModels
             // Vue par défaut au démarrage
             CurrentView = PosContainer;
 
-          
-           
+            WeakReferenceMessenger.Default.Register<NavigateToPosMessage>(this, (r, m) =>
+            {
+                CurrentView = PosContainer;
+            });
+
         }
         // ✅ On assigne le ViewModel, pas la View !
         [RelayCommand]
