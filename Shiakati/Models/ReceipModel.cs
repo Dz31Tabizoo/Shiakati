@@ -9,6 +9,7 @@ namespace Shiakati.Models
     public class ReceipModel
     {
         public string TicketNumber { get; set; } = string.Empty;
+        public bool IsEdited { get; set; } = false; 
         public DateTime Date { get; set; }
         public List<ReceiptItem> Items { get; set; } = new();
         public decimal TotalDiscount { get; set; }

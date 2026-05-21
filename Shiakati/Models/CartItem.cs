@@ -6,6 +6,7 @@ namespace Shiakati.Models
 {
     public partial class CartItem : ObservableObject
     {
+        public int? SaleItemId { get; set; }   // null for new items, set when editing
         public ProductVariantModel? Variant { get; }
         public ProductModel? Product { get; }
 

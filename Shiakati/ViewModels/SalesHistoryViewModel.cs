@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
+using Shiakati.Helpers;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
@@ -11,114 +12,45 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Shiakati.ViewModels
 {
     public partial class SalesHistoryViewModel : ObservableObject
     {
-        private readonly IHistoryService _historyService;
-
+        private readonly ISaleService _saleService;
         private readonly ILogger<SalesHistoryViewModel> _logger;
 
-        [ObservableProperty]
-        private string _searchTicketNumber = string.Empty;
-
-        [ObservableProperty]
-        private DateTime? _startDate;
-
-        [ObservableProperty]
-        private DateTime? _endDate;
-
-        [ObservableProperty]
-        private bool _isLoading;
-
+        [ObservableProperty] private string _searchTicketNumber = string.Empty;
+        [ObservableProperty] private DateTime? _startDate = DateTime.Today;
+        [ObservableProperty] private DateTime? _endDate = DateTime.Today;
+        [ObservableProperty] private bool _isLoading;
         public ObservableCollection<SaleModel> Sales { get; } = new();
 
-        public SalesHistoryViewModel()
+        public SalesHistoryViewModel(ISaleService saleService, ILogger<SalesHistoryViewModel> logger)
         {
-            //_historyService = historyService;
-            //_logger = logger;
-
-            // Set default date to today to avoid loading 10 years of history at startup
-            StartDate = DateTime.Today;
-            EndDate = DateTime.Today;
-
+            _saleService = saleService;
+            _logger = logger;
             _ = LoadSalesAsync();
         }
-
-        // A barcode/QR scanner acts like a keyboard. 
-        // We can trigger search automatically when text changes (with debounce) or via a button.
-        async partial void OnSearchTicketNumberChanged(string value)
-        {
-            // If scanner is fast, you might want a 500ms debounce here like we did for POS
-            //if (value.Length > 7) // Assuming ticket numbers are at least 4 chars
-            //{
-            //    await LoadSalesAsync();
-            //}
-
-            Sales.Select(X => X.TicketNumber == value);
-        }
-
-        //fake load for testing the UI without backend
-        public void LoadFakeSales()
-        {
-            Sales.Clear();
-            var random = new Random();
-
-            for (int i = 1; i <= 20; i++)
-            {
-                // On génère des dates étalées sur le dernier mois
-                DateTime fakeDate = DateTime.Now.AddDays(-random.Next(0, 30))
-                                               .AddHours(-random.Next(1, 12));
-
-                Sales.Add(new SaleModel
-                {
-                    SaleID = i,
-                    // Format de ticket réaliste pour tester le scanner QR/Code-barres
-                    TicketNumber = $"TK-{fakeDate:yyyyMMdd}-{random.Next(100, 999)}",
-                    SaleDate = fakeDate,
-                    TotalAmount = (decimal)(random.NextDouble() * (15000 - 1000) + 1000), // Entre 1000 et 15000 DA
-                    UserID = 1,
-                    GlobalDiscount = random.Next(0, 5) == 0 ? 500 : 0 // Une remise de 500 DA une fois sur cinq
-                });
-            }
-
-            // Optionnel : Trier par date la plus récente
-            var sorted = Sales.OrderByDescending(s => s.SaleDate).ToList();
-            Sales.Clear();
-            foreach (var sale in sorted) Sales.Add(sale);
-        }
-
-
 
         [RelayCommand]
         private async Task LoadSalesAsync()
         {
-            //if (IsLoading) return;
-
-            //try
-            //{
-            //    IsLoading = true;
-            //    Sales.Clear();
-
-            //    var results = await _historyService.GetSalesAsync(SearchTicketNumber, StartDate, EndDate);
-
-            //    foreach (var sale in results)
-            //    {
-            //        Sales.Add(sale);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "Error loading sales history");
-            //    // TODO: Show Error Snackbar/MessageBox
-            //}
-            //finally
-            //{
-            //    IsLoading = false;
-            //}
-
-                LoadFakeSales();
+            if (IsLoading) return;
+            try
+            {
+                IsLoading = true;
+                Sales.Clear();
+                var results = await _saleService.GetSalesAsync(SearchTicketNumber, StartDate, EndDate);
+                foreach (var s in results) Sales.Add(s);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur chargement historique ventes");
+                MessageBox.Show("Impossible de charger l'historique.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally { IsLoading = false; }
         }
 
         [RelayCommand]
@@ -130,37 +62,50 @@ namespace Shiakati.ViewModels
             await LoadSalesAsync();
         }
 
-        
-
         [RelayCommand]
         private async Task EditSale(SaleModel selectedSale)
         {
-            if (selectedSale == null) return;
+            if (selectedSale?.SaleID == null) return;
+            var sale = await _saleService.GetSaleAsync(selectedSale.SaleID.Value);
+            if (sale == null)
+            {
+                MessageBox.Show("Vente introuvable.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var items = sale.Items.Select(i => new SaleItemModel
+            {
+                VariantID = i.VariantId,
+                Quantity = i.Quantity,
+                DiscountAmount = i.DiscountAmount
+            }).ToList();
 
-            // Fausse donnée pour la démo : On dit que ce ticket contenait le Parfum (VariantID = 3) en quantité 2
-            var fakeSaleItems = new List<SaleItemModel>
-        {
-            new SaleItemModel { VariantID = 3, Quantity = 2, DiscountAmount = 0 }
-        };
-
-            // Envoi du message au POSViewModel
-            WeakReferenceMessenger.Default.Send(new EditSaleMessage(selectedSale, fakeSaleItems));
-
-            // TODO: Demander au système de navigation de changer d'onglet (ex: NavigationService.NavigateTo("POS"))
+            WeakReferenceMessenger.Default.Send(new EditSaleMessage(
+                new SaleModel { SaleID = sale.SaleId, TicketNumber = sale.TicketNumber },
+                items));
+            WeakReferenceMessenger.Default.Send(new SwitchTabMessage("POS"));
         }
 
         [RelayCommand]
         private async Task VoidSaleAsync(SaleModel selectedSale)
         {
-            if (selectedSale == null || selectedSale.SaleID == null) return;
-
-            // TODO: Add a MessageBox confirmation here! "Are you sure you want to refund this ticket?"
-
-           // bool success = await _historyService.VoidSaleAsync(selectedSale.SaleID.Value);
-            //if (success)
-            //{
-            //    Sales.Remove(selectedSale);
-            //}
+            if (selectedSale?.SaleID == null) return;
+            var result = MessageBox.Show($"Annuler définitivement le ticket {selectedSale.TicketNumber} ?\nLes articles seront remis en stock.",
+                                          "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+            try
+            {
+                bool success = await _saleService.VoidSaleAsync(selectedSale.SaleID.Value);
+                if (success)
+                {
+                    Sales.Remove(selectedSale);
+                    MessageBox.Show("Vente annulée. Stock mis à jour.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur annulation vente");
+                MessageBox.Show("Erreur lors de l'annulation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

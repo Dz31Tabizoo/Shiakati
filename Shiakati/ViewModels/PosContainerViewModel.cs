@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Shiakati.Helpers;
 using Shiakati.ViewModels;
 using System.Collections.ObjectModel;
 
@@ -21,6 +23,12 @@ namespace Shiakati.ViewModels
         {
             _serviceProvider = serviceProvider;
             AddNewTab();
+            
+            WeakReferenceMessenger.Default.Register<SwitchTabMessage>(this, (r, m) =>
+            {
+                var tab = PosTabs.FirstOrDefault(t => t.TabName == m.TabName);
+                if (tab != null) SelectedTab = tab;
+            });
         }
 
         [RelayCommand]

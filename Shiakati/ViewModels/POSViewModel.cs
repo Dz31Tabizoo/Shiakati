@@ -297,47 +297,6 @@ namespace Shiakati.ViewModels
             else CartItems.Remove(item);
         }
         [RelayCommand] private void CancelEdit() => ResetPOS();
-        /* [RelayCommand] private async Task CheckoutAsync()
-         {
-             if (CartItems.Count == 0)
-             {
-                 MessageBox.Show("Le panier est vide !", "Action requise", MessageBoxButton.OK, MessageBoxImage.Warning);
-                 return;
-             }
-
-             IsLoading = true;
-             try
-             {
-                 string finalTicketNumber = IsEditMode ? $"{EditTicketNumber} (modifiée)" : $"TK-{DateTime.Now:yyyyMMddHHmmss}";
-
-                 var receipt = new ReceipModel
-                 {
-                     TicketNumber = finalTicketNumber,
-                     Date = DateTime.Now,
-                     TotalAmount = CartTotal ?? 0,
-                     TotalDiscount = TotalDiscountAmount ?? 0,
-                     Items = CartItems.Select(c => new ReceiptItem
-                     {
-                         Designation = c.DisplayName,
-                         Quantity = c.Quantity ?? 0,
-                         UnitPrice = c.Variant?.SalePrice ?? 0,
-                     }).ToList()
-                 };
-
-                 // await _saleService.SaveTransactionAsync(receipt); 
-
-                 if (PrintTicket(receipt))
-                 {
-                     string actionMsg = IsEditMode ? "Modification de la vente validée" : "Vente validée";
-                     MessageBox.Show($"{actionMsg} pour un total de {CartTotal:N2} DA.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                     ResetPOS();
-                 }
-             }
-             finally
-             {
-                 IsLoading = false;
-             }
-         }*/
 
         [RelayCommand]
         private async Task CheckoutAsync()
@@ -351,55 +310,101 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                // Build the sale request – NO ticket number here
-                var saleRequest = new SaleRequest
+                if (IsEditMode && EditSaleId.HasValue)
                 {
-                    GlobalDiscount = 0,                     // or from UI if you add it later
-
-                    Items = CartItems.Select(c => new SaleItemDto
+                    // ─── UPDATE existing sale ───
+                    var updateRequest = new UpdateSaleRequest
                     {
-                        VariantId = c.Variant!.VariantId,
-                        Quantity = c.Quantity ?? 1,
-                        FixedDiscountApplied = c.IsDiscountPinned,
-                        ManualDiscountAmount = c.ManualDiscount
-                    }).ToList()
-                };
-
-                // Call the API
-                var result = await _saleService.CreateSaleAsync(saleRequest); // you need to add this method
-                if (result != null)
-                {
-                    // Now we have the real ticket number from the server
-                    var receipt = new ReceipModel
-                    {
-                        TicketNumber = result.TicketNumber,
-                        Date = DateTime.Now,
-                        TotalAmount = CartTotal ?? 0,
-                        TotalDiscount = TotalDiscountAmount ?? 0,
-                        Items = CartItems.Select(c => new ReceiptItem
+                        SaleId = EditSaleId.Value,
+                        GlobalDiscount = 0,   // or from UI if you add it later
+                        Items = CartItems.Select(c => new UpdateSaleItemDto
                         {
-                            Designation = c.DisplayName,
-                            Quantity = c.Quantity ?? 0,
-                            UnitPrice = c.Variant?.SalePrice ?? 0
+                            SaleItemId = c.SaleItemId,   // null for new items added during edit
+                            VariantId = c.Variant!.VariantId,
+                            Quantity = c.Quantity ?? 1,
+                            FixedDiscountApplied = c.IsDiscountPinned,
+                            ManualDiscountAmount = c.ManualDiscount
                         }).ToList()
                     };
 
-                    if (PrintTicket(receipt))
+                    var result = await _saleService.UpdateSaleAsync(EditSaleId.Value, updateRequest);
+                    if (result)
                     {
-                        MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}",
-                                        "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                        
+                        // Optionally fetch the updated sale to get total, or trust the UI
+                        var receipt = new ReceipModel
+                        {
+                            TicketNumber = EditTicketNumber,
+                            IsEdited = true,
+                            Date = DateTime.Now,
+                            TotalAmount = CartTotal ?? 0,
+                            TotalDiscount = TotalDiscountAmount ?? 0,
+                            Items = CartItems.Select(c => new ReceiptItem
+                            {
+                                Designation = c.DisplayName,
+                                Quantity = c.Quantity ?? 0,
+                                UnitPrice = c.Variant?.SalePrice ?? 0
+                            }).ToList()
+                        };
+
+                        if (PrintTicket(receipt))
+                        {
+                            MessageBox.Show($"Vente modifiée – Ticket {EditTicketNumber}",
+                                            "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        _cacheService.Remove(CacheKeys.StockVariants);
+                        _ = LoadProductsAsync();
+                        ResetPOS();
                     }
-                    // Refresh cache / stock
-                    _cacheService.Remove(CacheKeys.StockVariants);
-                    _ = LoadProductsAsync();
-                    ResetPOS();
-
-
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la modification de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Erreur lors de l'enregistrement de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // ─── CREATE new sale ───
+                    var saleRequest = new SaleRequest
+                    {
+                        GlobalDiscount = 0,   // or from UI
+                        Items = CartItems.Select(c => new SaleItemDto
+                        {
+                            VariantId = c.Variant!.VariantId,
+                            Quantity = c.Quantity ?? 1,
+                            FixedDiscountApplied = c.IsDiscountPinned,
+                            ManualDiscountAmount = c.ManualDiscount
+                        }).ToList()
+                    };
+
+                    var result = await _saleService.CreateSaleAsync(saleRequest);
+                    if (result != null)
+                    {
+                        var receipt = new ReceipModel
+                        {
+                            TicketNumber = result.TicketNumber,
+                            Date = DateTime.Now,
+                            TotalAmount = CartTotal ?? 0,
+                            TotalDiscount = TotalDiscountAmount ?? 0,
+                            Items = CartItems.Select(c => new ReceiptItem
+                            {
+                                Designation = c.DisplayName,
+                                Quantity = c.Quantity ?? 0,
+                                UnitPrice = c.Variant?.SalePrice ?? 0
+                            }).ToList()
+                        };
+
+                        if (PrintTicket(receipt))
+                        {
+                            MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}",
+                                            "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        _cacheService.Remove(CacheKeys.StockVariants);
+                        _ = LoadProductsAsync();
+                        ResetPOS();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de l'enregistrement de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             finally
@@ -407,10 +412,10 @@ namespace Shiakati.ViewModels
                 IsLoading = false;
             }
         }
-
         /*---------------------------------------------
          * Helper Methods 
          *---------------------------------------------*/
+
 
         public void LoadSaleForEditing(SaleModel sale, IEnumerable<SaleItemModel> items)
         {
@@ -430,7 +435,8 @@ namespace Shiakati.ViewModels
                     var cartItem = new CartItem(variant)
                     {
                         Quantity = item.Quantity ?? 1,
-                        ManualDiscount = item.DiscountAmount
+                        ManualDiscount = item.DiscountAmount,
+                        SaleItemId = item.SaleItemID   // store the original sale item ID
                     };
                     CartItems.Add(cartItem);
                 }

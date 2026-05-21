@@ -106,7 +106,7 @@ namespace Shiakati
             services.AddTransient<LoginViewModel>();
             services.AddSingleton<StockViewModel>();
             services.AddTransient<StockView>();
-            services.AddSingleton<SalesHistoryViewModel>();
+            services.AddTransient<SalesHistoryViewModel>();
             services.AddTransient<SalesHistoryView>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();

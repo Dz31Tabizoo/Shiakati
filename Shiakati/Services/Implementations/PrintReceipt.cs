@@ -101,8 +101,17 @@ namespace Shiakati.Services.Implementations
             yPos += 15;
             g.DrawString("Adresse: Rue 1er Novembre, La Cia, Chlef 02", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
             yPos += 25;
-            g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-            yPos += 15;
+
+            if (_currentReceip.IsEdited)
+            {
+                g.DrawString($"*Vente Modifiée* Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+            }
+            else
+            {
+                g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+            }                
             g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
             yPos += 22;
 

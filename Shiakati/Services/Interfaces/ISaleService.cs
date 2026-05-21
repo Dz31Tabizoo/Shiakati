@@ -13,5 +13,8 @@ namespace Shiakati.Services.Interfaces
         Task<bool> UpdateSaleAsync(int saleId, UpdateSaleRequest request);
         Task<SaleResponse?> GetSaleAsync(int saleId);
         Task<List<SaleSummary>> GetSalesAsync();
+        Task<List<SaleModel>> GetSalesAsync(string? search, DateTime? from, DateTime? to);
+        Task<bool> VoidSaleAsync(int saleId);
+        
     }
 }
