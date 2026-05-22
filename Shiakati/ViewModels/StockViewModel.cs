@@ -74,6 +74,8 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isDimensionSizeVisible = true;
         [ObservableProperty] private bool _printLabelsOnSave = true;
         [ObservableProperty] private bool _isNonActiveItemsVisible = false;
+        [ObservableProperty] private bool _isManualSkuEnabled;
+        [ObservableProperty] private bool _isNotEditMode = true;
 
         // ===========================================================
         // IV. FILTERS & SELECTION
@@ -180,6 +182,8 @@ namespace Shiakati.ViewModels
             SelectedBrand = null;
             FilterColor = null;
             FilterFullSize = null;
+            IsManualSkuEnabled = false;
+            DraftSKU = string.Empty;
         }
 
         [RelayCommand]
@@ -200,7 +204,8 @@ namespace Shiakati.ViewModels
             DraftSelectedProduct = Products.FirstOrDefault(p => p.ProductName == item.ProductName && p.BrandName == item.BrandName);
 
             // variant details
-            DraftSKU = item.Sku;
+            IsManualSkuEnabled = false;   // never editable in edit mode
+            DraftSKU = item.Sku;         // show the existing SKU (read‑only)
             DraftPurchasePrice = item.PurchasePrice;
             DraftSalePrice = item.SalePrice;
             DraftFixedDiscount = item.DiscountFixed;
@@ -272,6 +277,7 @@ namespace Shiakati.ViewModels
                     ProductId = DraftSelectedProduct?.ProductID,
                     ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
                     // Variant fields
+
                     Color = DraftColor,
                     PurchasePrice = DraftPurchasePrice,
                     SalePrice = DraftSalePrice,
@@ -468,6 +474,7 @@ namespace Shiakati.ViewModels
         {
             ApplyFilters();
         }
+        partial void OnIsEditModeChanged(bool value) => IsNotEditMode = !value;
         private async Task ForceReloadAllDataAsync()
         {
             // 1. On vide le cache pour forcer l'application à demander des données fraîches

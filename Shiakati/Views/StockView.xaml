@@ -374,9 +374,15 @@
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
 
-                        <TextBox FontSize="13" materialDesign:HintAssist.Hint="Code-barres (SKU)" IsEnabled="False" Text="{Binding DraftSKU}" 
-                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15">
-                            <TextBox.ToolTip>Généré automatiquement lors de l'enregistrement</TextBox.ToolTip>
+                        <CheckBox Content="Saisir code-barres manuellement" 
+                                    IsChecked="{Binding IsManualSkuEnabled}" 
+                                    FontSize="12" Margin="0,0,0,5"
+                                    Visibility="{Binding IsNotEditMode, Converter={StaticResource BoolToVis}}"/>
+                        <TextBox FontSize="13" materialDesign:HintAssist.Hint="Code-barres (SKU)" 
+                                 Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}" 
+                                 IsEnabled="{Binding IsManualSkuEnabled}"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15">
+                            <TextBox.ToolTip>Laissez vide pour générer automatiquement, ou scannez le code-barres existant</TextBox.ToolTip>
                         </TextBox>
 
                         <Grid Margin="0,0,0,15">
