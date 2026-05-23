@@ -150,8 +150,7 @@ namespace Shiakati.ViewModels
          * Search & Filter Logic
          *---------------------------------------------*/
 
-        [RelayCommand]
-        private async Task ProcessScanOrSearchAsync()
+        [RelayCommand] private async Task ProcessScanOrSearchAsync()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
                 return;
@@ -171,8 +170,7 @@ namespace Shiakati.ViewModels
 
         partial void OnSearchTextChanged(string value) => ApplyFilters();
 
-        [RelayCommand]
-        private void ApplyFilters()
+        [RelayCommand] private void ApplyFilters()
         {
             var query = _allProducts.AsEnumerable();
 
@@ -232,7 +230,7 @@ namespace Shiakati.ViewModels
         /*---------------------------------------------
          * Cart Event Handlers
          *---------------------------------------------*/
-
+        
         partial void OnSelectedCategoryChanged(string value) => ApplyFilters();
         partial void OnSelectedBrandChanged(string value) => ApplyFilters();
         partial void OnSelectedColorChanged(string value) => ApplyFilters();
@@ -273,22 +271,28 @@ namespace Shiakati.ViewModels
             if (selectedVariant == null) return;
 
             var existingItem = CartItems.FirstOrDefault(c => c.Variant?.VariantId == selectedVariant.VariantId);
-
             if (existingItem != null)
             {
-                existingItem.Quantity = (existingItem.Quantity ?? 0) + 1;
+                // Reuse the increment logic which checks stock
+                IncrementQty(existingItem);
             }
             else
             {
                 CartItems.Add(new CartItem(selectedVariant));
             }
-
             SearchText = string.Empty;
         }
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
         [RelayCommand] private void IncrementQty(CartItem item)
         {
-            if (item != null) item.Quantity = (item.Quantity ?? 0) + 1;
+            if (item == null || item.Variant == null) return;
+            int maxStock = item.Variant.StockQuantity ?? 0;
+            if ((item.Quantity ?? 0) >= maxStock)
+            {
+                MessageBox.Show($"Stock maximum atteint ({maxStock} unité(s)).", "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            item.Quantity = (item.Quantity ?? 0) + 1;
         }
         [RelayCommand] private void DecrementQty(CartItem item)
         {
@@ -297,9 +301,7 @@ namespace Shiakati.ViewModels
             else CartItems.Remove(item);
         }
         [RelayCommand] private void CancelEdit() => ResetPOS();
-
-        [RelayCommand]
-        private async Task CheckoutAsync()
+        [RelayCommand] private async Task CheckoutAsync()
         {
             if (CartItems.Count == 0)
             {
@@ -307,6 +309,27 @@ namespace Shiakati.ViewModels
                 return;
             }
 
+            // 1. Vérifier remise excessive
+            bool remiseExcessive = CartItems.Any(item =>                
+                item.ManualDiscount.HasValue &&
+                item.ManualDiscount.Value > 0 &&
+                item.Variant.DiscountFixed.HasValue &&
+                item.IsDiscountPinned);
+
+            if (remiseExcessive)
+            {
+                var result = MessageBox.Show(
+                    "Un ou plusieurs articles ont une remise manuelle supérieure à la remise fixe.\n\n" +
+                    "Voulez-vous continuer ?",
+                    "Remise élevée",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return;   // L'utilisateur a refusé → annuler la vente
+            }
+
+            // 2. Si on arrive ici, la vente peut continuer (soit pas de remise excessive, soit acceptée)
             IsLoading = true;
             try
             {
@@ -412,6 +435,13 @@ namespace Shiakati.ViewModels
                 IsLoading = false;
             }
         }
+
+
+
+
+
+           
+        
         /*---------------------------------------------
          * Helper Methods 
          *---------------------------------------------*/
