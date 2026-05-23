@@ -19,10 +19,10 @@
             <converters:CommonEqualityConverter x:Key="CommonEqualityConverter" />
         </UserControl.Resources>        
         
-    <Grid Margin="10">
+      <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Margin="0,0,15,0">
@@ -93,25 +93,39 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Padding="0" Margin="6" Height="130" Width="160">
-                            <materialDesign:Card UniformCornerRadius="8" Background="White" Width="160" Height="130">
-                                <Grid Margin="12">
+            CommandParameter="{Binding}"
+            Style="{StaticResource MaterialDesignFlatButton}" 
+            Padding="0" Margin="5" Height="140" Width="165">
+                            <materialDesign:Card UniformCornerRadius="10" Background="White" 
+                             Width="165" Height="140"
+                             materialDesign:ElevationAssist.Elevation="Dp1">
+                                <Grid Margin="10">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" 
-                                               Text="{Binding BrandName}" 
-                                               Foreground="#888888" 
-                                               FontSize="11" 
-                                               FontWeight="Medium" 
-                                               TextTrimming="CharacterEllipsis" 
-                                               Margin="0,0,0,4"/>
+                                    <!-- Brand + optional SKU (subtle) -->
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding BrandName}" 
+                               Foreground="#757575" 
+                               FontSize="11" 
+                               FontWeight="Medium" 
+                               TextTrimming="CharacterEllipsis"
+                               MaxWidth="100"/>
+                                        <TextBlock Text="{Binding Sku}" 
+                               Foreground="#BDBDBD" 
+                               FontSize="10" 
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               MaxWidth="80"
+                               TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
 
+                                    <!-- Product name -->
                                     <TextBlock Grid.Row="1" 
                                                Text="{Binding ProductName}" 
                                                FontSize="14" 
@@ -119,34 +133,51 @@
                                                TextWrapping="Wrap" 
                                                TextTrimming="CharacterEllipsis" 
                                                VerticalAlignment="Top"
-                                               MaxHeight="40"
-                                               LineHeight="18"/>
+                                               MaxHeight="45"
+                                               LineHeight="16"
+                                               Foreground="#212121"/>
 
-                                    <Grid Grid.Row="2" Margin="0,8,0,0" VerticalAlignment="Bottom">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
 
-                                        <Border Grid.Column="0" 
+                                    <Border Grid.Row="2"
+                                            Background="{StaticResource PrimaryBrush}" 
+                                            CornerRadius="10" 
+                                            Padding="6,3" 
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Color}" 
+                                                   FontSize="13" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="WhiteSmoke"                                                   
+                                                   Width="Auto"
+                                                   TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </Border>
+
+                                    <!-- Size chip + price -->
+                                    
+
+                                        <Border Grid.Row="3"
                                                 Background="{StaticResource BgBrush}" 
-                                                CornerRadius="4" 
-                                                Padding="6,2" 
+                                                CornerRadius="10" 
+                                                Padding="6,3" 
                                                 VerticalAlignment="Center">
                                             <TextBlock Text="{Binding FullSize}" 
-                                                       FontSize="12" 
+                                                       FontSize="13" 
                                                        FontWeight="Bold" 
-                                                       Foreground="{StaticResource PrimaryBrush}"/>
+                                                       Foreground="{StaticResource PrimaryBrush}"
+                                                       MaxWidth="60"
+                                                       TextTrimming="CharacterEllipsis"/>
                                         </Border>
 
-                                        <TextBlock Grid.Column="1" 
-                                                   Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
-                                                   FontSize="15" 
-                                                   FontWeight="Bold" 
-                                                   Foreground="{StaticResource SecondaryBrush}" 
-                                                   HorizontalAlignment="Right" 
-                                                   VerticalAlignment="Center"/>
-                                    </Grid>
+                                            <TextBlock Grid.Row="4" 
+                                                        Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
+                                                        FontSize="14" 
+                                                        FontWeight="Bold" 
+                                                        Foreground="{StaticResource SecondaryBrush}" 
+                                                        HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"
+                                                        MaxWidth="110"
+                                                        TextTrimming="CharacterEllipsis"/>
+                                    
                                 </Grid>
                             </materialDesign:Card>
                         </Button>
@@ -156,7 +187,7 @@
         </Grid>
 
         <!-- Cart & checkout (unchanged) -->
-        <materialDesign:Card Grid.Column="1" UniformCornerRadius="15" Background="White">
+        <materialDesign:Card Grid.Column="1" UniformCornerRadius="15" Width="Auto" MinWidth="400" Background="White">
             <Grid Margin="15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -202,7 +233,7 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Article" Width="400">
+                        <DataGridTemplateColumn Header="Article" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" 
