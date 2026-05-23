@@ -20,7 +20,7 @@ namespace Shiakati.ViewModels
     public partial class StockViewModel : ObservableObject
     {
         // ===========================================================
-        // I. SERVICES
+        // I.                     SERVICES
         // ===========================================================
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogService _catalogDb;
@@ -50,7 +50,7 @@ namespace Shiakati.ViewModels
         }
 
         // ===========================================================
-        // II. COLLECTIONS
+        // II.                   COLLECTIONS
         // ===========================================================
         public ObservableCollection<CategoryModel> Categories { get; }
         public ObservableCollection<BrandsModel> Brands { get; }
@@ -65,7 +65,7 @@ namespace Shiakati.ViewModels
         private List<ProductVariantModel> _allStockItems = new();
 
         // ===========================================================
-        // III. UI STATES
+        // III.                 UI STATES
         // ===========================================================
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private bool _isReceptionVisible;
@@ -537,7 +537,7 @@ namespace Shiakati.ViewModels
             DraftProductName = string.Empty;
             DraftColor = string.Empty;
             DraftNumericSize = string.Empty;
-            DraftWidth = string.Empty;
+            DraftWidth = null;
             DraftLength = string.Empty;
             DraftPurchasePrice = null;
             DraftFixedDiscount = null;
