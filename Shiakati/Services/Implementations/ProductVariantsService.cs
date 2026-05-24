@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using static System.Net.WebRequestMethods;
 
 namespace Shiakati.Services.Implementations
 {
@@ -39,36 +40,31 @@ namespace Shiakati.Services.Implementations
             }
         }
 
-        
-        public async Task<bool> AddProductVariantAsync(AddVariantRequest request)
+        public async Task<ProductVariantResponse?> AddProductVariantAsync(AddVariantRequest request)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("api/stock/add", request);
-                return response.IsSuccessStatusCode;
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<ProductVariantResponse>();
+                return null;
             }
             catch(Exception ex)
             {
                 MessageBox.Show($"{ex}");
-                return false;
+                return null;
             }
         }
 
-        public async Task<bool> UpdateProductVariantAsync(UpdateVariantRequest request)
+        public async Task<ProductVariantResponse?> UpdateProductVariantAsync(UpdateVariantRequest request)
         {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("api/stock/update", request);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex}");
-                return false;
-            }
+            var response = await _httpClient.PutAsJsonAsync("api/stock/update", request);
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<ProductVariantResponse>();
+            return null;
         }
 
-        
+
 
     }
 }

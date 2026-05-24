@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using global::Shiakati.Models;
 using Serilog;
 using Shiakati.Helpers;
+using Shiakati.Messages;
 using Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
 using Shiakati.ViewModels;
@@ -140,17 +142,8 @@ namespace Shiakati.ViewModels
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                   
-                    FilteredStock.Clear();
-                    if (IsNonActiveItemsVisible)
-                    {
-                        FilteredStock.AddRange(_allStockItems);
-                    }
-                    else
-                    {
-                        var activeItems = _allStockItems.Where(i => i.IsActive == true).ToList();
-                        FilteredStock.AddRange(activeItems);
-                    }
+
+                    ApplyFilters();
 
                     Categories.Clear();
                     foreach (var c in catalog.Categories) Categories.Add(c);
@@ -170,12 +163,8 @@ namespace Shiakati.ViewModels
             }
             finally { IsLoading = false; }
         }
-
-        [RelayCommand]
-        private void ToggleReception() { IsReceptionVisible = !IsReceptionVisible; IsEditMode = false; ClearDraft(); }
-
-        [RelayCommand]
-        private void ClearFilters()
+        [RelayCommand] private void ToggleReception() { IsReceptionVisible = !IsReceptionVisible; IsEditMode = false; ClearDraft(); }
+        [RelayCommand] private void ClearFilters()
         {
             SearchText = string.Empty;
             SelectedCategory = null;
@@ -185,9 +174,7 @@ namespace Shiakati.ViewModels
             IsManualSkuEnabled = false;
             DraftSKU = string.Empty;
         }
-
-        [RelayCommand]
-        private void PrepareEdit(ProductVariantModel item)
+        [RelayCommand] private void PrepareEdit(ProductVariantModel item)
         {
             if (item == null) return;
             IsEditMode = true;
@@ -232,9 +219,7 @@ namespace Shiakati.ViewModels
             }
 
         }
-
-        [RelayCommand]
-        private async Task PrintFromGridAsync(ProductVariantModel item)
+        [RelayCommand] private async Task PrintFromGridAsync(ProductVariantModel item)
         {
             string printerToUse = Properties.Settings.Default.BarcodePrinterName;
             if (item == null) return;
@@ -253,9 +238,7 @@ namespace Shiakati.ViewModels
                 } , printerToUse,dialog.Quantity );
             }
         }
-
-        [RelayCommand]
-        private async Task ReceiveStockAsync()
+        [RelayCommand] private async Task ReceiveStockAsync()
         {
             if (!IsFormValid()) return;
             int numericSize = 0;
@@ -296,16 +279,21 @@ namespace Shiakati.ViewModels
                     updateRequest.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
                 }
 
-                bool success = await _stockService.UpdateProductVariantAsync(updateRequest);
+                var UpdatedVariant = await _stockService.UpdateProductVariantAsync(updateRequest);
 
-                if (success)
+                if (UpdatedVariant != null)
                 {
+                    _cacheService.Remove(CacheKeys.StockVariants);
+                    if (!string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
+                        _cacheService.Remove(CacheKeys.Catalog);
+
                     await ForceReloadAllDataAsync();
                     MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                    await PrintBarCodeOnReciveStock(updateRequest.ProductName, LabelsToPrint);
+                    await PrintBarCodeOnReciveStock(UpdatedVariant, LabelsToPrint);
                     IsReceptionVisible = false;
                     IsEditMode = false;
                     ClearDraft();
+                    WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
                 }
                 else
                 {
@@ -340,9 +328,9 @@ namespace Shiakati.ViewModels
                     request.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
                 }
 
-                bool isSuccess = await _stockService.AddProductVariantAsync(request);
+                var newVariant = await _stockService.AddProductVariantAsync(request);
 
-                if (isSuccess)
+                if (newVariant != null)
                 {
                     _cacheService.Remove(CacheKeys.StockVariants);
                     if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
@@ -351,10 +339,11 @@ namespace Shiakati.ViewModels
                     IsLoading = false;
                     await LoadInitialDataAsync(forceRefresh: true);
                     MessageBox.Show("Stock enregistré avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                    await PrintBarCodeOnReciveStock(request.ProductName, LabelsToPrint);
+                    await PrintBarCodeOnReciveStock(newVariant, LabelsToPrint);
                     IsReceptionVisible = false;
                     IsEditMode = false;
                     ClearDraft();
+                    WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
                 }
                 else
                 {
@@ -362,11 +351,8 @@ namespace Shiakati.ViewModels
                     MessageBox.Show("Erreur lors de l'enregistrement.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-        }
-
-        
-        [RelayCommand]
-        private async Task DeleteStockItemAsync(ProductVariantModel item)
+        }        
+        [RelayCommand] private async Task DeleteStockItemAsync(ProductVariantModel item)
         {
             if (item == null) return;
 
@@ -388,12 +374,16 @@ namespace Shiakati.ViewModels
                     IsActive = false
                 };
 
-                bool success = await _stockService.UpdateProductVariantAsync(updateRequest);
+                var UpdatedVariant = await _stockService.UpdateProductVariantAsync(updateRequest);
 
-                if (success)
+                if (UpdatedVariant != null && !string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
                 {
+                    if (updateRequest.BrandId == null && !string.IsNullOrWhiteSpace(updateRequest.BrandName))
+                        _cacheService.Remove(CacheKeys.Catalog);
                     // On utilise la méthode centralisée qui s'occupe de vider le cache et recharger
                     await ForceReloadAllDataAsync();
+
+                    WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
 
                     MessageBox.Show("Article supprimé du stock avec succès !", "Suppression réussie", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -411,23 +401,27 @@ namespace Shiakati.ViewModels
                 IsLoading = false;
             }
         }
-
-        private async Task PrintBarCodeOnReciveStock(string newProduct, int stockQuantity)
+        private async Task PrintBarCodeOnReciveStock(ProductVariantResponse newVariant, int Copies)
         {
-            var newItem = _allStockItems.FirstOrDefault(x => x.ProductName == newProduct);
-            var label = new BarecodeLabelData { 
-                Barcode = newItem.Sku,
-                BrandName = newItem.BrandName,
-                VariantName = newItem.ProductName,
-                ProductSize = newItem.FullSize,
-                Price = newItem.SalePrice?? 0,
-            };
+            if (PrintLabelsOnSave)
+            {
+                var label = new BarecodeLabelData
+                {
+                    Barcode = newVariant.Sku,
+                    BrandName = newVariant.BrandName,
+                    VariantName = newVariant.ProductName,
+                    ProductSize = newVariant.FullSize,
+                    Price = newVariant.SalePrice ?? 0,
+                };
 
-            _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, stockQuantity);
+                _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, Copies);
+            }
+            else
+            {
+                return;
+            }
         }
-
-        [RelayCommand]
-        private void StockAddingFiledsClear()
+        [RelayCommand] private void StockAddingFiledsClear()
         {
             ClearDraft();
         }
@@ -436,9 +430,21 @@ namespace Shiakati.ViewModels
         // VII. HELPERS & TRIGGERS
         // ===========================================================
 
-         partial void OnSearchTextChanged(string value)
+        private CancellationTokenSource? _searchDebounceToken;
+
+        partial void OnSearchTextChanged(string value)
         {
-            Task.Delay(500).ContinueWith(_ => ApplyFilters());
+            _searchDebounceToken?.Cancel();
+            _searchDebounceToken = new CancellationTokenSource();
+
+            var token = _searchDebounceToken.Token;
+            Task.Delay(500, token).ContinueWith(_ =>
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    Application.Current.Dispatcher.Invoke(() => ApplyFilters());
+                }
+            }, token);
         }
         partial void OnSelectedCategoryChanged(CategoryModel value) => ApplyFilters();
         partial void OnSelectedBrandChanged(BrandsModel value) => ApplyFilters();

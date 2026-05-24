@@ -22,37 +22,55 @@
 
         <!-- Filter bar -->
         <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16" UniformCornerRadius="8">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <DatePicker Grid.Column="0" 
-                            SelectedDate="{Binding StartDate}"
-                            materialDesign:HintAssist.Hint="Du"
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                            Margin="0,0,16,0" VerticalAlignment="Center"/>
-
-                <DatePicker Grid.Column="1" 
-                            SelectedDate="{Binding EndDate}"
-                            materialDesign:HintAssist.Hint="Au"
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                            Margin="0,0,16,0" VerticalAlignment="Center"/>
-
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Command="{Binding LoadMovementsCommand}" 
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Margin="0,0,8,0" Content="Rechercher" Cursor="Hand"/>
-
-                    <Button Command="{Binding ClearFiltersCommand}" 
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Content="Réinitialiser" Cursor="Hand"/>
+            <StackPanel>
+                <!-- Quick period chips -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Content="Aujourd'hui" Command="{Binding QuickSetPeriodCommand}" CommandParameter="today"
+                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
+                    <Button Content="Hier" Command="{Binding QuickSetPeriodCommand}" CommandParameter="yesterday"
+                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
+                    <Button Content="Semaine passée" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastweek"
+                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
+                    <Button Content="Mois passé" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastmonth"
+                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
+                    <Button Content="Année" Command="{Binding QuickSetPeriodCommand}" CommandParameter="year"
+                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
+                    <Button Content="Tout l'historique" Command="{Binding QuickSetPeriodCommand}" CommandParameter="all"
+                    Style="{StaticResource MaterialDesignFlatButton}"/>
                 </StackPanel>
-            </Grid>
-        </materialDesign:Card>
 
+                <!-- Original date filter row -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <DatePicker Grid.Column="0" 
+                        SelectedDate="{Binding StartDate}"
+                        materialDesign:HintAssist.Hint="Du"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+
+                    <DatePicker Grid.Column="1" 
+                        SelectedDate="{Binding EndDate}"
+                        materialDesign:HintAssist.Hint="Au"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Command="{Binding LoadMovementsCommand}" 
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Margin="0,0,8,0" Content="Rechercher" Cursor="Hand"/>
+
+                        <Button Command="{Binding ClearFiltersCommand}" 
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Content="Réinitialiser" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </materialDesign:Card>
         <!-- Grid -->
         <materialDesign:Card Grid.Row="1" UniformCornerRadius="8">
             <DataGrid ItemsSource="{Binding Movements}" 

@@ -41,6 +41,12 @@ namespace Shiakati.ViewModels
             });
 
             _ = LoadProductsAsync();
+            WeakReferenceMessenger.Default.Register<StockUpdatedMessage>(this, async (r, m) =>
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
+            });
+
+
         }
 
         /*---------------------------------------------

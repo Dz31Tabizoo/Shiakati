@@ -46,6 +46,41 @@ namespace Shiakati.ViewModels
         }
 
         [RelayCommand]
+        private async Task QuickSetPeriod(string period)
+        {
+            DateTime today = DateTime.Today;
+            switch (period)
+            {
+                case "today":
+                    StartDate = today;
+                    EndDate = today;
+                    break;
+                case "yesterday":
+                    StartDate = today.AddDays(-1);
+                    EndDate = today.AddDays(-1);
+                    break;
+                case "lastweek":
+                    StartDate = today.AddDays(-(int)today.DayOfWeek + 1 - 7);
+                    EndDate = StartDate.Value.AddDays(6);
+                    break;
+                case "lastmonth":
+                    var firstDayLastMonth = new DateTime(today.Year, today.Month, 1).AddMonths(-1);
+                    StartDate = firstDayLastMonth;
+                    EndDate = firstDayLastMonth.AddMonths(1).AddDays(-1);
+                    break;
+                case "year":
+                    StartDate = new DateTime(today.Year, 1, 1);
+                    EndDate = new DateTime(today.Year, 12, 31);
+                    break;
+                case "all":
+                    StartDate = null;
+                    EndDate = null;
+                    break;
+            }
+            await LoadMovementsAsync();
+        }
+
+        [RelayCommand]
         private async Task ClearFiltersAsync()
         {
             StartDate = DateTime.Today.AddMonths(-1);

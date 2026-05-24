@@ -39,7 +39,11 @@
                         <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                                  materialDesign:HintAssist.Hint="Rechercher par Nom du produit ou SKU..."
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 Width="350" FontSize="16" VerticalAlignment="Center"/>
+                                 Width="350" FontSize="16" VerticalAlignment="Center">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding ApplyFiltersCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
                     </StackPanel>
 
                     <Button Grid.Column="1" Content="RÉINITIALISER LES FILTRES" Style="{StaticResource MaterialDesignFlatLightButton}" 

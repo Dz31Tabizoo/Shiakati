@@ -9,4 +9,6 @@ namespace Shiakati.Messages
     public class NavigateToPosMessage
     {
     }
+
+    public class StockUpdatedMessage { }
 }
