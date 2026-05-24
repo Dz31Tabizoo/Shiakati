@@ -219,23 +219,31 @@ namespace Shiakati.ViewModels
             }
 
         }
-        [RelayCommand] private async Task PrintFromGridAsync(ProductVariantModel item)
+        [RelayCommand]
+        private async Task PrintFromGridAsync(ProductVariantModel item)
         {
-            string printerToUse = Properties.Settings.Default.BarcodePrinterName;
-            if (item == null) return;
-            var dialog = new Shiakati.Views.PrintQuantityDialog { Owner = App.Current.MainWindow };
-            dialog.Quantity = item.StockQuantity ?? 1;
-            if (dialog.ShowDialog() == true)
+            try
             {
-                 _printerService.PrintBarCode(new BarecodeLabelData
+                string printerToUse = Properties.Settings.Default.BarcodePrinterName;
+                if (item == null) return;
+                var dialog = new Shiakati.Views.PrintQuantityDialog { Owner = App.Current.MainWindow };
+                dialog.Quantity = item.StockQuantity ?? 1;
+                if (dialog.ShowDialog() == true)
                 {
-                    VariantName = item.ProductName,
-                    Barcode = item.Sku,
-                    BrandName = item.BrandName,
-                    Price = item.SalePrice.GetValueOrDefault(),
-                    ProductSize = item.FullSize
+                    _printerService.PrintBarCode(new BarecodeLabelData
+                    {
+                        VariantName = item.ProductName,
+                        Barcode = item.Sku,
+                        BrandName = item.BrandName,
+                        Price = item.SalePrice.GetValueOrDefault(),
+                        ProductSize = item.FullSize
 
-                } , printerToUse,dialog.Quantity );
+                    }, printerToUse, dialog.Quantity);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'impression du code-barres: {ex.Message}", "Erreur d'impression", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         [RelayCommand] private async Task ReceiveStockAsync()
@@ -403,22 +411,29 @@ namespace Shiakati.ViewModels
         }
         private async Task PrintBarCodeOnReciveStock(ProductVariantResponse newVariant, int Copies)
         {
-            if (PrintLabelsOnSave)
+            try
             {
-                var label = new BarecodeLabelData
+                if (PrintLabelsOnSave)
                 {
-                    Barcode = newVariant.Sku,
-                    BrandName = newVariant.BrandName,
-                    VariantName = newVariant.ProductName,
-                    ProductSize = newVariant.FullSize,
-                    Price = newVariant.SalePrice ?? 0,
-                };
+                    var label = new BarecodeLabelData
+                    {
+                        Barcode = newVariant.Sku,
+                        BrandName = newVariant.BrandName,
+                        VariantName = newVariant.ProductName,
+                        ProductSize = newVariant.FullSize,
+                        Price = newVariant.SalePrice ?? 0,
+                    };
 
-                _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, Copies);
+                    _printerService.PrintBarCode(label, Properties.Settings.Default.BarcodePrinterName, Copies);
+                }
+                else
+                {
+                    return;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show($"Erreur lors de l'impression du code-barres: {ex.Message}", "Erreur d'impression", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         [RelayCommand] private void StockAddingFiledsClear()
