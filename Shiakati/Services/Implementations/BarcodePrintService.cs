@@ -135,3 +135,6 @@ public class BarcodePrintService : IBarCodePrintService
     [System.Runtime.InteropServices.DllImport("gdi32.dll")]
     public static extern bool DeleteObject(IntPtr hObject);
 }
+
+
+

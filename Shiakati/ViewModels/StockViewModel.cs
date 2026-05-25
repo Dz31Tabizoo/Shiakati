@@ -220,13 +220,11 @@ namespace Shiakati.ViewModels
             }
 
         }
-
         [RelayCommand]
         private async Task PrintFromGridAsync(ProductVariantModel item)
         {
             try
             {
-
                 if (item == null || string.IsNullOrWhiteSpace(item.Sku))
                 {
                     MessageBox.Show("Code‑barres manquant pour cet article.", "Impossible d'imprimer", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -239,10 +237,6 @@ namespace Shiakati.ViewModels
                     MessageBox.Show("Aucune imprimante code‑barres sélectionnée dans les paramètres.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
-                var pd = new System.Windows.Controls.PrintDialog();
-                pd.PrintQueue = new System.Printing.LocalPrintServer().GetPrintQueue(printerToUse);
-                pd.PrintVisual(new System.Windows.Controls.TextBlock { Text = "TEST" }, "Test Label");
 
                 // Safely find a valid owner window
                 Window? owner = Application.Current.MainWindow;
