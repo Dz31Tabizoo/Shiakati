@@ -8,6 +8,7 @@ using Shiakati.Messages;
 using Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
 using Shiakati.ViewModels;
+using Shiakati.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -219,15 +220,45 @@ namespace Shiakati.ViewModels
             }
 
         }
+
         [RelayCommand]
         private async Task PrintFromGridAsync(ProductVariantModel item)
         {
             try
             {
+
+                if (item == null || string.IsNullOrWhiteSpace(item.Sku))
+                {
+                    MessageBox.Show("Code‑barres manquant pour cet article.", "Impossible d'imprimer", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 string printerToUse = Properties.Settings.Default.BarcodePrinterName;
-                if (item == null) return;
-                var dialog = new Shiakati.Views.PrintQuantityDialog { Owner = App.Current.MainWindow };
-                dialog.Quantity = item.StockQuantity ?? 1;
+                if (string.IsNullOrWhiteSpace(printerToUse))
+                {
+                    MessageBox.Show("Aucune imprimante code‑barres sélectionnée dans les paramètres.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var pd = new System.Windows.Controls.PrintDialog();
+                pd.PrintQueue = new System.Printing.LocalPrintServer().GetPrintQueue(printerToUse);
+                pd.PrintVisual(new System.Windows.Controls.TextBlock { Text = "TEST" }, "Test Label");
+
+                // Safely find a valid owner window
+                Window? owner = Application.Current.MainWindow;
+                if (owner == null || owner is PrintQuantityDialog) // guard against self-reference
+                {
+                    owner = Application.Current.Windows
+                               .OfType<Window>()
+                               .FirstOrDefault(w => w.IsActive && !(w is PrintQuantityDialog))
+                            ?? Application.Current.Windows
+                                   .OfType<Window>()
+                                   .FirstOrDefault(w => !(w is PrintQuantityDialog));
+                }
+
+                var dialog = new PrintQuantityDialog { Quantity = item.StockQuantity ?? 1 };
+                if (owner != null) dialog.Owner = owner;
+
                 if (dialog.ShowDialog() == true)
                 {
                     _printerService.PrintBarCode(new BarecodeLabelData
@@ -237,15 +268,15 @@ namespace Shiakati.ViewModels
                         BrandName = item.BrandName,
                         Price = item.SalePrice.GetValueOrDefault(),
                         ProductSize = item.FullSize
-
                     }, printerToUse, dialog.Quantity);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de l'impression du code-barres: {ex.Message}", "Erreur d'impression", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Erreur lors de l'impression du code-barres : {ex.Message}", "Erreur d'impression", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         [RelayCommand] private async Task ReceiveStockAsync()
         {
             if (!IsFormValid()) return;
