@@ -271,8 +271,7 @@ namespace Shiakati.ViewModels
          * Commands (POS Actions)
          *---------------------------------------------*/
 
-        [RelayCommand]
-        private void AddToCart(ProductVariantModel selectedVariant)
+        [RelayCommand] private void AddToCart(ProductVariantModel selectedVariant)
         {
             if (selectedVariant == null) return;
 
@@ -442,12 +441,6 @@ namespace Shiakati.ViewModels
             }
         }
 
-
-
-
-
-           
-        
         /*---------------------------------------------
          * Helper Methods 
          *---------------------------------------------*/

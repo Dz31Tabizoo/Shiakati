@@ -140,7 +140,3 @@ namespace Shiakati
     }
 }
 
-// Service
-
-
-// ViewModel & View

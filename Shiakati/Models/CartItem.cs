@@ -57,7 +57,7 @@ namespace Shiakati.Models
         }
 
         // Priorise les données dénormalisées du Variant, sinon fallback sur l'objet Product
-        public string DisplayName => $"{Variant?.ProductName ?? Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
+        public string DisplayName => $"{Variant?.BrandName} {Variant?.ProductName ?? Product?.ProductName} {Variant?.FullSize} {Variant?.Color}".Trim();
 
         // Constructeur flexible : accepte un Variant seul ou avec son Produit parent
         public CartItem(ProductVariantModel variant, ProductModel? product = null)
@@ -67,8 +67,7 @@ namespace Shiakati.Models
             Quantity = 1;
         }
 
-        [RelayCommand]
-        private void ToggleDiscount()
+        [RelayCommand] private void ToggleDiscount()
         {
             IsDiscountPinned = !IsDiscountPinned;
             OnPropertyChanged(nameof(TotalPrice));
