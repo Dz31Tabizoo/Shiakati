@@ -107,7 +107,7 @@
 
 
                 <materialDesign:Card Grid.Row="2" UniformCornerRadius="8" Padding="5">
-                    <DataGrid ItemsSource="{Binding FilteredStock}" 
+                <DataGrid ItemsSource="{Binding FilteredStockView}" 
                   AutoGenerateColumns="False" 
                   CanUserAddRows="False" 
                   IsReadOnly="True" 

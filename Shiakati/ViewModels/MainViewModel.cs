@@ -69,16 +69,14 @@ namespace Shiakati.ViewModels
         {
             _authService.Logout();
 
-            var loginView = App.ServiceProvider.GetRequiredService<LoginView>();
+            var loginView = App.ServiceProvider?.GetRequiredService<LoginView>();
 
-            // Subscribe to login success BEFORE showing
             loginView.LoginSucceeded += () =>
             {
-                System.Windows.Application.Current.MainWindow?.Show();
+                App.Current.MainWindow?.Show();
             };
 
-            // Hide main window, show login
-            System.Windows.Application.Current.MainWindow?.Hide();
+            App.Current.MainWindow?.Hide();   // now hides the actual main menu
             loginView.Show();
         }
         [RelayCommand] private void NavigateToStockMovements() => CurrentView = StockMovements;

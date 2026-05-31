@@ -60,6 +60,7 @@ public partial class LoginViewModel : ObservableObject
         {
             // Navigation vers la vue principale
             var mainView = App.ServiceProvider.GetRequiredService<MainView>();
+            Application.Current.MainWindow = mainView;
             mainView.Show();
 
             // On demande la fermeture de la fenêtre de login proprement
