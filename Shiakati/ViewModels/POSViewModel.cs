@@ -156,25 +156,49 @@ namespace Shiakati.ViewModels
          * Search & Filter Logic
          *---------------------------------------------*/
 
-        [RelayCommand] private async Task ProcessScanOrSearchAsync()
+        private DateTime _lastKeystrokeTime = DateTime.MinValue;
+        private CancellationTokenSource? _searchDebounceToken;
+        private const int ScanSpeedThresholdMs = 150;   // wider window for split barcodes
+
+        partial void OnSearchTextChanged(string value)
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
-                return;
+            _searchDebounceToken?.Cancel();
+            _searchDebounceToken = new CancellationTokenSource();
+            var token = _searchDebounceToken.Token;
 
-            // 1. Check if the text is an exact SKU match
-            var exactMatch = _allProducts.FirstOrDefault(p =>
-                p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase));
-
-            if (exactMatch != null)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                // It's a barcode – add directly to cart
-                AddToCart(exactMatch);
-                SearchText = string.Empty;  // clear for the next scan
+                ApplyFilters();
                 return;
             }
+
+            // Detect scan by typing speed (widened to 150ms for split barcodes)
+            var now = DateTime.Now;
+            bool isScan = (now - _lastKeystrokeTime).TotalMilliseconds < ScanSpeedThresholdMs;
+            _lastKeystrokeTime = now;
+
+            if (isScan)
+            {
+                // Try exact SKU match on the FULL current value
+                var exactMatch = _allProducts.FirstOrDefault(p =>
+                    p.Sku != null && p.Sku.Equals(value, StringComparison.OrdinalIgnoreCase));
+
+                if (exactMatch != null)
+                {
+                    AddToCart(exactMatch);
+                    SearchText = string.Empty;
+                    return;
+                }
+            }
+
+            // Debounced filter for manual typing
+            Task.Delay(500, token).ContinueWith(_ =>
+            {
+                if (!token.IsCancellationRequested)
+                    Application.Current.Dispatcher.Invoke(() => ApplyFilters());
+            }, token);
         }
 
-        partial void OnSearchTextChanged(string value) => ApplyFilters();
 
         [RelayCommand] private void ApplyFilters()
         {

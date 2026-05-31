@@ -287,14 +287,14 @@
                             <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto" MinWidth="100"/>
                             <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto" MinWidth="80"/>
                             <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}" Width="Auto" MinWidth="80"/>
+                            <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green" FontWeight="SemiBold" Width="*"/>
 
                             <DataGridTextColumn Header="P. Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="Crimson" Width="Auto" MinWidth="120"/>
                             <DataGridTextColumn Header="Remise Fixe" 
                                             Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}" 
                                             Foreground="Orange" 
                                             Width="Auto" MinWidth="90"  FontSize="13"/>
-                            <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green" FontWeight="SemiBold" Width="*"/>
-                        </DataGrid.Columns>
+                            </DataGrid.Columns>
                     </DataGrid>
                 </materialDesign:Card>
 

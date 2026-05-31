@@ -35,14 +35,10 @@
             <materialDesign:Card Grid.Row="0" Padding="10" UniformCornerRadius="10" Margin="0,0,0,15">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="BarcodeScan" Width="30" Height="30" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
-                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}" 
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                              materialDesign:HintAssist.Hint="Scanner un code-barres ou chercher un produit..."
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Width="400" FontSize="18" VerticalAlignment="Center">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Return" Command="{Binding ProcessScanOrSearchCommand}"/>
-                        </TextBox.InputBindings>
-                    </TextBox>
+                             Width="400" FontSize="18" VerticalAlignment="Center"/>
                 </StackPanel>
             </materialDesign:Card>
 
