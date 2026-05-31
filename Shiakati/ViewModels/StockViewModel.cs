@@ -1153,12 +1153,10 @@ namespace Shiakati.ViewModels
                 }
             }, token);
         }
-
         partial void OnSelectedCategoryChanged(CategoryModel value) => FilteredStockView?.Refresh();
         partial void OnSelectedBrandChanged(BrandsModel value) => FilteredStockView?.Refresh();
         partial void OnFilterColorChanged(string value) => FilteredStockView?.Refresh();
         partial void OnFilterFullSizeChanged(string value) => FilteredStockView?.Refresh();
-
         partial void OnDraftCategoryChanged(CategoryModel value)
         {
             if (value == null) return;
@@ -1175,10 +1173,8 @@ namespace Shiakati.ViewModels
             };
             FilteredBrands.Refresh();
         }
-
         partial void OnIsNonActiveItemsVisibleChanged(bool value) => FilteredStockView?.Refresh();
         partial void OnIsEditModeChanged(bool value) => IsNotEditMode = !value;
-
         private async Task ForceReloadAllDataAsync()
         {
             _cacheService.Remove(CacheKeys.StockVariants);
@@ -1219,7 +1215,6 @@ namespace Shiakati.ViewModels
 
             return true;
         }
-
         private void UpdateFilterOptions(List<string> distinctColors, List<string> distinctSizes)
         {
             AllColors.Clear();
@@ -1229,7 +1224,6 @@ namespace Shiakati.ViewModels
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
         }
-
         private void ClearDraft()
         {
             IsEditMode = false;
@@ -1249,7 +1243,6 @@ namespace Shiakati.ViewModels
             DraftNewBrandName = string.Empty;
             DraftSelectedProduct = null;
         }
-
         private bool IsFormValid()
         {
             if (DraftCategory == null)

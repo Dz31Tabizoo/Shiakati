@@ -671,7 +671,7 @@ namespace Shiakati.ViewModels
         public decimal? TotalDiscountAmount => CartItems.Sum(x => x.TotalLineDiscount ?? 0);
         public decimal? CartTotal => CartSubTotal - TotalDiscountAmount;
 
-        private async Task LoadProductsAsync()
+        public async Task LoadProductsAsync()
         {
             try
             {

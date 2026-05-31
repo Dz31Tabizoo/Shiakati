@@ -57,7 +57,11 @@ namespace Shiakati.ViewModels
             CurrentView = Stock;
             await Stock.LoadInitialDataAsync(true);
         }
-        [RelayCommand] private void NavigateToPOS()=> CurrentView = PosContainer;
+        [RelayCommand] private void NavigateToPOS()
+        {
+            CurrentView = PosContainer;
+            PosContainer.SelectedTab?.LoadProductsAsync();
+        }
         [RelayCommand] private void NavigateToSalesHistory() => CurrentView = SalesHistory;
         [RelayCommand] private void ExitApplication()
         {
