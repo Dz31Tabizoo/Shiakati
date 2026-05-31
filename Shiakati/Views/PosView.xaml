@@ -216,7 +216,7 @@
 
                 <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
                           CanUserAddRows="False" Background="Transparent" BorderThickness="0"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           GridLinesVisibility="None"
                           HorizontalAlignment="Stretch" 
                           SelectionMode="Single">
