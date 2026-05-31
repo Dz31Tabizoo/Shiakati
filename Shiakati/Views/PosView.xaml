@@ -77,7 +77,8 @@
             </StackPanel>
 
             <!-- Product grid (unchanged) -->
-            <ListBox Grid.Row="2" ItemsSource="{Binding FilteredProducts}" 
+            <ListBox Grid.Row="2" 
+                     ItemsSource="{Binding FilteredProductsView}" 
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      Background="Transparent" BorderThickness="0"
                      HorizontalContentAlignment="Stretch">
@@ -89,91 +90,75 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-            CommandParameter="{Binding}"
-            Style="{StaticResource MaterialDesignFlatButton}" 
-            Padding="0" Margin="5" Height="140" Width="165">
-                            <materialDesign:Card UniformCornerRadius="10" Background="White" 
-                             Width="165" Height="140"
-                             materialDesign:ElevationAssist.Elevation="Dp1">
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource MaterialDesignFlatButton}" 
+                                Padding="0" Margin="6" Height="120" Width="175">
+                            <materialDesign:Card UniformCornerRadius="12" Background="White" 
+                                     Width="175" Height="120"
+                                     materialDesign:ElevationAssist.Elevation="Dp2">
                                 <Grid Margin="10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- Brand + optional SKU (subtle) -->
-                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
-                                        <TextBlock Text="{Binding BrandName}" 
-                               Foreground="#757575" 
-                               FontSize="11" 
-                               FontWeight="Medium" 
-                               TextTrimming="CharacterEllipsis"
-                               MaxWidth="100"/>
-                                        <TextBlock Text="{Binding Sku}" 
-                               Foreground="#BDBDBD" 
-                               FontSize="10" 
-                               Margin="8,0,0,0"
-                               VerticalAlignment="Center"
-                               MaxWidth="80"
-                               TextTrimming="CharacterEllipsis"/>
-                                    </StackPanel>
+                                    <!-- Brand (subtle) -->
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding BrandName}" 
+                                               FontSize="14" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" 
+                                               TextTrimming="CharacterEllipsis" 
+                                               MaxWidth="150"
+                                               Margin="0,0,0,2"/>
 
-                                    <!-- Product name -->
+                                    <!-- Product Name -->
                                     <TextBlock Grid.Row="1" 
                                                Text="{Binding ProductName}" 
-                                               FontSize="14" 
+                                               FontSize="13" 
                                                FontWeight="SemiBold" 
-                                               TextWrapping="Wrap" 
                                                TextTrimming="CharacterEllipsis" 
-                                               VerticalAlignment="Top"
-                                               MaxHeight="45"
-                                               LineHeight="16"
-                                               Foreground="#212121"/>
+                                               MaxHeight="40"
+                                               TextWrapping="Wrap"
+                                               LineHeight="18"
+                                               Foreground="{StaticResource PrimaryLightBrush}"/>
 
+                                    <!-- Color & Size pills -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4">
+                                        <Border Background="#E3F2FD" CornerRadius="8" Padding="6,2" Margin="0,0,6,0">
+                                            <TextBlock Text="{Binding Color}" FontSize="11" FontWeight="SemiBold" 
+                                           Foreground="#1565C0" MaxWidth="70" TextTrimming="CharacterEllipsis"/>
+                                        </Border>
+                                        <Border Background="#FFF3E0" CornerRadius="8" Padding="6,2">
+                                            <TextBlock Text="{Binding FullSize}" FontSize="11" FontWeight="SemiBold" 
+                                           Foreground="#E65100" MaxWidth="70" TextTrimming="CharacterEllipsis"/>
+                                        </Border>
+                                    </StackPanel>
 
-                                    <Border Grid.Row="2"
-                                            Background="{StaticResource PrimaryBrush}" 
-                                            CornerRadius="10" 
-                                            Padding="6,3" 
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Color}" 
-                                                   FontSize="13" 
-                                                   FontWeight="Bold" 
-                                                   Foreground="WhiteSmoke"                                                   
-                                                   Width="Auto"
-                                                   TextAlignment="Center"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                    </Border>
+                                    <!-- Stock + Price -->
+                                    <Grid Grid.Row="3" Margin="0,4,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <!-- Size chip + price -->
-                                    
-
-                                        <Border Grid.Row="3"
-                                                Background="{StaticResource BgBrush}" 
-                                                CornerRadius="10" 
-                                                Padding="6,3" 
-                                                VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding FullSize}" 
-                                                       FontSize="13" 
-                                                       FontWeight="Bold" 
-                                                       Foreground="{StaticResource PrimaryBrush}"
-                                                       MaxWidth="60"
-                                                       TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="10" Padding="8,3">
+                                            <TextBlock FontSize="12" FontWeight="Bold" Foreground="#424242">
+                                                <Run Text=" Q " FontWeight="ExtraLight" Foreground="{StaticResource PrimaryLightBrush}"/>
+                                                <Run Text="{Binding StockQuantity, Mode=OneWay}" Foreground="{StaticResource PrimaryBrush}"/>                                    
+                                            </TextBlock>
                                         </Border>
 
-                                            <TextBlock Grid.Row="4" 
-                                                        Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
-                                                        FontSize="14" 
-                                                        FontWeight="Bold" 
-                                                        Foreground="{StaticResource SecondaryBrush}" 
-                                                        HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"
-                                                        MaxWidth="110"
-                                                        TextTrimming="CharacterEllipsis"/>
-                                    
+                                        <TextBlock Grid.Column="1" 
+                                       Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
+                                       FontSize="14" 
+                                       FontWeight="Bold" 
+                                       Foreground="{StaticResource SecondaryBrush}" 
+                                       HorizontalAlignment="Right" 
+                                       VerticalAlignment="Center"/>
+                                    </Grid>
                                 </Grid>
                             </materialDesign:Card>
                         </Button>

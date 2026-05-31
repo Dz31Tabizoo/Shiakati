@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
+using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
-using Shiakati.Messages;
+using System.Windows.Data;
 
 namespace Shiakati.ViewModels
 {
@@ -76,7 +78,9 @@ namespace Shiakati.ViewModels
 
         // Collections
         private List<ProductVariantModel> _allProducts = new();
-        [ObservableProperty] private ObservableCollection<ProductVariantModel> _filteredProducts = new();
+        // [ObservableProperty] private ObservableCollection<ProductVariantModel> _filteredProducts = new();
+
+        public ICollectionView FilteredProductsView { get; private set; } = null!;
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
         // Financial Totals
@@ -139,7 +143,8 @@ namespace Shiakati.ViewModels
                 FilterSizes.Add("TOUT");
                 foreach (var s in distinctSizes) FilterSizes.Add(s);
 
-                ApplyFilters();
+                FilteredProductsView = CollectionViewSource.GetDefaultView(_allProducts);
+                FilteredProductsView.Filter = ProductFilter;
             }
             catch (Exception ex)
             {
@@ -168,7 +173,7 @@ namespace Shiakati.ViewModels
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                ApplyFilters();
+                FilteredProductsView?.Refresh();
                 return;
             }
 
@@ -195,34 +200,65 @@ namespace Shiakati.ViewModels
             Task.Delay(500, token).ContinueWith(_ =>
             {
                 if (!token.IsCancellationRequested)
-                    Application.Current.Dispatcher.Invoke(() => ApplyFilters());
+                    Application.Current.Dispatcher.Invoke(() => FilteredProductsView?.Refresh());
             }, token);
         }
 
-
-        [RelayCommand] private void ApplyFilters()
+        private bool ProductFilter(object obj)
         {
-            var query = _allProducts.AsEnumerable();
+            if (obj is not ProductVariantModel p) return false;
 
-            if (!string.IsNullOrWhiteSpace(SelectedCategory) && !SelectedCategory.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
-                query = query.Where(p => string.Equals(p.CategoryName, SelectedCategory, StringComparison.OrdinalIgnoreCase));
+            // Active + stock check is already done when loading; kept here for safety
+            if (p.IsActive != true || p.StockQuantity <= 0) return false;
 
-            if (!string.IsNullOrWhiteSpace(SelectedBrand) && !SelectedBrand.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
-                query = query.Where(p => string.Equals(p.BrandName, SelectedBrand, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(SelectedCategory) && SelectedCategory != "TOUT" &&
+                !string.Equals(p.CategoryName, SelectedCategory, StringComparison.OrdinalIgnoreCase))
+                return false;
 
-            if (!string.IsNullOrWhiteSpace(SelectedColor) && !SelectedColor.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
-                query = query.Where(p => string.Equals(p.Color, SelectedColor, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(SelectedBrand) && SelectedBrand != "TOUT" &&
+                !string.Equals(p.BrandName, SelectedBrand, StringComparison.OrdinalIgnoreCase))
+                return false;
 
-            if (!string.IsNullOrWhiteSpace(SelectedSize) && !SelectedSize.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
-                query = query.Where(p => string.Equals(p.FullSize, SelectedSize, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrWhiteSpace(SelectedColor) && SelectedColor != "TOUT" &&
+                !string.Equals(p.Color, SelectedColor, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (!string.IsNullOrWhiteSpace(SelectedSize) && SelectedSize != "TOUT" &&
+                !string.Equals(p.FullSize, SelectedSize, StringComparison.OrdinalIgnoreCase))
+                return false;
 
             if (!string.IsNullOrWhiteSpace(SearchText))
-                query = query.Where(p =>
-                    (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
-                    (p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase)));
+            {
+                return (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
+                       (p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase));
+            }
 
-            FilteredProducts = new ObservableCollection<ProductVariantModel>(query);
+            return true;
         }
+
+        //[RelayCommand] private void ApplyFilters()
+        //{
+        //    var query = _allProducts.AsEnumerable();
+
+        //    if (!string.IsNullOrWhiteSpace(SelectedCategory) && !SelectedCategory.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
+        //        query = query.Where(p => string.Equals(p.CategoryName, SelectedCategory, StringComparison.OrdinalIgnoreCase));
+
+        //    if (!string.IsNullOrWhiteSpace(SelectedBrand) && !SelectedBrand.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
+        //        query = query.Where(p => string.Equals(p.BrandName, SelectedBrand, StringComparison.OrdinalIgnoreCase));
+
+        //    if (!string.IsNullOrWhiteSpace(SelectedColor) && !SelectedColor.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
+        //        query = query.Where(p => string.Equals(p.Color, SelectedColor, StringComparison.OrdinalIgnoreCase));
+
+        //    if (!string.IsNullOrWhiteSpace(SelectedSize) && !SelectedSize.Equals("TOUT", StringComparison.OrdinalIgnoreCase))
+        //        query = query.Where(p => string.Equals(p.FullSize, SelectedSize, StringComparison.OrdinalIgnoreCase));
+
+        //    if (!string.IsNullOrWhiteSpace(SearchText))
+        //        query = query.Where(p =>
+        //            (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
+        //            (p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase)));
+
+        //    FilteredProducts = new ObservableCollection<ProductVariantModel>(query);
+        //}
 
         /*---------------------------------------------
          * Toggle filter commands
@@ -232,25 +268,27 @@ namespace Shiakati.ViewModels
         private void ToggleCategory(string category)
         {
             SelectedCategory = ToggleValue(SelectedCategory, category);
-            ApplyFilters();
+            FilteredProductsView?.Refresh();
         }
         [RelayCommand]
         private void ToggleBrand(string brand)
         {
             SelectedBrand = ToggleValue(SelectedBrand, brand);
-            ApplyFilters();
+            FilteredProductsView?.Refresh();
         }
         [RelayCommand]
         private void ToggleColor(string color)
         {
             SelectedColor = ToggleValue(SelectedColor, color);
-            ApplyFilters();
+            FilteredProductsView?.Refresh();
+
         }
         [RelayCommand]
         private void ToggleSize(string size)
         {
             SelectedSize = ToggleValue(SelectedSize, size);
-            ApplyFilters();
+            FilteredProductsView?.Refresh();
+
         }
         private string? ToggleValue(string? current, string value)
         {
@@ -261,10 +299,14 @@ namespace Shiakati.ViewModels
          * Cart Event Handlers
          *---------------------------------------------*/
         
-        partial void OnSelectedCategoryChanged(string value) => ApplyFilters();
-        partial void OnSelectedBrandChanged(string value) => ApplyFilters();
-        partial void OnSelectedColorChanged(string value) => ApplyFilters();
-        partial void OnSelectedSizeChanged(string value) => ApplyFilters();
+        partial void OnSelectedCategoryChanged(string value) => FilteredProductsView?.Refresh();
+
+        partial void OnSelectedBrandChanged(string value) => FilteredProductsView?.Refresh();
+
+        partial void OnSelectedColorChanged(string value) => FilteredProductsView?.Refresh();
+
+        partial void OnSelectedSizeChanged(string value) => FilteredProductsView?.Refresh();
+
         private void CartItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -507,7 +549,8 @@ namespace Shiakati.ViewModels
             SearchText = string.Empty;
 
             ResetCartMemorySafe();
-            ApplyFilters();
+            FilteredProductsView?.Refresh();
+
         }
 
         private void ResetCartMemorySafe()
