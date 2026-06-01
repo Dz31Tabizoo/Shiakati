@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Shiakati.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1024"
@@ -12,13 +13,21 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Filter card -->
+            <RowDefinition Height="Auto"/>
+            <!-- Progress bar -->
             <RowDefinition Height="*"/>
+            <!-- History grid -->
+            <RowDefinition Height="Auto"/>
+            <!-- Bonus button + grid -->
         </Grid.RowDefinitions>
+        
         <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16" UniformCornerRadius="8">
             <StackPanel>
                 <!-- Quick period chips -->
@@ -70,8 +79,8 @@
 
                     <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                         <Button Command="{Binding LoadSalesCommand}" 
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        Margin="0,0,8,0" Content="Rechercher" Cursor="Hand"/>
+                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                        Margin="0,0,8,0" Foreground="White" Content="Rechercher" Cursor="Hand"/>
 
                         <Button Command="{Binding ClearFiltersCommand}" 
                         Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -86,7 +95,7 @@
                      Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"
                      Panel.ZIndex="1"/>
 
-        <materialDesign:Card Grid.Row="1" UniformCornerRadius="8">
+        <materialDesign:Card Grid.Row="2" UniformCornerRadius="8">
             <DataGrid ItemsSource="{Binding Sales}" 
                       AutoGenerateColumns="False" 
                       CanUserAddRows="False" 
@@ -144,5 +153,27 @@
                 </DataGrid.Columns>
             </DataGrid>
         </materialDesign:Card>
+        <!-- Bonus section -->
+        <StackPanel Grid.Row="3" Margin="0,16,0,0">
+            <Button Content="Calculer les primes journalières" 
+                Command="{Binding CalculateDailyBonusesCommand}"
+                    Foreground="White"
+                Style="{StaticResource MaterialDesignFlatLightBgButton}"
+                HorizontalAlignment="Left" Margin="0,0,0,8"/>
+            <materialDesign:Card UniformCornerRadius="8" 
+Visibility="{Binding DailyBonuses.Count, Converter={StaticResource IntToVisibilityConverter}}"    >
+                <DataGrid ItemsSource="{Binding DailyBonuses}" 
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False" IsReadOnly="True"
+                      HeadersVisibility="All">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=dd/MM/yyyy}" Width="Auto"/>
+                        <DataGridTextColumn Header="Total Ventes" Binding="{Binding TotalSales, StringFormat={}{0:N2} DA}" Width="Auto"/>
+                        <DataGridTextColumn Header="% Prime" Binding="{Binding BonusPercentage, StringFormat={}{0:F1}%}" Width="Auto"/>
+                        <DataGridTextColumn Header="Montant Prime" Binding="{Binding BonusAmount, StringFormat={}{0:N2} DA}" Width="Auto"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </materialDesign:Card>
+        </StackPanel>
     </Grid>
 </UserControl>
