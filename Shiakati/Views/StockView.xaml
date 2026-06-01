@@ -204,7 +204,21 @@
                                                     </Style>
                                                 </MenuItem.Style>
                                             </MenuItem>
-                                        </ContextMenu>
+
+                                            <Separator/>
+
+                                        <MenuItem Header="Lancer l'inventaire du produit" 
+                                          Command="" 
+                                          CommandParameter="{Binding}">
+                                            <MenuItem.Icon>
+                                                <materialDesign:PackIcon Kind="ClipboardCheckMultiple" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+
+
+
+                                    </ContextMenu>
                                     </Setter.Value>
                                 </Setter>
 
@@ -283,13 +297,12 @@
                             <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Bold" Width="Auto" MinWidth="110"/>
                             <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}" Width="Auto" MinWidth="120"/>
                             <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}" Width="Auto" MinWidth="120"/>
-                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="2*" MinWidth="180"/>
+                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*" MinWidth="180"/>
                             <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto" MinWidth="100"/>
                             <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto" MinWidth="80"/>
                             <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}" Width="Auto" MinWidth="80"/>
-                            <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green" FontWeight="SemiBold" Width="*"/>
-
-                            <DataGridTextColumn Header="P. Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="Crimson" Width="Auto" MinWidth="120"/>
+                            <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green" FontWeight="SemiBold" Width="Auto"/>
+                            <DataGridTextColumn Header="P. Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="Crimson" Width="Auto" />
                             <DataGridTextColumn Header="Remise Fixe" 
                                             Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}" 
                                             Foreground="Orange" 
