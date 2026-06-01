@@ -22,6 +22,7 @@ namespace Shiakati.ViewModels
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleService _saleService;
+        private bool _skipGridRefresh;
 
         // ---- Stable collection for the ICollectionView ----
         private readonly ObservableCollection<ProductVariantModel> _posProducts = new();
@@ -163,9 +164,7 @@ namespace Shiakati.ViewModels
         }
 
         // ────────────── Search & Scan Detection ──────────────
-        private DateTime _lastKeystrokeTime = DateTime.MinValue;
         private CancellationTokenSource? _searchDebounceToken;
-        private const int ScanSpeedThresholdMs = 200;
 
         partial void OnSearchTextChanged(string value)
         {
@@ -175,31 +174,31 @@ namespace Shiakati.ViewModels
 
             if (string.IsNullOrWhiteSpace(value))
             {
+                // After a scan we skip the refresh – otherwise restore full list
+                if (_skipGridRefresh)
+                {
+                    _skipGridRefresh = false;
+                    return;          // ← no grid update after a scanned product was added
+                }
                 FilteredProductsView.Refresh();
                 return;
             }
 
-            var now = DateTime.Now;
-            bool isScan = (now - _lastKeystrokeTime).TotalMilliseconds < ScanSpeedThresholdMs;
-            _lastKeystrokeTime = now;
-
-            if (isScan)
+            // Exact SKU match? (works for both scanner and manual typing)
+            if (_skuLookup.TryGetValue(value, out var exactMatch))
             {
-                if (_skuLookup.TryGetValue(value, out var exactMatch))
-                {
-                    AddToCart(exactMatch);
-                    SearchText = string.Empty;
-                    return;
-                } 
+                _skipGridRefresh = true;               // prevent the next empty‑text refresh
+                AddToCart(exactMatch);                 // this will also clear SearchText
+                return;
             }
 
+            // No match – normal text search with debounce
             Task.Delay(500, token).ContinueWith(_ =>
             {
                 if (!token.IsCancellationRequested)
                     Application.Current.Dispatcher.Invoke(() => FilteredProductsView.Refresh());
             }, token);
         }
-
         private bool ProductFilter(object obj)
         {
             if (obj is not ProductVariantModel p) return false;
@@ -263,7 +262,7 @@ namespace Shiakati.ViewModels
                 IncrementQty(existingItem);
             else
                 CartItems.Add(new CartItem(selectedVariant));
-            
+            SearchText = string.Empty;
         }
 
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
