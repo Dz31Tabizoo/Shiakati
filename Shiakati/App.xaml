@@ -60,6 +60,14 @@
                         <views:StockMovementsView />
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type viewModels:ClientListViewModel}">
+                        <views:ClientListView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type viewModels:ClientDetailViewModel}">
+                        <views:ClientDetailView />
+                    </DataTemplate>
+
                 </ResourceDictionary>
                 
                 <ResourceDictionary>

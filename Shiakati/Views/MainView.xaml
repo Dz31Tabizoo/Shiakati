@@ -190,6 +190,15 @@
 
                     <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
 
+                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateToClientsCommand}" >
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountGroup" Width="48" Height="48" Margin="10,0,0,0"/>
+                            <TextBlock Text="Clients" Margin="35,0,0,0" FontSize="18" VerticalAlignment="Center" FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" Height="2" Margin="0,8,0,8"/>
+
                     <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavToSettingsCommand}" Height="60">
                         <StackPanel Orientation="Horizontal" >
                             <materialDesign:PackIcon Kind="Cogs" Width="48" Height="48" Margin="10,0,0,0"/>

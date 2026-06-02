@@ -26,6 +26,8 @@ namespace Shiakati.ViewModels
 
         public StockMovementsViewModel StockMovements { get; }
         public StockViewModel Stock { get; }
+
+        public ClientListViewModel ClientList { get; }
         public SettingsViewModel Settings { get; }
 
         public MainViewModel(ICacheService cacheService ,
@@ -34,7 +36,8 @@ namespace Shiakati.ViewModels
                             StockViewModel stockViewModel, 
                             SalesHistoryViewModel salesHistory,
                             SettingsViewModel settingsViewModel,
-                            StockMovementsViewModel stockMovementsViewModel)
+                            StockMovementsViewModel stockMovementsViewModel,
+                            ClientListViewModel clientList)
         {
             StockMovements = stockMovementsViewModel;
             _authService = authService;
@@ -44,6 +47,7 @@ namespace Shiakati.ViewModels
             Settings = settingsViewModel;
             // Vue par défaut au démarrage
             CurrentView = PosContainer;
+            ClientList = clientList;
 
             WeakReferenceMessenger.Default.Register<NavigateToPosMessage>(this, (r, m) =>
             {
@@ -84,6 +88,7 @@ namespace Shiakati.ViewModels
             loginView.Show();
         }
         [RelayCommand] private void NavigateToStockMovements() => CurrentView = StockMovements;
+        [RelayCommand] private void NavigateToClients() => CurrentView = ClientList;
 
     }
 }

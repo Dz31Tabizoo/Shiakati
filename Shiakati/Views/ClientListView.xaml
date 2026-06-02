@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Shiakati.Views.ClientListView"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Shiakati.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="768" d:DesignWidth="1024"
+             FontFamily="{StaticResource MontserratFont}">
+    
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
+                     materialDesign:HintAssist.Hint="Rechercher par nom ou téléphone…"
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                     Width="300" FontSize="14"/>
+            <Button Content="Ajouter un client" Command="{Binding AddNewClientCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Foreground="White" Margin="10,0,0,0"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Clients}" AutoGenerateColumns="False" IsReadOnly="True"
+                  SelectionMode="Single" SelectedItem="{Binding SelectedClient}" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nom" Binding="{Binding FullName}" MaxWidth="350" Width="*"/>
+                <DataGridTextColumn Header="Téléphone" Binding="{Binding PhoneNumber}" Width="Auto"/>
+                <DataGridTextColumn Header="Crédits" Binding="{Binding TotalCredits, StringFormat={}{0:N2} DA}" Width="Auto"/>
+                <DataGridTextColumn Header="Versements" Binding="{Binding TotalVersements, StringFormat={}{0:N2} DA}" Width="Auto"/>
+                <DataGridTextColumn Header="Solde" Binding="{Binding NetBalance, StringFormat={}{0:N2} DA}" Width="Auto"
+                                    Foreground="Green"/>
+            </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+    </Grid>
+
+</UserControl>

@@ -101,6 +101,11 @@ namespace Shiakati
             })
              .AddHttpMessageHandler<AuthenticationHandler>();
 
+            services.AddHttpClient<IClientService, ClientService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            }).AddHttpMessageHandler<AuthenticationHandler>();
+
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
             // ---------------------------------------------------------
@@ -118,6 +123,10 @@ namespace Shiakati
             services.AddTransient<SettingsView>();
             services.AddTransient<StockMovementsViewModel>();
             services.AddTransient<StockMovementsView>();
+            services.AddTransient<ClientListViewModel>();
+            services.AddTransient<ClientListView>();
+            services.AddTransient<ClientDetailViewModel>();
+            services.AddTransient<ClientDetailView>();
 
             // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();

@@ -1,0 +1,34 @@
+﻿<Window x:Class="Shiakati.Views.ClientCreateDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Nouveau client" Width="400" Height="350"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        FontFamily="{StaticResource MontserratFont}">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0" Text="{Binding FullName}" materialDesign:HintAssist.Hint="Nom complet"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+        <TextBox Grid.Row="1" Text="{Binding PhoneNumber}" materialDesign:HintAssist.Hint="Numéro de téléphone"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+        <TextBox Grid.Row="2" Text="{Binding Address}" materialDesign:HintAssist.Hint="Adresse (optionnelle)"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,10"/>
+        <TextBox Grid.Row="3" Text="{Binding Email}" materialDesign:HintAssist.Hint="Email (optionnel)"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Annuler" Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,10,0" Click="Cancel_Click"/>
+            <Button Content="Enregistrer" Style="{StaticResource MaterialDesignRaisedButton}"
+                    Click="Ok_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
