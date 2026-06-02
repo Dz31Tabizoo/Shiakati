@@ -6,8 +6,13 @@ using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -15,17 +20,26 @@ namespace Shiakati.ViewModels
 {
     public partial class StockViewModel : ObservableObject
     {
-        // ===========================================================
-        // I. SERVICES
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   Services
+        // ─────────────────────────────────────────────────────────
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogService _catalogDb;
         private readonly IProductsService _productsService;
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
 
-        public StockViewModel(IBarCodePrintService printerService, ICatalogService db,
-                              IProductVariantsService stockService, ICacheService cacheService, IProductsService productsService)
+        // ─────────────────────────────────────────────────────────
+        //   Private source collection (stable) and master list
+        // ─────────────────────────────────────────────────────────
+        private readonly ObservableCollection<ProductVariantModel> _stockSource = new();
+        private List<ProductVariantModel> _allStockItems = new();
+
+        public StockViewModel(IBarCodePrintService printerService,
+                              ICatalogService db,
+                              IProductVariantsService stockService,
+                              ICacheService cacheService,
+                              IProductsService productsService)
         {
             _printerService = printerService;
             _catalogDb = db;
@@ -33,36 +47,42 @@ namespace Shiakati.ViewModels
             _stockService = stockService;
             _cacheService = cacheService;
 
-            // Initialisation des collections
+            // ── The view is created ONCE, bound to the stable source collection ──
+            FilteredStockView = CollectionViewSource.GetDefaultView(_stockSource);
+            FilteredStockView.Filter = StockFilter;
+
+            // Initialise other collections
             Categories = new ObservableCollection<CategoryModel>();
             Brands = new ObservableCollection<BrandsModel>();
             FilteredBrands = CollectionViewSource.GetDefaultView(Brands);
             Products = new ObservableCollection<ProductModel>();
-            // FilteredStock n'est plus une ObservableCollection mais un ICollectionView
             FilterColors = new ObservableCollection<string>();
             FilterSizes = new ObservableCollection<string>();
             AllColors = new ObservableCollection<string>();
             WidthsList = new ObservableCollection<string> { "XS", "S", "M", "L", "XL", "XXL", "XXXL", "1", "2", "3", "4" };
         }
 
-        // ===========================================================
-        // II. COLLECTIONS
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   Exposed collections
+        // ─────────────────────────────────────────────────────────
         public ObservableCollection<CategoryModel> Categories { get; }
         public ObservableCollection<BrandsModel> Brands { get; }
         public ICollectionView FilteredBrands { get; private set; }
         public ObservableCollection<ProductModel> Products { get; }
-        public ICollectionView FilteredStockView { get; private set; }  // ← nouveau
+
+        /// <summary>
+        /// The DataGrid binds to this property. It never changes – only its content changes.
+        /// </summary>
+        public ICollectionView FilteredStockView { get; }
+
         public ObservableCollection<string> FilterColors { get; }
         public ObservableCollection<string> FilterSizes { get; }
         public ObservableCollection<string> AllColors { get; }
         public ObservableCollection<string> WidthsList { get; }
 
-        private List<ProductVariantModel> _allStockItems = new();
-
-        // ===========================================================
-        // III. UI STATES
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   UI States
+        // ─────────────────────────────────────────────────────────
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private bool _isReceptionVisible;
         [ObservableProperty] private bool _isEditMode;
@@ -73,9 +93,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isManualSkuEnabled;
         [ObservableProperty] private bool _isNotEditMode = true;
 
-        // ===========================================================
-        // IV. FILTERS & SELECTION
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   Filters & Selection
+        // ─────────────────────────────────────────────────────────
         [ObservableProperty] private string _searchText;
         [ObservableProperty] private CategoryModel _selectedCategory;
         [ObservableProperty] private BrandsModel _selectedBrand;
@@ -83,9 +103,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private string _filterFullSize;
         [ObservableProperty] private ProductVariantModel _selectedStockItem;
 
-        // ===========================================================
-        // V. FORM FIELDS (DRAFT)
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   Form Draft Fields
+        // ─────────────────────────────────────────────────────────
         [ObservableProperty] private CategoryModel _draftCategory;
         [ObservableProperty] private BrandsModel _draftBrand;
         [ObservableProperty] private string _draftProductName;
@@ -102,9 +122,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private string _draftNewBrandName = string.Empty;
         [ObservableProperty] private ProductModel? _draftSelectedProduct;
 
-        // ===========================================================
-        // VI. COMMANDS
-        // ===========================================================
+        // ─────────────────────────────────────────────────────────
+        //   Data Loading
+        // ─────────────────────────────────────────────────────────
         public async Task LoadInitialDataAsync(bool forceRefresh = false)
         {
             if (!forceRefresh && (IsLoading || _allStockItems.Any()))
@@ -116,29 +136,38 @@ namespace Shiakati.ViewModels
                                     CacheKeys.Catalog,
                                     () => _catalogDb.GetInitialGatalogDataAsync());
 
-                var prods = await _cacheService.GetOrLoadAsync(CacheKeys.Products, _productsService.GetProductsAsync);
-                var items = await _cacheService.GetOrLoadAsync(CacheKeys.StockVariants, _stockService.GetProductVariantsAsync);
+                // Products may not be available on all endpoints – we catch the exception
+                List<ProductModel> prods = new();
+                try
+                {
+                    prods = await _cacheService.GetOrLoadAsync(CacheKeys.Products, _productsService.GetProductsAsync);
+                }
+                catch { /* ignore – the grid works without this list */ }
 
+                var items = await _cacheService.GetOrLoadAsync(CacheKeys.StockVariants, _stockService.GetProductVariantsAsync);
                 _allStockItems = items.ToList();
 
-                var distinctColors = _allStockItems.Select(i => i.Color)
-                                        .Where(c => !string.IsNullOrWhiteSpace(c))
-                                        .Distinct()
-                                        .OrderBy(c => c)
-                                        .ToList();
-                var distinctSizes = _allStockItems.Select(i => i.FullSize)
-                                                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                                                    .Distinct()
-                                                    .OrderBy(s => s)
-                                                    .ToList();
+                var distinctColors = _allStockItems
+                    .Select(i => i.Color)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .Distinct()
+                    .OrderBy(c => c)
+                    .ToList();
+                var distinctSizes = _allStockItems
+                    .Select(i => i.FullSize)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToList();
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    // Créer ou réaffecter la vue filtrée
-                    FilteredStockView = CollectionViewSource.GetDefaultView(_allStockItems);
-                    FilteredStockView.Filter = StockFilter;
-                    OnPropertyChanged(nameof(FilteredStockView)); // Notification pour le binding
+                    // Replace the entire content of the stable source collection
+                    _stockSource.Clear();
+                    foreach (var item in _allStockItems)
+                        _stockSource.Add(item);
 
+                    // Rebuild filter dropdowns
                     Categories.Clear();
                     foreach (var c in catalog.Categories) Categories.Add(c);
 
@@ -149,18 +178,88 @@ namespace Shiakati.ViewModels
                     foreach (var p in prods) Products.Add(p);
 
                     UpdateFilterOptions(distinctColors, distinctSizes);
+
+                    // Refresh the view – the filter is reapplied automatically
+                    FilteredStockView.Refresh();
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Probleme de connexion", "Data Loading Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally { IsLoading = false; }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
+        // ─────────────────────────────────────────────────────────
+        //   Filter predicate (used by the ICollectionView)
+        // ─────────────────────────────────────────────────────────
+        private bool StockFilter(object obj)
+        {
+            if (obj is not ProductVariantModel p) return false;
+
+            // Soft‑delete filter
+            if (!IsNonActiveItemsVisible && p.IsActive != true)
+                return false;
+
+            // Text search (product name or SKU)
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                if (!(p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true ||
+                      p.Sku?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true))
+                    return false;
+            }
+
+            // Dropdown filters
+            if (SelectedCategory != null &&
+                !string.Equals(p.CategoryName, SelectedCategory.CategoryName, StringComparison.OrdinalIgnoreCase))
+                return false;
+            if (SelectedBrand != null &&
+                !string.Equals(p.BrandName, SelectedBrand.BrandName, StringComparison.OrdinalIgnoreCase))
+                return false;
+            if (!string.IsNullOrWhiteSpace(FilterColor) &&
+                !string.Equals(p.Color, FilterColor, StringComparison.OrdinalIgnoreCase))
+                return false;
+            if (!string.IsNullOrWhiteSpace(FilterFullSize) &&
+                !string.Equals(p.FullSize, FilterFullSize, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return true;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        //   Filter refresh triggers
+        // ─────────────────────────────────────────────────────────
+        private CancellationTokenSource? _searchDebounceToken;
+
+        partial void OnSearchTextChanged(string value) => DebounceRefresh();
+        partial void OnSelectedCategoryChanged(CategoryModel value) => FilteredStockView?.Refresh();
+        partial void OnSelectedBrandChanged(BrandsModel value) => FilteredStockView?.Refresh();
+        partial void OnFilterColorChanged(string value) => FilteredStockView?.Refresh();
+        partial void OnFilterFullSizeChanged(string value) => FilteredStockView?.Refresh();
+        partial void OnIsNonActiveItemsVisibleChanged(bool value) => FilteredStockView?.Refresh();
+        partial void OnIsEditModeChanged(bool value) => IsNotEditMode = !value;
+
+        partial void OnDraftCategoryChanged(CategoryModel value)
+        {
+            if (value == null) return;
+            IsDimensionSizeVisible = value.CategoryName.Contains("Thob") ||
+                                     value.CategoryName.Contains("Pantalon") ||
+                                     value.CategoryName.Contains("Sous");
+            IsNumericSizeVisible = !IsDimensionSizeVisible;
+
+            FilteredBrands.Filter = obj => obj is BrandsModel brand && brand.CategoryID == value.CategoryID;
+            FilteredBrands.Refresh();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        //   Commands
+        // ─────────────────────────────────────────────────────────
         [RelayCommand] private void ToggleReception() { IsReceptionVisible = !IsReceptionVisible; IsEditMode = false; ClearDraft(); }
-        [RelayCommand]
-        private void ClearFilters()
+
+        [RelayCommand] private void ClearFilters()
         {
             SearchText = string.Empty;
             SelectedCategory = null;
@@ -169,8 +268,9 @@ namespace Shiakati.ViewModels
             FilterFullSize = null;
             IsManualSkuEnabled = false;
             DraftSKU = string.Empty;
-            FilteredStockView?.Refresh(); // rafraîchir la vue filtrée
+            FilteredStockView?.Refresh();
         }
+
         [RelayCommand]
         private void PrepareEdit(ProductVariantModel item)
         {
@@ -180,7 +280,6 @@ namespace Shiakati.ViewModels
 
             DraftCategory = Categories.FirstOrDefault(c => c.CategoryName == item.CategoryName);
             DraftBrand = Brands.FirstOrDefault(b => b.BrandName == item.BrandName);
-            //DraftNewBrandName = string.Empty; // corriger l'auto-assignation
 
             DraftProductName = item.ProductName;
             DraftSelectedProduct = Products.FirstOrDefault(p => p.ProductName == item.ProductName && p.BrandName == item.BrandName);
@@ -446,47 +545,21 @@ namespace Shiakati.ViewModels
 
         [RelayCommand] private void StockAddingFiledsClear() => ClearDraft();
 
-        // ===========================================================
-        // VII. HELPERS & TRIGGERS
-        // ===========================================================
-        private CancellationTokenSource? _searchDebounceToken;
-
-        partial void OnSearchTextChanged(string value)
+        // ─────────────────────────────────────────────────────────
+        //   Helpers
+        // ─────────────────────────────────────────────────────────
+        private void DebounceRefresh()
         {
             _searchDebounceToken?.Cancel();
             _searchDebounceToken = new CancellationTokenSource();
             var token = _searchDebounceToken.Token;
-
             Task.Delay(500, token).ContinueWith(_ =>
             {
                 if (!token.IsCancellationRequested)
-                {
                     Application.Current.Dispatcher.Invoke(() => FilteredStockView?.Refresh());
-                }
             }, token);
         }
-        partial void OnSelectedCategoryChanged(CategoryModel value) => FilteredStockView?.Refresh();
-        partial void OnSelectedBrandChanged(BrandsModel value) => FilteredStockView?.Refresh();
-        partial void OnFilterColorChanged(string value) => FilteredStockView?.Refresh();
-        partial void OnFilterFullSizeChanged(string value) => FilteredStockView?.Refresh();
-        partial void OnDraftCategoryChanged(CategoryModel value)
-        {
-            if (value == null) return;
-            IsDimensionSizeVisible = value.CategoryName.Contains("Thob") ||
-                                     value.CategoryName.Contains("Pantalon") ||
-                                     value.CategoryName.Contains("Sous");
-            IsNumericSizeVisible = !IsDimensionSizeVisible;
 
-            FilteredBrands.Filter = (obj) =>
-            {
-                if (obj is BrandsModel brand)
-                    return brand.CategoryID == value.CategoryID;
-                return false;
-            };
-            FilteredBrands.Refresh();
-        }
-        partial void OnIsNonActiveItemsVisibleChanged(bool value) => FilteredStockView?.Refresh();
-        partial void OnIsEditModeChanged(bool value) => IsNotEditMode = !value;
         private async Task ForceReloadAllDataAsync()
         {
             _cacheService.Remove(CacheKeys.StockVariants);
@@ -496,37 +569,6 @@ namespace Shiakati.ViewModels
             await LoadInitialDataAsync(forceRefresh: true);
         }
 
-        // ===========================================================
-        // Filtre ICollectionView pour le stock
-        // ===========================================================
-        private bool StockFilter(object obj)
-        {
-            if (obj is not ProductVariantModel p) return false;
-
-            // Filtre d'activité
-            if (!IsNonActiveItemsVisible && p.IsActive != true)
-                return false;
-
-            // Recherche textuelle
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                if (!(p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true ||
-                      p.Sku?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true))
-                    return false;
-            }
-
-            // Filtres par propriétés
-            if (SelectedCategory != null && !string.Equals(p.CategoryName, SelectedCategory.CategoryName, StringComparison.OrdinalIgnoreCase))
-                return false;
-            if (SelectedBrand != null && !string.Equals(p.BrandName, SelectedBrand.BrandName, StringComparison.OrdinalIgnoreCase))
-                return false;
-            if (!string.IsNullOrWhiteSpace(FilterColor) && !string.Equals(p.Color, FilterColor, StringComparison.OrdinalIgnoreCase))
-                return false;
-            if (!string.IsNullOrWhiteSpace(FilterFullSize) && !string.Equals(p.FullSize, FilterFullSize, StringComparison.OrdinalIgnoreCase))
-                return false;
-
-            return true;
-        }
         private void UpdateFilterOptions(List<string> distinctColors, List<string> distinctSizes)
         {
             AllColors.Clear();
@@ -536,6 +578,7 @@ namespace Shiakati.ViewModels
             FilterSizes.Clear();
             foreach (var s in distinctSizes) FilterSizes.Add(s);
         }
+
         private void ClearDraft()
         {
             IsEditMode = false;
@@ -555,6 +598,7 @@ namespace Shiakati.ViewModels
             DraftNewBrandName = string.Empty;
             DraftSelectedProduct = null;
         }
+
         private bool IsFormValid()
         {
             if (DraftCategory == null)

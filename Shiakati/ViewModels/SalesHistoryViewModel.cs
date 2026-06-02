@@ -25,6 +25,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private DateTime? _startDate = DateTime.Today;
         [ObservableProperty] private DateTime? _endDate = DateTime.Today;
         [ObservableProperty] private bool _isLoading;
+        [ObservableProperty] private ObservableCollection<DailyBonusModel> _dailyBonuses = new();
         public ObservableCollection<SaleModel> Sales { get; } = new();
 
         public SalesHistoryViewModel(ISaleService saleService, ILogger<SalesHistoryViewModel> logger)
@@ -147,6 +148,53 @@ namespace Shiakati.ViewModels
                 _logger.LogError(ex, "Erreur annulation vente");
                 MessageBox.Show("Erreur lors de l'annulation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        [RelayCommand]
+        private void CalculateDailyBonuses()
+        {
+            // 1. Only consider non‑voided sales
+            var nonVoided = Sales.Where(s => !s.IsVoided).ToList();
+
+            if (nonVoided.Count == 0)
+            {
+                MessageBox.Show("Aucune vente valide à analyser.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // 2. Group by date (ignoring time)
+            var dailyGroups = nonVoided
+                .Where(s => s.SaleDate.HasValue)
+                .GroupBy(s => s.SaleDate!.Value.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    TotalSales = g.Sum(s => s.TotalAmount ?? 0)
+                })
+                .OrderBy(g => g.Date);
+
+            // 3. Apply bonus tiers
+            var bonusList = new List<DailyBonusModel>();
+            foreach (var day in dailyGroups)
+            {
+                decimal percentage = 0;
+                if (day.TotalSales >= 20000 && day.TotalSales < 50000)
+                    percentage = 2m;
+                else if (day.TotalSales >= 50000 && day.TotalSales <= 100000)
+                    percentage = 2.5m;
+                else if (day.TotalSales > 100000)
+                    percentage = 3m;
+
+                bonusList.Add(new DailyBonusModel
+                {
+                    Date = day.Date,
+                    TotalSales = day.TotalSales,
+                    BonusPercentage = percentage,
+                    BonusAmount = day.TotalSales * percentage / 100
+                });
+            }
+
+            DailyBonuses = new ObservableCollection<DailyBonusModel>(bonusList);
         }
     }
 }
