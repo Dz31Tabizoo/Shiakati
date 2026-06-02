@@ -37,6 +37,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private string? _creditNotes;
         [ObservableProperty] private decimal _versementAmount;
         [ObservableProperty] private string? _versementNotes;
+        [ObservableProperty] private DateTime? _creditExpiresAt;
 
         public ClientDetailViewModel(IClientService clientService)
         {
@@ -69,8 +70,7 @@ namespace Shiakati.ViewModels
             finally { IsLoading = false; }
         }
 
-        [RelayCommand]
-        private async Task EditClient()
+        [RelayCommand] private async Task EditClient()
         {
             if (Client == null) return;
             // Open edit dialog (similar to create)
@@ -96,15 +96,14 @@ namespace Shiakati.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task GrantCreditAsync()
+        [RelayCommand] private async Task GrantCreditAsync()
         {
             if (CreditAmount <= 0) return;
-            var request = new CreateCreditRequest { ClientId = _clientId, Amount = CreditAmount, Notes = CreditNotes };
+            var request = new CreateCreditRequest { ClientId = _clientId, Amount = CreditAmount, Notes = CreditNotes, ExpiresAt = CreditExpiresAt };
             var success = await _clientService.GrantCreditAsync(request);
             if (success)
             {
-                CreditAmount = 0; CreditNotes = null;
+                CreditAmount = 0; CreditNotes = null; CreditExpiresAt = null;
                 await LoadAsync(); // refresh
             }
             else MessageBox.Show("Erreur lors de l'ajout du crédit.");

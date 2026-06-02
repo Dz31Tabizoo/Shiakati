@@ -37,9 +37,19 @@
 
                     <!-- Add credit form -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBox Text="{Binding CreditAmount}" materialDesign:HintAssist.Hint="Montant" Width="120"/>
-                        <TextBox Text="{Binding CreditNotes}" materialDesign:HintAssist.Hint="Notes" Width="200" Margin="10,0"/>
-                        <Button Content="Ajouter" Command="{Binding GrantCreditCommand}" Style="{StaticResource MaterialDesignRaisedButton}"/>
+                        <TextBox Text="{Binding CreditAmount}" 
+                                    materialDesign:HintAssist.Hint="Montant" 
+                                    Width="120" Margin="0,0,10,0"/>
+                        <TextBox Text="{Binding CreditNotes}" 
+                                 materialDesign:HintAssist.Hint="Notes" 
+                                 Width="180" Margin="0,0,10,0"/>
+                        <DatePicker SelectedDate="{Binding CreditExpiresAt}" 
+                                    materialDesign:HintAssist.Hint="Expire le" Opacity="0.8" 
+                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}" 
+                                    Width="140" Margin="5,0"/>
+                        <Button Content="Ajouter" 
+                                Command="{Binding GrantCreditCommand}" 
+                                Style="{StaticResource MaterialDesignRaisedButton}"/>
                     </StackPanel>
 
                     <!-- Credits DataGrid -->
@@ -50,6 +60,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Montant" Binding="{Binding Amount, StringFormat={}{0:N2} DA}" Width="Auto"/>
                             <DataGridTextColumn Header="Date" Binding="{Binding GrantedAt, StringFormat=dd/MM/yyyy}" Width="Auto"/>
+                            <DataGridTextColumn Header="Expire le" Binding="{Binding ExpiresAt, StringFormat=dd/MM/yyyy}" Width="Auto"/>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
                             <DataGridTextColumn Header="Utilisé" Binding="{Binding IsRedeemed}" Width="Auto"/>
                         </DataGrid.Columns>
@@ -69,32 +80,47 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Add versement form -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBox Text="{Binding VersementAmount}" materialDesign:HintAssist.Hint="Montant" Width="120"/>
-                        <TextBox Text="{Binding VersementNotes}" materialDesign:HintAssist.Hint="Notes" Width="200" Margin="10,0"/>
-                        <Button Content="Ajouter" Command="{Binding AddVersementCommand}" Style="{StaticResource MaterialDesignRaisedButton}"/>
+                        <TextBox Text="{Binding VersementAmount}" 
+                                 materialDesign:HintAssist.Hint="Montant" 
+                                 Width="120" Margin="0,0,10,0"/>
+                        <TextBox Text="{Binding VersementNotes}" 
+                                 materialDesign:HintAssist.Hint="Notes" 
+                                 Width="200" Margin="0,0,10,0"/>
+                        <Button Content="Ajouter" 
+                                Command="{Binding AddVersementCommand}" 
+                                Style="{StaticResource MaterialDesignRaisedButton}"/>
                     </StackPanel>
 
                     <!-- Versements DataGrid -->
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Versements}" AutoGenerateColumns="False"
+                              IsReadOnly="True"
                               MinHeight="150" MaxHeight="300"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                               BorderThickness="0" GridLinesVisibility="Horizontal">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Montant" Binding="{Binding Amount, StringFormat={}{0:N2} DA}" Width="Auto"/>
-                            <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat=dd/MM/yyyy}" Width="Auto"/>
+                            <DataGridTemplateColumn Header="Date" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding PaymentDate, StringFormat=dd/MM/yyyy}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
                         </DataGrid.Columns>
-                    </DataGrid>
+                    </DataGrid>                    
 
                     <!-- Versements total -->
                     <TextBlock Grid.Row="2" Margin="0,8,0,0" FontWeight="SemiBold" FontSize="14">
                         <Run Text="Total versements : "/>
                         <Run Text="{Binding TotalPayments, StringFormat={}{0:N2} DA}" Foreground="#1565C0"/>
                     </TextBlock>
+                    
                 </Grid>
             </TabItem>
         </TabControl>

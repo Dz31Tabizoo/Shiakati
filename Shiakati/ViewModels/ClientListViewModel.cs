@@ -114,6 +114,7 @@ namespace Shiakati.ViewModels
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             window.ShowDialog();
+            _ = LoadClientsAsync();
         }
     }
 }
