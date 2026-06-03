@@ -2,17 +2,156 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
-    <Style x:Key="ShiakatiCard" TargetType="materialDesign:Card">
-        <Setter Property="UniformCornerRadius" Value="15"/>
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp3"/>
-        <Setter Property="Margin" Value="5"/>
+    <!-- ═══════════════════════════════════════
+         BUTTONS (touch‑friendly)
+         ═══════════════════════════════════════ -->
+    <!-- Primary action (dark background, white text) -->
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Padding" Value="20,8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <!-- Force the content to be white -->
+        <Setter Property="TextElement.Foreground" Value="White"/>
     </Style>
 
-    <Style x:Key="ShiakatiMenuButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-        <Setter Property="Height" Value="120"/>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="15"/>
+    <!-- Secondary action (outlined) -->
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Padding" Value="20,8"/>
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
+
+    <!-- Danger / delete action -->
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="Padding" Value="20,8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Icon‑only button (no text) -->
+    <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
+        <Setter Property="Width" Value="48"/>
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+         TEXT INPUTS
+         ═══════════════════════════════════════ -->
+    <Style x:Key="ShiakatiTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="Padding" Value="8,12,8,4"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+         COMBO BOX
+         ═══════════════════════════════════════ -->
+    <Style x:Key="ShiakatiComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+         CARDS
+         ═══════════════════════════════════════ -->
+    <Style x:Key="ShiakatiCard" TargetType="materialDesign:Card">
+        <Setter Property="UniformCornerRadius" Value="12"/>
+        <Setter Property="Background" Value="{StaticResource BgBrush}"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp2"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+         DATA GRID
+         ═══════════════════════════════════════ -->
+    <Style x:Key="ShiakatiDataGrid" TargetType="DataGrid">
+        <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="RowHeight" Value="52"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BgAltBrush}"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+    </Style>
+
+    <Style x:Key="ShiakatiDataGridColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SecondaryBrush}"/>
+    </Style>
+
+    <Style x:Key="ShiakatiDataGridCell" TargetType="DataGridCell">
+        <Setter Property="Padding" Value="12,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                        <ContentPresenter VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ShiakatiDataGridRow" TargetType="DataGridRow">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Height" Value="52"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+         SPACING HELPERS
+         ═══════════════════════════════════════ -->
+    <Thickness x:Key="DefaultMargin">12,8</Thickness>
+    <Thickness x:Key="DefaultPadding">16</Thickness>
 
 </ResourceDictionary>
