@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:Shiakati.Views"
-             FontFamily="{StaticResource MontserratFont}"
-             Background="{DynamicResource MaterialDesignPaper}">
+             FontFamily="{StaticResource BodyFont}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -12,28 +11,31 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Top bar: brand / action -->
-        <Border Grid.Row="0" Padding="10,8" Background="{DynamicResource MaterialDesignCardBackground}">
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="12,10" Background="{StaticResource BgBrush}"
+        BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
             <Grid>
-                <TextBlock Text="POINT DE VENTE" FontSize="18" FontWeight="Bold" 
-                           Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
-
-                <Button HorizontalAlignment="Right" 
-                        Command="{Binding AddNewTabCommand}"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        Background="{StaticResource SecondaryBrush}"
-                        Foreground="White" FontWeight="SemiBold">
+                <!-- Larger, touch‑optimised “Nouvelle vente” button -->
+                <Button HorizontalAlignment="Right"
+                Command="{Binding AddNewTabCommand}"
+                Style="{StaticResource PrimaryButton}"
+                MinHeight="56"
+                MinWidth="180"
+                FontSize="18"
+                Padding="24,12">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center"/>
-                        <TextBlock Text="Nouvelle vente" Margin="5,0,0,0"/>
+                        <materialDesign:PackIcon Kind="Plus"
+                                         Width="24" Height="24"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,10,0"/>
+                        <TextBlock FontWeight="SemiBold" Foreground="{StaticResource BgBrush}" Text="Nouvelle vente" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </Grid>
         </Border>
-
-        <!-- Tab control with modern header styling -->
-        <TabControl Grid.Row="1" 
-                    ItemsSource="{Binding PosTabs}" 
+        <!-- Tab control -->
+        <TabControl Grid.Row="1"
+                    ItemsSource="{Binding PosTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     Style="{StaticResource MaterialDesignTabControl}"
                     Background="Transparent">
@@ -41,23 +43,19 @@
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="4,0">
-                        <!-- Icon left of tab name -->
-                        <materialDesign:PackIcon Kind="Receipt" 
-                                                 Width="16" Height="16" 
-                                                 VerticalAlignment="Center" 
-                                                 Foreground="{StaticResource PrimaryBrush}" 
+                        <materialDesign:PackIcon Kind="Receipt"
+                                                 Width="16" Height="16"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{StaticResource PrimaryBrush}"
                                                  Margin="0,0,6,0"/>
-
-                        <TextBlock Text="{Binding TabName}" 
-                                   VerticalAlignment="Center" 
+                        <TextBlock Text="{Binding TabName}"
+                                   VerticalAlignment="Center"
                                    FontSize="14" FontWeight="SemiBold"
                                    Foreground="{StaticResource PrimaryBrush}"
                                    Margin="0,0,8,0"/>
-
-                        <!-- Close button -->
                         <Button Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
                                 CommandParameter="{Binding}"
-                                Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                                Style="{StaticResource MaterialDesignIconForegroundButton}"
                                 Width="20" Height="20" Margin="0,-2,0,0"
                                 ToolTip="Fermer la vente">
                             <materialDesign:PackIcon Kind="Close" Width="12" Height="12"/>

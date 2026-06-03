@@ -1,4 +1,4 @@
-﻿    <UserControl x:Class="Shiakati.Views.PosView"
+﻿<UserControl x:Class="Shiakati.Views.PosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,24 +7,24 @@
              mc:Ignorable="d" 
              xmlns:converters="clr-namespace:Shiakati.Converters"
              d:DesignHeight="768" d:DesignWidth="1024"
-             FontFamily="{StaticResource MontserratFont}"
-             Background="{DynamicResource MaterialDesignPaper}">
-        
+             FontFamily="{StaticResource BodyFont}">
+
     <UserControl.InputBindings>
         <KeyBinding Key="F12" Command="{Binding CheckoutCommand}" />
     </UserControl.InputBindings>
 
     <UserControl.Resources>
-            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-            <converters:CommonEqualityConverter x:Key="CommonEqualityConverter" />
-        </UserControl.Resources>        
-        
-      <Grid Margin="10">
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:CommonEqualityConverter x:Key="CommonEqualityConverter" />
+    </UserControl.Resources>
+
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+        <!-- ═══════════ LEFT: Product Browser ═══════════ -->
         <Grid Grid.Column="0" Margin="0,0,15,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -32,144 +32,173 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <materialDesign:Card Grid.Row="0" Padding="10" UniformCornerRadius="10" Margin="0,0,0,15">
+            <!-- Search bar -->
+            <materialDesign:Card Grid.Row="0" Padding="12" UniformCornerRadius="12" Margin="0,0,0,12"
+                                 Background="{StaticResource BgBrush}" Style="{StaticResource ShiakatiCard}">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="BarcodeScan" Width="30" Height="30" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
-                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                    <materialDesign:PackIcon Kind="BarcodeScan" Width="28" Height="28"
+                                             VerticalAlignment="Center"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Margin="0,0,10,0"/>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Scanner un code-barres ou chercher un produit..."
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Width="400" FontSize="18" VerticalAlignment="Center"/>
+                             Style="{StaticResource ShiakatiTextBox}"
+                             Width="400" FontSize="16"
+                             VerticalAlignment="Center"/>
                 </StackPanel>
             </materialDesign:Card>
 
-            
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <!-- Filter chips -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
                 <ComboBox materialDesign:HintAssist.Hint="Catégorie"
-              FontSize="13"
-              MinWidth="120"
-              ItemsSource="{Binding Categories}"
-              SelectedItem="{Binding SelectedCategory}"
-              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-              Margin="0,0,10,0"/>
-
+                          FontSize="14" MinWidth="130"
+                          ItemsSource="{Binding Categories}"
+                          SelectedItem="{Binding SelectedCategory}"
+                          Style="{StaticResource ShiakatiComboBox}"
+                          Margin="0,0,10,0"/>
                 <ComboBox materialDesign:HintAssist.Hint="Marque"
-              FontSize="13"
-              MinWidth="120"
-              ItemsSource="{Binding Brands}"
-              SelectedItem="{Binding SelectedBrand}"
-              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-              Margin="0,0,10,0"/>
-
+                          FontSize="14" MinWidth="130"
+                          ItemsSource="{Binding Brands}"
+                          SelectedItem="{Binding SelectedBrand}"
+                          Style="{StaticResource ShiakatiComboBox}"
+                          Margin="0,0,10,0"/>
                 <ComboBox materialDesign:HintAssist.Hint="Couleur"
-              FontSize="13"
-              MinWidth="100"
-              ItemsSource="{Binding FilterColors}"
-              SelectedItem="{Binding SelectedColor}"
-              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-              Margin="0,0,10,0"/>
-
+                          FontSize="14" MinWidth="110"
+                          ItemsSource="{Binding FilterColors}"
+                          SelectedItem="{Binding SelectedColor}"
+                          Style="{StaticResource ShiakatiComboBox}"
+                          Margin="0,0,10,0"/>
                 <ComboBox materialDesign:HintAssist.Hint="Taille"
-              FontSize="13"
-              MinWidth="100"
-              ItemsSource="{Binding FilterSizes}"
-              SelectedItem="{Binding SelectedSize}"
-              Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                          FontSize="14" MinWidth="110"
+                          ItemsSource="{Binding FilterSizes}"
+                          SelectedItem="{Binding SelectedSize}"
+                          Style="{StaticResource ShiakatiComboBox}"/>
             </StackPanel>
 
-            <!-- Product grid (unchanged) -->
-            <ListBox Grid.Row="2" 
-                     ItemsSource="{Binding FilteredProductsView}" 
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     Background="Transparent" BorderThickness="0"
-                     HorizontalContentAlignment="Stretch">
+            <!-- Product grid -->
+            <ListBox Grid.Row="2"
+         ItemsSource="{Binding FilteredProductsView}"
+         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+         ScrollViewer.IsDeferredScrollingEnabled="True"
+         VirtualizingPanel.IsVirtualizing="True"
+         VirtualizingPanel.VirtualizationMode="Recycling"
+         Background="Transparent" BorderThickness="0"
+         HorizontalContentAlignment="Stretch">
+
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Padding="0" Margin="6" Height="120" Width="175">
-                            <materialDesign:Card UniformCornerRadius="12" Background="White" 
-                                     Width="175" Height="120"
-                                     materialDesign:ElevationAssist.Elevation="Dp2">
-                                <Grid Margin="10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
+                        <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding}"
+                    Margin="6" Height="130" Width="180"
+                    Cursor="Hand">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="ContainerBorder"
+                                Background="White"
+                                CornerRadius="12"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1">
+                                        <Grid Margin="10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                    <!-- Brand (subtle) -->
-                                    <TextBlock Grid.Row="0" 
-                                               Text="{Binding BrandName}" 
-                                               FontSize="14" 
-                                               FontWeight="Bold"
-                                               Foreground="{StaticResource PrimaryBrush}" 
-                                               TextTrimming="CharacterEllipsis" 
-                                               MaxWidth="150"
-                                               Margin="0,0,0,2"/>
+                                            <TextBlock Grid.Row="0"
+                                           Text="{Binding BrandName}"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{StaticResource PrimaryBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxWidth="150" Margin="0,0,0,2"/>
 
-                                    <!-- Product Name -->
-                                    <TextBlock Grid.Row="1" 
-                                               Text="{Binding ProductName}" 
-                                               FontSize="13" 
-                                               FontWeight="SemiBold" 
-                                               TextTrimming="CharacterEllipsis" 
-                                               MaxHeight="40"
-                                               TextWrapping="Wrap"
-                                               LineHeight="18"
-                                               Foreground="{StaticResource PrimaryLightBrush}"/>
+                                            <TextBlock Grid.Row="1"
+                                           Text="{Binding ProductName}"
+                                           FontSize="13" FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxHeight="36" TextWrapping="Wrap"
+                                           LineHeight="18"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
 
-                                    <!-- Color & Size pills -->
-                                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4">
-                                        <Border Background="#E3F2FD" CornerRadius="8" Padding="6,2" Margin="0,0,6,0">
-                                            <TextBlock Text="{Binding Color}" FontSize="11" FontWeight="SemiBold" 
-                                           Foreground="#1565C0" MaxWidth="70" TextTrimming="CharacterEllipsis"/>
-                                        </Border>
-                                        <Border Background="#FFF3E0" CornerRadius="8" Padding="6,2">
-                                            <TextBlock Text="{Binding FullSize}" FontSize="11" FontWeight="SemiBold" 
-                                           Foreground="#E65100" MaxWidth="70" TextTrimming="CharacterEllipsis"/>
-                                        </Border>
-                                    </StackPanel>
+                                            <StackPanel Grid.Row="2" Orientation="Horizontal"
+                                            VerticalAlignment="Center" Margin="0,4">
+                                                <Border Background="#E3F2FD" CornerRadius="8" Padding="6,2" Margin="0,0,6,0">
+                                                    <TextBlock Text="{Binding Color}" FontSize="11"
+                                                   FontWeight="SemiBold" Foreground="#1565C0"
+                                                   MaxWidth="70" TextTrimming="CharacterEllipsis"/>
+                                                </Border>
+                                                <Border Background="#FFF3E0" CornerRadius="8" Padding="6,2">
+                                                    <TextBlock Text="{Binding FullSize}" FontSize="11"
+                                                   FontWeight="SemiBold" Foreground="#E65100"
+                                                   MaxWidth="70" TextTrimming="CharacterEllipsis"/>
+                                                </Border>
+                                            </StackPanel>
 
-                                    <!-- Stock + Price -->
-                                    <Grid Grid.Row="3" Margin="0,4,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                            <Grid Grid.Row="3" Margin="0,4,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" Background="{StaticResource BgAltBrush}"
+                                            CornerRadius="10" Padding="8,3">
+                                                    <TextBlock FontSize="12" FontWeight="Bold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}">
+                                            <Run Text="Q:"/>
+                                            <Run Text="{Binding StockQuantity, Mode=OneWay}"/>
+                                                    </TextBlock>
+                                                </Border>
+                                                <TextBlock Grid.Column="1"
+                                               Text="{Binding SalePrice, StringFormat={}{0:N2} DA}"
+                                               FontSize="14" FontWeight="Bold"
+                                               Foreground="{StaticResource SecondaryBrush}"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
 
-                                        <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="10" Padding="8,3">
-                                            <TextBlock FontSize="12" FontWeight="Bold" Foreground="#424242">
-                                                <Run Text=" Q " FontWeight="ExtraLight" Foreground="{StaticResource PrimaryLightBrush}"/>
-                                                <Run Text="{Binding StockQuantity, Mode=OneWay}" Foreground="{StaticResource PrimaryBrush}"/>                                    
-                                            </TextBlock>
-                                        </Border>
-
-                                        <TextBlock Grid.Column="1" 
-                                       Text="{Binding SalePrice, StringFormat={}{0:N2} DA}" 
-                                       FontSize="14" 
-                                       FontWeight="Bold" 
-                                       Foreground="{StaticResource SecondaryBrush}" 
-                                       HorizontalAlignment="Right" 
-                                       VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Grid>
-                            </materialDesign:Card>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="ContainerBorder" Property="Background" Value="#F5F5F5"/>
+                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
 
-        <!-- Cart & checkout (unchanged) -->
-        <materialDesign:Card Grid.Column="1" UniformCornerRadius="15" Width="Auto" MinWidth="400" Background="White">
-            <Grid Margin="15">
+        <!-- ═══════════ RIGHT: Cart & Checkout ═══════════ -->
+        <materialDesign:Card Grid.Column="1" UniformCornerRadius="16"
+                             Width="Auto" MinWidth="420" Background="White"
+                             Style="{StaticResource ShiakatiCard}">
+            <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -177,64 +206,73 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <materialDesign:Card Grid.Row="0" Background="#FFF3E0" Foreground="#E65100" Padding="10" Margin="0,0,0,10"
-                                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}">
+                <!-- Edit banner -->
+                <materialDesign:Card Grid.Row="0" Background="#FFF3E0" Foreground="#E65100"
+                                     Padding="10" Margin="0,0,0,10"
+                                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                                     UniformCornerRadius="8">
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AlertCircleOutline" Width="24" Height="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding EditTicketNumber, StringFormat='MODIFICATION DU TICKET : {0}'}" 
+                            <materialDesign:PackIcon Kind="AlertCircleOutline"
+                                                     Width="24" Height="24"
+                                                     Margin="0,0,10,0"
+                                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding EditTicketNumber, StringFormat='MODIFICATION DU TICKET : {0}'}"
                                        FontWeight="Bold" VerticalAlignment="Center" FontSize="16"/>
                         </StackPanel>
-                        <Button Content="ANNULER" 
+                        <Button Content="ANNULER"
                                 Command="{Binding CancelEditCommand}"
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Foreground="#E65100" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                Style="{StaticResource SecondaryButton}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     </Grid>
                 </materialDesign:Card>
 
-                <TextBlock Grid.Row="1" Text="Ticket Actuel" FontSize="20" FontWeight="Bold" 
-                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
+                <TextBlock Grid.Row="1" Text="Ticket Actuel"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           Margin="0,0,0,15"/>
 
-                <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" 
-                          CanUserAddRows="False" Background="Transparent" BorderThickness="0"
+                <!-- Cart DataGrid (keep existing logic) -->
+                <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False" Background="Transparent"
+                          BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           GridLinesVisibility="None"
-                          HorizontalAlignment="Stretch" 
-                          SelectionMode="Single">
+                          HorizontalAlignment="Stretch"
+                          SelectionMode="Single"
+                          Style="{StaticResource ShiakatiDataGrid}">
 
                     <DataGrid.Resources>
-                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}" />
-                            <Setter Property="FontWeight" Value="Bold" />
-                            <Setter Property="FontSize" Value="14"/>
-                            <Setter Property="Padding" Value="10,0,0,10"/>
-                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                            <Setter Property="BorderBrush" Value="#DDDDDD"/>
-                        </Style>
+                        <Style TargetType="DataGridColumnHeader"
+                               BasedOn="{StaticResource ShiakatiDataGridColumnHeader}"/>
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
+                        <!-- Article -->
                         <DataGridTemplateColumn Header="Article" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" 
+                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"
                                                FontSize="15" TextWrapping="Wrap" Margin="0,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- Quantité -->
                         <DataGridTemplateColumn Header="Quantité" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Style="{StaticResource MaterialDesignIconButton}" 
+                                        <Button Style="{StaticResource MaterialDesignIconButton}"
                                                 Width="32" Height="32" Padding="5"
                                                 Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" Margin ="0,0,5,0">
                                             <materialDesign:PackIcon Kind="MinusCircle"/>
                                         </Button>
-                                        <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center" Margin="5,0" FontWeight="Bold"/>
-                                        <Button Style="{StaticResource MaterialDesignIconButton}" 
+                                        <TextBlock Text="{Binding Quantity}" VerticalAlignment="Center"
+                                                   Margin="5,0" FontWeight="Bold"/>
+                                        <Button Style="{StaticResource MaterialDesignIconButton}"
                                                 Width="32" Height="32" Padding="0"
                                                 Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" Margin ="5,0,0,0">
@@ -245,6 +283,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- Remises -->
                         <DataGridTemplateColumn Header="Remises" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -273,20 +312,22 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- Total -->
                         <DataGridTemplateColumn Header="Total" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}" 
-                                               VerticalAlignment="Center" FontWeight="Bold" 
+                                    <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}"
+                                               VerticalAlignment="Center" FontWeight="Bold"
                                                Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <!-- Remove -->
                         <DataGridTemplateColumn Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Style="{StaticResource MaterialDesignIconButton}" 
+                                    <Button Style="{StaticResource MaterialDesignIconButton}"
                                             Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="Crimson">
                                         <materialDesign:PackIcon Kind="CartRemove" Width="24" Height="24"/>
@@ -297,40 +338,43 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
+                <!-- Totals & Checkout -->
                 <StackPanel Grid.Row="3" Margin="0,15,0,0">
                     <Separator Margin="0,0,0,10"/>
                     <Grid Margin="0,2">
                         <TextBlock Text="Sous-total :" FontSize="16"/>
-                        <TextBlock Text="{Binding CartSubTotal, StringFormat={}{0:N2} DA}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding CartSubTotal, StringFormat={}{0:N2} DA}"
+                                   HorizontalAlignment="Right" FontWeight="SemiBold"/>
                     </Grid>
                     <Grid Margin="0,2">
                         <TextBlock Text="Remise totale :" FontSize="16" Foreground="Green"/>
-                        <TextBlock Text="{Binding TotalDiscountAmount, StringFormat={}-{0:N2} DA}" HorizontalAlignment="Right" Foreground="Green"/>
+                        <TextBlock Text="{Binding TotalDiscountAmount, StringFormat={}-{0:N2} DA}"
+                                   HorizontalAlignment="Right" Foreground="Green"/>
                     </Grid>
                     <Grid Margin="0,10">
-                        <TextBlock Text="TOTAL" FontSize="24" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
-                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}" FontSize="32" FontWeight="Bold" 
-                                   HorizontalAlignment="Right" Foreground="{StaticResource SecondaryBrush}"/>
+                        <TextBlock Text="TOTAL" FontSize="24" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}"
+                                   FontSize="32" FontWeight="Bold"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
 
-                    <Button Command="{Binding CheckoutCommand}" Height="70" FontSize="24" FontWeight="Bold">
+                    <Button Command="{Binding CheckoutCommand}"
+                            Height="70" FontSize="24" FontWeight="Bold" Foreground ="White">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
                                 <Setter Property="Content" Value="ENCAISSER (F12)"/>
-                                <Setter Property="Background" Value="{StaticResource SecondaryBrush}"/>
-                                <Setter Property="BorderBrush" Value="{x:Null}"/>
-
+                                <Setter Property="Foreground" Value="White"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Content" Value="METTRE À JOUR (F12)"/>
                                         <Setter Property="Background" Value="#FF9800"/>
+                                        <Setter Property="Foreground" Value="#1E1E1E"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <Button.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
-                        </Button.Effect>
                     </Button>
                 </StackPanel>
             </Grid>

@@ -64,7 +64,7 @@ public partial class LoginViewModel : ObservableObject
             mainView.Show();
 
             // On demande la fermeture de la fenêtre de login proprement
-            RequestClose?.Invoke();
+            OnLoginSuccess();
         }
         else
         {
@@ -75,6 +75,8 @@ public partial class LoginViewModel : ObservableObject
 
         IsLoading = false;
     }
+
+
 
     private void OnLoginSuccess()
     {

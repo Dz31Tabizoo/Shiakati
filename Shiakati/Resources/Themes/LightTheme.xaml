@@ -37,6 +37,13 @@
     <!-- ── Default font ── -->
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+    </Style>
+
+    <Style TargetType="UserControl">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+    </Style>
+
+    <Style TargetType="Window">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource TextPrimaryBrush}"/>
     </Style>
 </ResourceDictionary>
