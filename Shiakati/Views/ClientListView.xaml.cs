@@ -30,8 +30,7 @@ namespace Shiakati.Views
         private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender is DataGridRow row && row.DataContext is ClientSummaryDto selectedClient)
-            {
-                
+            {                
                 var vm = DataContext as ClientListViewModel;
                 vm?.OpenClientDetailCommand?.Execute(selectedClient);
             }

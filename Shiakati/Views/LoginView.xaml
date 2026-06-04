@@ -33,14 +33,14 @@
             <!-- ═══════════ LEFT PANEL ═══════════ -->
             <Border Grid.Column="0"
                     CornerRadius="22,0,0,22"
-                    Background="{StaticResource PrimaryBrush}">
+                    Background="Transparent">
                 <Grid>
                     <!-- Subtle gradient overlay -->
-                    <Border Opacity="0.08">
+                    <Border Opacity="1">
                         <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Offset="0" Color="White"/>
-                                <GradientStop Offset="1" Color="Transparent"/>
+                            <LinearGradientBrush StartPoint="0.1,0" EndPoint="1,0">
+                                <GradientStop Offset="0.85" Color="#1D4A6B"/>
+                                <GradientStop Offset="1" Color="#286693"/>
                             </LinearGradientBrush>
                         </Border.Background>
                     </Border>
@@ -107,17 +107,20 @@
 
                     <!-- Username -->
                     <TextBox x:Name="TxtUsername"
-             Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
-             Style="{StaticResource ShiakatiTextBox}"
-             materialDesign:HintAssist.Hint="Nom d'utilisateur / اسم المستخدم"
-             Margin="0,0,0,18"/>
-
+                             Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ShiakatiTextBox}"
+                             materialDesign:HintAssist.Hint="Nom d'utilisateur / اسم المستخدم"
+                             materialDesign:HintAssist.Foreground="{StaticResource TextSecondaryBrush}"
+                             materialDesign:HintAssist.FloatingScale="0.6"
+                             Margin="0,0,0,18"/>
                     <!-- Password – fully masked, clean floating hint -->
-                    
                     <PasswordBox x:Name="TxtPassword"
              Style="{StaticResource MaterialDesignRevealPasswordBox}"
              materialDesign:HintAssist.Hint="  Mot de passe / كلمة المرور"
+             materialDesign:HintAssist.Foreground="{StaticResource TextSecondaryBrush}"
+             materialDesign:HintAssist.FloatingScale="0.8"
              FontSize="16"
+             Foreground="{StaticResource TextPrimaryBrush}"
              Height="50"
              Margin="0,0,0,30"/>
 
@@ -126,6 +129,7 @@
                Text="{Binding ErrorMessage}"
                Foreground="{StaticResource DangerBrush}"
                FontSize="14"
+                               
                TextWrapping="Wrap"
                Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
                Margin="4,6,0,30"/>
@@ -136,7 +140,6 @@
             CommandParameter="{Binding ElementName=TxtPassword}"
             IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}"
             FontSize="20"
-            Background="#13314B"
             Height="60"
             Margin="0,4,0,0"
             Style="{StaticResource PrimaryButton}">

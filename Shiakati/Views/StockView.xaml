@@ -54,16 +54,18 @@
 
                     <Button Grid.Column="1" Content="RÉINITIALISER LES FILTRES"
                             Command="{Binding ClearFiltersCommand}"
-                            Style="{StaticResource SecondaryButton}"
+                            Style="{StaticResource HelpChipButton}"
                             VerticalAlignment="Center" Margin="0,0,10,0"
                             FontSize="14" MinHeight="48"/>
+                    
                     <Button Grid.Column="2"
-        Command="{Binding ToggleReceptionCommand}"
-        Style="{StaticResource PrimaryButton}"
-        VerticalAlignment="Center"
-        MinWidth="220"
-        HorizontalContentAlignment="Center"
-        FontSize="14" MinHeight="48">
+                            Command="{Binding ToggleReceptionCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            VerticalAlignment="Center"
+                            MinWidth="220"
+                            HorizontalContentAlignment="Center"
+                            FontSize="14" MinHeight="48">
+                        
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="TruckDeliveryOutline"
                                  Width="20" Height="20"
@@ -514,8 +516,7 @@
                             Style="{StaticResource SecondaryButton}"
                             Height="52" FontSize="15" Margin="0,0,10,0"/>
                     <Button Grid.Column="1"
-                            Command="{Binding ReceiveStockCommand}"
-                            
+                            Command="{Binding ReceiveStockCommand}"                            
                             Height="52" FontSize="16">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">

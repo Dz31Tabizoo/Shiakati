@@ -6,9 +6,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1024"
-             FontFamily="{StaticResource MontserratFont}"
-             Background="{DynamicResource MaterialDesignPaper}"
-             TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+             FontFamily="{StaticResource BodyFont}"
+             Background="{StaticResource BgBrush}"
+             TextElement.Foreground="{StaticResource TextPrimaryBrush}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -20,77 +20,119 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Filter bar -->
-        <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16" UniformCornerRadius="8">
+        <!-- ═══════════ FILTER BAR ═══════════ -->
+        <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16"
+                             Style="{StaticResource ShiakatiCard}">
             <StackPanel>
                 <!-- Quick period chips -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <Button Content="Aujourd'hui" Command="{Binding QuickSetPeriodCommand}" CommandParameter="today"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Hier" Command="{Binding QuickSetPeriodCommand}" CommandParameter="yesterday"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Semaine passée" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastweek"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Mois passé" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastmonth"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Année" Command="{Binding QuickSetPeriodCommand}" CommandParameter="year"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Tout l'historique" Command="{Binding QuickSetPeriodCommand}" CommandParameter="all"
-                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <Button Content="Aujourd'hui" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="today"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Hier" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="yesterday"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Semaine passée" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="lastweek"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Mois passé" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="lastmonth"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Année" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="year"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Tout l'historique" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="all"
+                            Style="{StaticResource HelpChipButton}"/>
                 </StackPanel>
 
-                <!-- Original date filter row -->
+                <!-- Date filter row -->
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <DatePicker Grid.Column="0" 
-                        SelectedDate="{Binding StartDate}"
-                        materialDesign:HintAssist.Hint="Du"
-                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="0"
+                                SelectedDate="{Binding StartDate}"
+                                materialDesign:HintAssist.Hint="Date de début"
+                                Width="Auto" Margin="0,0,16,0" VerticalAlignment="Center"/>
 
-                    <DatePicker Grid.Column="1" 
-                        SelectedDate="{Binding EndDate}"
-                        materialDesign:HintAssist.Hint="Au"
-                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="1"
+                                SelectedDate="{Binding EndDate}"
+                                Width="Auto"
+                                materialDesign:HintAssist.Hint="Date de fin"
+                                Margin="0,0,16,0" VerticalAlignment="Center"/>
 
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Command="{Binding LoadMovementsCommand}" 
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        Margin="0,0,8,0" Content="Rechercher" Cursor="Hand"/>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Command="{Binding ClearFiltersCommand}"
+                                Style="{StaticResource HelpChipButton}"
+                                BorderThickness="0.4"                                
+                                BorderBrush="{StaticResource PrimaryLightBrush}"
+                                MinHeight="48" FontSize="14"
+                                Content="Réinitialiser" Cursor="Hand" Margin="0,0,8,0"/>
 
-                        <Button Command="{Binding ClearFiltersCommand}" 
-                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                        Content="Réinitialiser" Cursor="Hand"/>
+                        <Button Command="{Binding LoadMovementsCommand}"
+                                Style="{StaticResource PrimaryButton}"
+                                MinHeight="48" FontSize="14"
+                                Margin="0,0,8,0" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20"
+                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Rechercher" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+
                     </StackPanel>
                 </Grid>
             </StackPanel>
         </materialDesign:Card>
-        <!-- Grid -->
-        <materialDesign:Card Grid.Row="1" UniformCornerRadius="8">
-            <DataGrid ItemsSource="{Binding Movements}" 
-                      AutoGenerateColumns="False" 
-                      CanUserAddRows="False" 
-                      IsReadOnly="True"
-                      HeadersVisibility="All"
-                      SelectionMode="Single"
-                      materialDesign:DataGridAssist.CellPadding="12"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="12">
 
+        <!-- ═══════════ DATA GRID ═══════════ -->
+        <materialDesign:Card Grid.Row="1" Style="{StaticResource ShiakatiCard}"
+                             Padding="4">
+            <DataGrid ItemsSource="{Binding Movements}"
+                      Style="{StaticResource ShiakatiDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiDataGridRow}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Date" Binding="{Binding MovementDate, StringFormat=dd/MM/yyyy HH:mm}" Width="Auto"/>
-                    <DataGridTextColumn Header="Type" Binding="{Binding MovementType}" Width="Auto"/>
-                    <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="Auto"/>
-                    <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
-                    <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto"/>
-                    <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto"/>
-                    <DataGridTextColumn Header="Qté" Binding="{Binding Quantity}" Width="Auto"/>
-                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="2*"/>
+                    <DataGridTextColumn Header="Date"
+                                        Binding="{Binding MovementDate, StringFormat=dd/MM/yyyy HH:mm}"
+                                        Width="Auto" FontSize="14"/>
+                    <DataGridTextColumn Header="Type"
+                                        Binding="{Binding MovementType}"
+                                        Width="Auto" FontSize="14"/>
+                    <DataGridTextColumn Header="SKU"
+                                        Binding="{Binding Sku}"
+                                        Width="Auto" FontSize="14"
+                                        Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <DataGridTextColumn Header="Produit"
+                                        Binding="{Binding ProductName}"
+                                        Width="*" FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <DataGridTextColumn Header="Couleur"
+                                        Binding="{Binding Color}"
+                                        Width="Auto" FontSize="14"/>
+                    <DataGridTextColumn Header="Taille"
+                                        Binding="{Binding FullSize}"
+                                        Width="Auto" FontSize="14"/>
+                    <DataGridTextColumn Header="Qté"
+                                        Binding="{Binding Quantity}"
+                                        Width="Auto" FontSize="14"
+                                        FontWeight="SemiBold"/>
+                    <DataGridTextColumn Header="Notes"
+                                        Binding="{Binding Notes}"
+                                        Width="2*" FontSize="14"
+                                        Foreground="{StaticResource TextSecondaryBrush}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </materialDesign:Card>

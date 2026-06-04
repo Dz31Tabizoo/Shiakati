@@ -32,7 +32,10 @@ namespace Shiakati.Views
 
         }
 
-       
+        private void CloseHistoriquePopup(object sender, RoutedEventArgs e)
+        {
+            btnHistorique.IsChecked = false;
+        }
 
 
         private void btnMaximize_Click(object sender, RoutedEventArgs e)

@@ -195,6 +195,7 @@
                                 </Border.Effect>
                                 <StackPanel Margin="6">
                                     <Button Command="{Binding NavigateToSalesHistoryCommand}"
+                                            Click="CloseHistoriquePopup"
                                             Width="180" Height="60"
                                             FontSize="17" FontFamily="{StaticResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
@@ -205,6 +206,7 @@
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding NavigateToStockMovementsCommand}"
+                                            Click="CloseHistoriquePopup"
                                             Width="180" Height="60"
                                             FontSize="17" FontFamily="{StaticResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
