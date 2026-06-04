@@ -123,13 +123,22 @@
     <!-- ═══════════════════════════════════════
          COMBO BOX
          ═══════════════════════════════════════ -->
-    <Style x:Key="ShiakatiComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}">
+    <Style x:Key="ShiakatiComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
         <Setter Property="MinHeight" Value="48"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BgBrush}"/>
+        <!-- white background -->
+        <Setter Property="BorderBrush" Value="{StaticResource BgAltBrush}"/>
+        <!-- light border -->
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="12,8,32,8"/>
+        <!-- Hint styling -->
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8"/>
     </Style>
-
     <!-- ═══════════════════════════════════════
          CARDS
          ═══════════════════════════════════════ -->
@@ -207,5 +216,35 @@
          ═══════════════════════════════════════ -->
     <Thickness x:Key="DefaultMargin">12,8</Thickness>
     <Thickness x:Key="DefaultPadding">16</Thickness>
+    <!-- ═══════════════════════════════════════
+                  ToggleStyle
+     ═══════════════════════════════════════ -->
+    <Style x:Key="NavToggleStyle" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="ToolTip" Value="Afficher / Masquer la barre de navigation"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border" Background="{TemplateBinding Background}"
+                        CornerRadius="8" Padding="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 </ResourceDictionary>

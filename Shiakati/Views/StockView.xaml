@@ -7,26 +7,29 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1024"
-             FontFamily="{StaticResource MontserratFont}">
+             FontFamily="{StaticResource BodyFont}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
 
-    <Grid Margin="15">
+    <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Margin="0,0,15,0">
+        <!-- ═══════════ LEFT: Main stock area ═══════════ -->
+        <Grid Grid.Column="0" Margin="0,0,16,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <materialDesign:Card Grid.Row="0" Padding="10" UniformCornerRadius="8" Margin="0,0,0,10">
+            <!-- ====== TOP BAR (search + actions) ====== -->
+            <materialDesign:Card Grid.Row="0" Padding="12" UniformCornerRadius="12" Margin="0,0,0,12"
+                                 Background="{StaticResource BgBrush}" Style="{StaticResource ShiakatiCard}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -35,109 +38,101 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" Grid.Column="0">
-                        <materialDesign:PackIcon Kind="Magnify" Width="24" Height="24" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                        <materialDesign:PackIcon Kind="Magnify" Width="24" Height="24"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{StaticResource PrimaryBrush}"
+                                                 Margin="0,0,10,0"/>
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:HintAssist.Hint="Rechercher par Nom du produit ou SKU..."
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 Width="350" FontSize="16" VerticalAlignment="Center">
+                                 Style="{StaticResource ShiakatiTextBox}"
+                                 Width="360" FontSize="16" VerticalAlignment="Center">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Return" Command="{Binding ApplyFiltersCommand}"/>
                             </TextBox.InputBindings>
                         </TextBox>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Content="RÉINITIALISER LES FILTRES" Style="{StaticResource MaterialDesignFlatLightButton}" 
-                            Command="{Binding ClearFiltersCommand}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-
-                    <Button Grid.Column="2" 
-                            Style="{StaticResource MaterialDesignFlatLightBgButton}" 
-                            Command="{Binding ToggleReceptionCommand}" 
-                            VerticalAlignment="Center">
+                    <Button Grid.Column="1" Content="RÉINITIALISER LES FILTRES"
+                            Command="{Binding ClearFiltersCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            VerticalAlignment="Center" Margin="0,0,10,0"
+                            FontSize="14" MinHeight="48"/>
+                    <Button Grid.Column="2"
+        Command="{Binding ToggleReceptionCommand}"
+        Style="{StaticResource PrimaryButton}"
+        VerticalAlignment="Center"
+        MinWidth="220"
+        HorizontalContentAlignment="Center"
+        FontSize="14" MinHeight="48">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="TruckDeliveryOutline" 
-                                 Width="20" Height="20" 
-                                 VerticalAlignment="Center" Foreground="White" 
+                            <materialDesign:PackIcon Kind="TruckDeliveryOutline"
+                                 Width="20" Height="20"
+                                 VerticalAlignment="Center"
                                  Margin="0,0,8,0"/>
-                            <TextBlock Text="RÉCEPTION FOURNISSEUR" 
-                                       VerticalAlignment="Center" 
-                                       FontSize="13" FontWeight="SemiBold"
-                                       Foreground="White"/>
+                            <TextBlock Text="RÉCEPTION FOURNISSEUR" VerticalAlignment="Center"
+                   FontSize="14" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Button>
+
                 </Grid>
             </materialDesign:Card>
 
-            <materialDesign:Card Grid.Row="1" Padding="15,10" UniformCornerRadius="8" Margin="0,0,0,10">
+            <!-- ====== FILTER BAR ====== -->
+            <materialDesign:Card Grid.Row="1" Padding="16,12" UniformCornerRadius="12"
+                                 Margin="0,0,0,12" Background="{StaticResource BgBrush}"
+                                 Style="{StaticResource ShiakatiCard}">
                 <WrapPanel Orientation="Horizontal">
-                    <WrapPanel.Resources>
-                        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignDataGridComboBox}">
-                            <Setter Property="FontSize" Value="15"/>
-                            <Setter Property="Height" Value="50"/>
-                            <Setter Property="Width" Value="180"/>
-                            <Setter Property="Margin" Value="0,0,20,15"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                        </Style>
-                    </WrapPanel.Resources>
-
-                    <ComboBox ItemsSource="{Binding Categories}" 
-                  DisplayMemberPath="CategoryName" 
-                  SelectedItem="{Binding SelectedCategory}"
-                  materialDesign:HintAssist.Hint="Catégorie"/>
-
-                    <ComboBox ItemsSource="{Binding Brands}" 
-                  DisplayMemberPath="BrandName" 
-                  SelectedItem="{Binding SelectedBrand}"
-                  materialDesign:HintAssist.Hint="Marque"/>
-
-                    <ComboBox ItemsSource="{Binding AllColors}" 
-                  SelectedItem="{Binding FilterColor}"
-                  materialDesign:HintAssist.Hint="Couleur"/>
-
-                    <ComboBox ItemsSource="{Binding FilterSizes}" 
-                  SelectedItem="{Binding FilterFullSize}"
-                  materialDesign:HintAssist.Hint="Taille"/>
-
+                    <ComboBox materialDesign:HintAssist.Hint="Catégorie"
+              ItemsSource="{Binding Categories}"
+              DisplayMemberPath="CategoryName"
+              SelectedItem="{Binding SelectedCategory}"
+              Style="{StaticResource ShiakatiComboBox}"
+              Width="180" Margin="0,0,20,12"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Marque"
+              ItemsSource="{Binding Brands}"
+              DisplayMemberPath="BrandName"
+              SelectedItem="{Binding SelectedBrand}"
+              Style="{StaticResource ShiakatiComboBox}"
+              Width="180" Margin="0,0,20,12"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Couleur"
+              ItemsSource="{Binding AllColors}"
+              SelectedItem="{Binding FilterColor}"
+              Style="{StaticResource ShiakatiComboBox}"
+              Width="150" Margin="0,0,20,12"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Taille"
+              ItemsSource="{Binding FilterSizes}"
+              SelectedItem="{Binding FilterFullSize}"
+              Style="{StaticResource ShiakatiComboBox}"
+              Width="150" Margin="0,0,20,12"/>
                     <CheckBox Content="Afficher les articles supprimés"
-                                IsChecked="{Binding IsNonActiveItemsVisible, Mode=TwoWay}"
-                                FontSize="16"
-                                Margin="10,0,20,15"
-                                VerticalAlignment="Center"/>
+              IsChecked="{Binding IsNonActiveItemsVisible, Mode=TwoWay}"
+              FontSize="15" FontWeight="Medium"
+              Foreground="{StaticResource TextPrimaryBrush}"
+              VerticalAlignment="Center" Margin="0,0,20,12"/>
                 </WrapPanel>
             </materialDesign:Card>
 
-
-                <materialDesign:Card Grid.Row="2" UniformCornerRadius="8" Padding="5">
-                    <DataGrid ItemsSource="{Binding FilteredStockView}"
-                          AutoGenerateColumns="False" 
-                          CanUserAddRows="False" 
-                          IsReadOnly="True" 
+            <!-- ====== DATA GRID ====== -->
+            <materialDesign:Card Grid.Row="2" UniformCornerRadius="12"
+                                 Background="{StaticResource BgBrush}"
+                                 Style="{StaticResource ShiakatiCard}"
+                                 Padding="4">
+                <DataGrid ItemsSource="{Binding FilteredStockView}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
                           HeadersVisibility="Column"
-                          SelectionMode="Single" 
+                          SelectionMode="Single"
                           SelectedItem="{Binding SelectedStockItem}"
-                          RowHeight="60" 
-                          FontSize="13"
-                          Background="#FCFCFC"
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
+                          Style="{StaticResource ShiakatiDataGrid}">
 
-                    <!-- CellStyle unchanged (keep your existing triggers for deleted/rupture) -->
+                    <!-- Cell style with status triggers -->
                     <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
-                            <Setter Property="Padding" Value="10,0"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="DataGridCell">
-                                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
-                                            <ContentPresenter VerticalAlignment="Center" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource ShiakatiDataGridCell}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsActive}" Value="False">
                                     <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="TextBlock.TextDecorations" Value="Strikethrough"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
                                 </DataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
@@ -149,56 +144,48 @@
                         </Style>
                     </DataGrid.CellStyle>
 
-                    <!-- RowStyle unchanged (your context menu, triggers) -->
+                    <!-- Row style with context menu -->
                     <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                        <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
                             <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <!-- Modifier l'article -->
-                                        <MenuItem Header="Modifier l'article" 
-                              Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-                              CommandParameter="{Binding}"
-                              IsEnabled="{Binding IsActive, TargetNullValue=False}">
+                                        <MenuItem Header="Modifier l'article"
+                                                  Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding}"
+                                                  IsEnabled="{Binding IsActive, TargetNullValue=False}">
                                             <MenuItem.Icon>
                                                 <materialDesign:PackIcon Kind="Edit" />
                                             </MenuItem.Icon>
                                         </MenuItem>
-
                                         <Separator/>
-
-                                        <!-- Imprimer Code-Barres -->
-                                        <MenuItem Header="Imprimer Code-Barres" 
-                              Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-                              CommandParameter="{Binding}">
+                                        <MenuItem Header="Imprimer Code-Barres"
+                                                  Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding}">
                                             <MenuItem.Icon>
                                                 <materialDesign:PackIcon Kind="Printer" />
                                             </MenuItem.Icon>
                                         </MenuItem>
-
                                         <Separator/>
-
-                                        <!-- Supprimer / Restaurer l'article -->
-                                        <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-                              CommandParameter="{Binding}">
+                                        <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding}">
                                             <MenuItem.Style>
-                                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Style TargetType="MenuItem">
                                                     <Setter Property="Header" Value="Supprimer l'article"/>
-                                                    <Setter Property="Foreground" Value="Crimson"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
                                                     <Setter Property="Icon">
                                                         <Setter.Value>
-                                                            <materialDesign:PackIcon Kind="Delete" Foreground="Crimson" />
+                                                            <materialDesign:PackIcon Kind="Delete" Foreground="{StaticResource DangerBrush}" />
                                                         </Setter.Value>
                                                     </Setter>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsActive}" Value="False">
                                                             <Setter Property="Header" Value="Restaurer l'article"/>
-                                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
                                                             <Setter Property="Icon">
                                                                 <Setter.Value>
-                                                                    <materialDesign:PackIcon Kind="Restore" Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                                                                    <materialDesign:PackIcon Kind="Restore" Foreground="{StaticResource PrimaryBrush}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </DataTrigger>
@@ -206,13 +193,10 @@
                                                 </Style>
                                             </MenuItem.Style>
                                         </MenuItem>
-
                                         <Separator/>
-
-                                        <!-- Lancer l'inventaire du produit (commande à ajouter plus tard) -->
-                                        <MenuItem Header="Lancer l'inventaire du produit" 
-                              Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
-                              CommandParameter="{Binding}">
+                                        <MenuItem Header="Lancer l'inventaire du produit"
+                                                  Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding}">
                                             <MenuItem.Icon>
                                                 <materialDesign:PackIcon Kind="ClipboardCheckMultiple" />
                                             </MenuItem.Icon>
@@ -220,29 +204,31 @@
                                     </ContextMenu>
                                 </Setter.Value>
                             </Setter>
-
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsActive}" Value="False">
                                     <Setter Property="Opacity" Value="0.55"/>
-                                    <Setter Property="Background" Value="#1A808080"/>
+                                    <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
 
                     <DataGrid.Columns>
-                        <!-- STATUS – prominent, slightly wider -->
+                        <!-- Status (unchanged) -->
                         <DataGridTemplateColumn Header="Statut" Width="Auto" MinWidth="90">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                                        <Border x:Name="DeleteBadge" Background="#FEE2E2" CornerRadius="6" Padding="8,4" Visibility="Collapsed">
-                                            <TextBlock Text="SUPPRIMÉ" Foreground="#991B1B" FontSize="10" FontWeight="Bold"/>
+                                        <Border x:Name="DeleteBadge" Background="{StaticResource DangerBrush}"
+                        CornerRadius="6" Padding="8,4" Visibility="Collapsed">
+                                            <TextBlock Text="SUPPRIMÉ" Foreground="White" FontSize="10" FontWeight="Bold"/>
                                         </Border>
-                                        <Border x:Name="RuptureBadge" Background="#FFEDD5" CornerRadius="6" Padding="8,4" Visibility="Collapsed">
+                                        <Border x:Name="RuptureBadge" Background="#FFEDD5"
+                        CornerRadius="6" Padding="8,4" Visibility="Collapsed">
                                             <TextBlock Text="RUPTURE" Foreground="#C2410C" FontSize="10" FontWeight="Bold"/>
                                         </Border>
-                                        <Border x:Name="ActiveBadge" Background="#DCFCE7" CornerRadius="6" Padding="8,4" Visibility="Visible">
+                                        <Border x:Name="ActiveBadge" Background="#DCFCE7"
+                        CornerRadius="6" Padding="8,4" Visibility="Visible">
                                             <TextBlock Text="ACTIF" Foreground="#166534" FontSize="10" FontWeight="Bold"/>
                                         </Border>
                                     </Grid>
@@ -265,79 +251,92 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <!-- SKU (unchanged) -->
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"
+                        FontWeight="Normal" FontSize="11"
+                        Foreground="{StaticResource TextSecondaryBrush}"
+                        Width="Auto" MinWidth="90"/>
 
-                        <!-- SKU – de‑emphasized -->
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Normal" FontSize="11"
-                            Foreground="#999999" Width="Auto" MinWidth="90"/>
+                        <!-- Catégorie (unchanged) -->
+                        <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}"
+                        Width="Auto" MinWidth="110" FontSize="13"/>
 
-                        <!-- CATEGORY – moderate importance -->
-                        <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}" Width="Auto" MinWidth="110" FontSize="12"/>
+                        <!-- Marque – slightly larger -->
+                        <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}"
+                        FontSize="15" FontWeight="Medium"
+                        Width="Auto" MinWidth="110"/>
 
-                        <!-- BRAND – moderate importance -->
-                        <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}" FontSize="16"  Width="Auto" MinWidth="110" />
+                        <!-- Produit – prominent -->
+                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}"
+                        FontSize="16" FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Width="*" MinWidth="200"/>
 
-                        <!-- PRODUCT NAME – very important -->
-                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" FontSize="15" FontWeight="SemiBold"
-                            Width="*" MinWidth="200"/>
+                        <!-- Couleur – slightly larger -->
+                        <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"
+                        Width="Auto" MinWidth="90" FontSize="15"/>
 
-                        <!-- COLOR – moderate -->
-                        <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto" MinWidth="90" FontSize="12"/>
+                        <!-- Taille – slightly larger -->
+                        <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"
+                        Width="Auto" MinWidth="70" FontSize="15"/>
 
-                        <!-- SIZE – moderate -->
-                        <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto" MinWidth="70" FontSize="12"/>
+                        <!-- Stock (unchanged) -->
+                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}"
+                        FontWeight="SemiBold" FontSize="14"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Width="Auto" MinWidth="70"/>
 
-                        <!-- STOCK QUANTITY – important, bold number -->
-                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}" FontWeight="SemiBold" FontSize="13"
-                            Width="Auto" MinWidth="70"/>
+                        <!-- Prix de vente – larger -->
+                        <DataGridTextColumn Header="P. Vente"
+                        Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}"
+                        Foreground="{StaticResource SecondaryBrush}"
+                        FontWeight="Bold" FontSize="16" Width="Auto" MinWidth="100"/>
 
-                        <!-- SALE PRICE – critical, standout -->
-                        <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="Green"
-                            FontWeight="Bold" FontSize="14" Width="Auto" MinWidth="100"/>
+                        <!-- Prix d'achat (unchanged) -->
+                        <DataGridTextColumn Header="P. Achat"
+                        Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}"
+                        Foreground="{StaticResource DangerBrush}"
+                        FontSize="13" Width="Auto" MinWidth="90"/>
 
-                        <!-- PURCHASE PRICE – less important, keep small -->
-                        <DataGridTextColumn Header="P. Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="Crimson"
-                            FontSize="12" Width="Auto" MinWidth="90"/>
-
-                        <!-- FIXED DISCOUNT – important -->
-                        <DataGridTextColumn Header="Remise Fixe" Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}" Foreground="Orange"
-                            FontWeight="SemiBold" FontSize="13" Width="Auto" MinWidth="90"/>
+                        <!-- Remise Fixe – slightly larger -->
+                        <DataGridTextColumn Header="Remise Fixe"
+                        Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}"
+                        Foreground="Orange"
+                        FontWeight="SemiBold" FontSize="15" Width="Auto" MinWidth="90"/>
                     </DataGrid.Columns>
+
                 </DataGrid>
-                </materialDesign:Card>
-
-
-
+            </materialDesign:Card>
         </Grid>
-        <materialDesign:Card Grid.Column="1" Width="380" UniformCornerRadius="8" Padding="15"
-                     Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
-                     materialDesign:ElevationAssist.Elevation="Dp3">
+
+        <!-- ═══════════ RIGHT: Reception panel ═══════════ -->
+        <materialDesign:Card Grid.Column="1" Width="450"
+                             Visibility="{Binding IsReceptionVisible, Converter={StaticResource BoolToVis}}"
+                             Padding="20">
             <materialDesign:Card.Style>
-                
-        <Style TargetType="materialDesign:Card" BasedOn="{StaticResource {x:Type materialDesign:Card}}">
-            <Setter Property="Background" Value="White"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                    <Setter Property="Background" Value="#FFFDE7"/> </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </materialDesign:Card.Style>
-            
+                <Style TargetType="materialDesign:Card" BasedOn="{StaticResource ShiakatiCard}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                            <Setter Property="Background" Value="#FFFDE7"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </materialDesign:Card.Style>
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
-                    
                 </Grid.RowDefinitions>
 
+                <!-- Header -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
-
                     <materialDesign:PackIcon Width="28" Height="28" VerticalAlignment="Center" Margin="0,0,10,0">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Setter Property="Kind" Value="TruckDeliveryOutline"/>
                                 <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
-
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Kind" Value="Edit"/>
@@ -347,13 +346,12 @@
                             </Style>
                         </materialDesign:PackIcon.Style>
                     </materialDesign:PackIcon>
-
-                    <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center">
+                    <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center"
+                               FontFamily="{StaticResource HeadingFont}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Text" Value="Réception Fournisseur"/>
-                                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Text" Value="Modification d'article"/>
@@ -363,89 +361,93 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-
                 </StackPanel>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+                <!-- Form content -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
                     <StackPanel>
+                        <TextBlock Text="1. Informations Produit" FontWeight="SemiBold"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="14" Margin="0,0,0,10"/>
 
-                        <TextBlock Text="1. Informations Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Catégorie"
+                  ItemsSource="{Binding Categories}"
+                  DisplayMemberPath="CategoryName"
+                  SelectedItem="{Binding DraftCategory}"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,0,14"/>
 
-                        <ComboBox materialDesign:HintAssist.Hint="Catégorie" 
-                                  FontSize="13" 
-                                  ItemsSource="{Binding Categories}" 
-                                  DisplayMemberPath="CategoryName" 
-                                  SelectedItem="{Binding DraftCategory}" 
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
-                                  Margin="0,0,0,15"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Marque"
+                  ItemsSource="{Binding FilteredBrands}"
+                  Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding DraftBrand}"
+                  DisplayMemberPath="BrandName"
+                  IsEditable="True"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,0,14"/>
 
-                        <ComboBox ItemsSource="{Binding FilteredBrands}" 
-                                  FontSize="13"
-                                  Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
-                                  SelectedItem="{Binding DraftBrand}"
-                                  DisplayMemberPath="BrandName"
-                                  materialDesign:HintAssist.Hint="Marque" 
-                                  IsEditable="True"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
-                                  Margin="0,0,0,15"/>
+                        <ComboBox materialDesign:HintAssist.Hint="Nom du produit"
+                  IsEditable="True"
+                  Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Products}"
+                  DisplayMemberPath="ProductName"
+                  SelectedItem="{Binding DraftSelectedProduct}"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,0,20"/>
 
-                        <ComboBox IsEditable="True" 
-                                  FontSize="13"
-                                  materialDesign:HintAssist.Hint="Nom du produit" 
-                                  Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}" 
-                                  ItemsSource="{Binding Products}"  
-                                  DisplayMemberPath="ProductName"
-                                  SelectedItem="{Binding DraftSelectedProduct}"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
-                                  Margin="0,0,0,22"/>
+                        <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="14" Margin="0,0,0,10"/>
 
-                        <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
-
-                        <CheckBox Content="Saisir code-barres manuellement" 
-                                    IsChecked="{Binding IsManualSkuEnabled}" 
-                                    FontSize="12" Margin="0,0,0,5"
-                                    Visibility="{Binding IsNotEditMode, Converter={StaticResource BoolToVis}}"/>
-                        <TextBox FontSize="13" materialDesign:HintAssist.Hint="Code-barres (SKU)" 
-                                 Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}" 
-                                 IsEnabled="{Binding IsManualSkuEnabled}"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15">
+                        <CheckBox Content="Saisir code-barres manuellement"
+                  IsChecked="{Binding IsManualSkuEnabled}"
+                  FontSize="13" Margin="0,0,0,6"
+                  Visibility="{Binding IsNotEditMode, Converter={StaticResource BoolToVis}}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Code-barres (SKU)"
+                 Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding IsManualSkuEnabled}"
+                 Style="{StaticResource ShiakatiTextBox}"
+                 Margin="0,0,0,14">
                             <TextBox.ToolTip>Laissez vide pour générer automatiquement, ou scannez le code-barres existant</TextBox.ToolTip>
                         </TextBox>
 
-                        <Grid Margin="0,0,0,15">
+                        <Grid Margin="0,0,0,14">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
-                            <ComboBox Grid.Column="0" 
-                                      FontSize="13"
-                                      IsEditable="True" 
-                                      ItemsSource="{Binding AllColors}" 
+                            <ComboBox Grid.Column="0" IsEditable="True"
+                                      materialDesign:HintAssist.Hint="Couleur"
+                                      ItemsSource="{Binding AllColors}"
                                       Text="{Binding DraftColor, UpdateSourceTrigger=PropertyChanged}"
-                                      materialDesign:HintAssist.Hint="Couleur" 
-                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+                                      Style="{StaticResource ShiakatiComboBox}"
                                       Margin="0,0,10,0"/>
-
-                            <TextBox FontSize="13" Grid.Column="1" materialDesign:HintAssist.Hint="Taille (numérique)" Text="{Binding DraftNumericSize}" 
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Visibility="{Binding IsNumericSizeVisible, Converter={StaticResource BoolToVis}}"/>
-
-                            <Grid Grid.Column="1" Visibility="{Binding IsDimensionSizeVisible, Converter={StaticResource BoolToVis}}">
+                            <TextBox Grid.Column="1"
+                                     materialDesign:HintAssist.Hint="Taille (numérique)"
+                                     Text="{Binding DraftNumericSize}"
+                                     Style="{StaticResource ShiakatiTextBox}"
+                                     Visibility="{Binding IsNumericSizeVisible, Converter={StaticResource BoolToVis}}"/>
+                            <Grid Grid.Column="1"
+                                    Visibility="{Binding IsDimensionSizeVisible, Converter={StaticResource BoolToVis}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-
-                                <ComboBox FontSize="13" Grid.Column="0" IsEditable="False" ItemsSource="{Binding WidthsList}" SelectedItem="{Binding DraftWidth}"
-                                  materialDesign:HintAssist.Hint="Largeur" 
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" Margin="0,0,5,0"/>
-                                <TextBox FontSize="13" Grid.Column="1" materialDesign:HintAssist.Hint="Longueur" Text="{Binding DraftLength}" 
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="5,0,0,0"/>
+                                <ComboBox Grid.Column="0" IsEditable="False"
+                                      materialDesign:HintAssist.Hint="Largeur"
+                                      ItemsSource="{Binding WidthsList}"
+                                      SelectedItem="{Binding DraftWidth}"
+                                      Style="{StaticResource ShiakatiComboBox}"
+                                      Margin="0,0,5,0"/>
+                                <TextBox Grid.Column="1"
+                                        materialDesign:HintAssist.Hint="Longueur"
+                                        Text="{Binding DraftLength}"
+                                        Style="{StaticResource ShiakatiTextBox}"
+                                        Margin="5,0,0,0"/>
                             </Grid>
                         </Grid>
 
-                        <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0,0,0,15"/>
+                        <Separator Margin="0,0,0,14"/>
 
                         <Grid Margin="0,0,0,20">
                             <Grid.ColumnDefinitions>
@@ -456,73 +458,68 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-
-                            <TextBox FontSize="13" Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Prix d'achat (DA)" 
-                                     Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}" 
-                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,10,15"
-                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
-                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
-                                     DataObject.Pasting="TextBox_Pasting"/>
-
-                            <TextBox FontSize="13" Grid.Row="0" Grid.Column="1" materialDesign:HintAssist.Hint="Prix de vente (DA)" 
-                                     Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}" 
-                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,0,15"
-                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
-                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
-                                     DataObject.Pasting="TextBox_Pasting"/>
-
-                            <TextBox FontSize="13" Grid.Row="1" Grid.Column="1" materialDesign:HintAssist.Hint="Remise fixe (DA)" 
-                                     Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}" 
-                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                     PreviewTextInput="OnlyDigits_PreviewTextInput"
-                                     PreviewKeyDown="OnlyDigits_PreviewKeyDown"
-                                     DataObject.Pasting="TextBox_Pasting"/>
+                            <TextBox Grid.Row="0" Grid.Column="0"
+                     materialDesign:HintAssist.Hint="Prix d'achat (DA)"
+                     Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ShiakatiTextBox}"
+                     Margin="0,0,10,14"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                     materialDesign:HintAssist.Hint="Prix de vente (DA)"
+                     Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ShiakatiTextBox}"
+                     Margin="0,0,0,14"/>
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                     materialDesign:HintAssist.Hint="Remise fixe (DA)"
+                     Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ShiakatiTextBox}"/>
                         </Grid>
 
-                        <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,10"/>
+                        <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="14" Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue" 
-                         Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}" 
-                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         FontSize="20" FontWeight="Bold" Margin="0,0,0,15" Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBox materialDesign:HintAssist.Hint="Quantité reçue"
+                 Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{StaticResource ShiakatiTextBox}"
+                 FontSize="22" FontWeight="Bold"
+                 Margin="0,0,0,14"
+                 Foreground="{StaticResource PrimaryBrush}"/>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <CheckBox Content="Imprimer code-barres" IsChecked="{Binding PrintLabelsOnSave}" 
-                              FontWeight="SemiBold" VerticalAlignment="Center"/>
-
-                            <TextBox materialDesign:HintAssist.Hint="Qté à imprimer" 
-                             Text="{Binding LabelsToPrint, UpdateSourceTrigger=PropertyChanged}" 
-                             Width="100" FontSize="13" Margin="20,0,0,0"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <CheckBox Content="Imprimer code-barres"
+                      IsChecked="{Binding PrintLabelsOnSave}"
+                      FontWeight="SemiBold" FontSize="14"
+                      VerticalAlignment="Center"/>
+                            <TextBox materialDesign:HintAssist.Hint="Qté à imprimer"
+                     Text="{Binding LabelsToPrint, UpdateSourceTrigger=PropertyChanged}"
+                     Width="100" FontSize="14" Margin="20,0,0,0"
+                     Style="{StaticResource ShiakatiTextBox}"
+                     Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}"
+                     VerticalAlignment="Center"/>
                         </StackPanel>
-
-                        <TextBlock Text="Par défaut, imprime une étiquette par article reçu. Vous pouvez modifier ce nombre." 
-                           FontStyle="Italic" FontSize="11" Foreground="Gray" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                        <TextBlock Text="Par défaut, imprime une étiquette par article reçu. Vous pouvez modifier ce nombre."
+                   FontStyle="Italic" FontSize="12"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   TextWrapping="Wrap" Margin="0,4,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
-
-                <Grid Grid.Row="2" Margin="0,15,0,0">
+                <!-- Bottom buttons -->
+                <Grid Grid.Row="2" Margin="0,20,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" Content="ANNULER" Height="50" FontSize="15" FontWeight="SemiBold"
-                    Command="{Binding StockAddingFiledsClearCommand}" Margin="0,0,10,0"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
-                    <Button Grid.Column="1" Height="50" FontSize="12" FontWeight="SemiBold"
+                    <Button Grid.Column="0" Content="ANNULER"
+                            Command="{Binding StockAddingFiledsClearCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Height="52" FontSize="15" Margin="0,0,10,0"/>
+                    <Button Grid.Column="1"
+                            Command="{Binding ReceiveStockCommand}"
                             
-                    Command="{Binding ReceiveStockCommand}">
-                        <Button.Effect>
-                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.2"/>
-                        </Button.Effect>
-
+                            Height="52" FontSize="16">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
                                 <Setter Property="Content" Value="ENREGISTRER &amp; IMPRIMER"/>
-
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Content" Value="MODIFIER L'ARTICLE"/>

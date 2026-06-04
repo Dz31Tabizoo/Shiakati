@@ -77,15 +77,7 @@
             </Setter>
         </Style>
 
-        <!-- ============ Navigation visibility toggle (menu icon) ============ -->
-        <Style x:Key="NavToggleStyle" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
-            <Setter Property="Width" Value="40"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
+        <!-- The global NavToggleStyle from GlobalStyles.xaml will be used – no need to redefine here -->
     </Window.Resources>
 
     <!-- ============ ROUNDED WINDOW CORNERS ============ -->
@@ -104,30 +96,42 @@
             <Border x:Name="pnlControlBar" Grid.Row="0" Height="80" Background="{StaticResource BgBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
                     BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
-                <Grid Margin="20,0" Height="Auto">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="Auto" >
+                <Grid Margin="20,0">
+                    <!-- App logo + name (left) -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="/Resources/Photos/shiakati bg.png" 
-                               Width="48" Height="48"  VerticalAlignment="Center" Stretch="Uniform"/>
+                               Width="48" Height="48" VerticalAlignment="Center" Stretch="Uniform"/>
                         <TextBlock Text="Shiakati شياكتي" 
                                    FontFamily="{StaticResource HeadingFont}" 
                                    FontSize="28" FontWeight="Bold"
-                                   Foreground="{StaticResource PrimaryBrush}"       VerticalAlignment="Center"/>
+                                   Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
-                        <!-- Hide / Show navigation -->
+                    <!-- Right side controls: navigation toggle + window buttons -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
                         <ToggleButton x:Name="NavVisibilityToggle" 
                                       Style="{StaticResource NavToggleStyle}"
-                                      ToolTip="Afficher/Masquer la navigation"
-                                      Margin="0,0,8,0">
+                                      Margin="0,0,16,0">
                             <ToggleButton.Content>
-                                <materialDesign:PackIcon Kind="Menu" Width="24" Height="24"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Menu" Width="36" Height="36" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Menu" VerticalAlignment="Center" Margin="12,0,0,0"
+                                               FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                </StackPanel>
                             </ToggleButton.Content>
                             <materialDesign:ToggleButtonAssist.OnContent>
-                                <materialDesign:PackIcon Kind="MenuOpen" Width="24" Height="24"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="MenuOpen" Width="36" Height="36" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Masquer" VerticalAlignment="Center" Margin="12,0,0,0"
+                                               FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                </StackPanel>
                             </materialDesign:ToggleButtonAssist.OnContent>
                         </ToggleButton>
 
+                        <!-- Window control buttons -->
                         <Button x:Name="BtnMinmize" Content="—" Click="BtnMinmize_Click" 
                                 Style="{StaticResource MaterialDesignFlatButton}" 
                                 Foreground="{StaticResource TextSecondaryBrush}" 
@@ -146,29 +150,29 @@
 
             <!-- ═══════════ 2. COLLAPSIBLE NAVIGATION BAR ═══════════ -->
             <Border Grid.Row="1" Height="80" Background="{StaticResource BgBrush}"
-        BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1"
-        Visibility="{Binding ElementName=NavVisibilityToggle, Path=IsChecked, Converter={StaticResource BoolToVis}}">
+                    BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1"
+                    Visibility="{Binding ElementName=NavVisibilityToggle, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                 <Grid Margin="20,0">
                     <!-- Left: main navigation buttons -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToPOSCommand}"
-                    MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                    FontSize="17">
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CashRegister" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Caisse" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToStockCommand}"
-                    MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                    FontSize="17">
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Warehouse" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Stock" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <!-- Historique toggle – larger, with dropdown arrow -->
+                        <!-- Historique toggle -->
                         <ToggleButton x:Name="btnHistorique" Style="{StaticResource TopNavToggleButtonStyle}"
                                       MinWidth="180" MinHeight="60" Margin="0,0,18,0"
                                       FontSize="17">
@@ -176,37 +180,35 @@
                                 <materialDesign:PackIcon Kind="History" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Historique" VerticalAlignment="Center"/>
                                 <materialDesign:PackIcon Kind="MenuDown" Width="20" Height="20" Margin="8,0,0,0"
-                                 VerticalAlignment="Center"/>
+                                                         VerticalAlignment="Center"/>
                             </StackPanel>
                         </ToggleButton>
                         <Popup PlacementTarget="{Binding ElementName=btnHistorique}" 
-       Placement="Bottom" 
-       IsOpen="{Binding IsChecked, ElementName=btnHistorique}" 
-       StaysOpen="False"
-       AllowsTransparency="True">
+                               Placement="Bottom" 
+                               IsOpen="{Binding IsChecked, ElementName=btnHistorique}" 
+                               StaysOpen="False"
+                               AllowsTransparency="True">
                             <Border CornerRadius="10" Background="{StaticResource BgBrush}"
-            BorderBrush="{StaticResource BgAltBrush}" BorderThickness="1">
+                                    BorderBrush="{StaticResource BgAltBrush}" BorderThickness="1">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.3"/>
                                 </Border.Effect>
                                 <StackPanel Margin="6">
-                                    <!-- “Historique Ventes” -->
                                     <Button Command="{Binding NavigateToSalesHistoryCommand}"
-                    Width="180" Height="60"
-                    FontSize="17" FontFamily="{StaticResource HeadingFont}"
-                    FontWeight="SemiBold" Foreground="White"
-                    Style="{StaticResource TopNavButtonStyle}" Margin="2">
+                                            Width="180" Height="60"
+                                            FontSize="17" FontFamily="{StaticResource HeadingFont}"
+                                            FontWeight="SemiBold" Foreground="White"
+                                            Style="{StaticResource TopNavButtonStyle}" Margin="2">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="ReceiptTextClock" Width="22" Height="22" Margin="0,0,8,0"/>
                                             <TextBlock Text="Historique Ventes" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <!-- “Mouvement Stock” -->
                                     <Button Command="{Binding NavigateToStockMovementsCommand}"
-                    Width="180" Height="60"
-                    FontSize="17" FontFamily="{StaticResource HeadingFont}"
-                    FontWeight="SemiBold" Foreground="White"
-                    Style="{StaticResource TopNavButtonStyle}" Margin="2">
+                                            Width="180" Height="60"
+                                            FontSize="17" FontFamily="{StaticResource HeadingFont}"
+                                            FontWeight="SemiBold" Foreground="White"
+                                            Style="{StaticResource TopNavButtonStyle}" Margin="2">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="DatabaseClock" Width="22" Height="22" Margin="0,0,8,0"/>
                                             <TextBlock Text="Mouvement Stock" VerticalAlignment="Center"/>
@@ -217,16 +219,16 @@
                         </Popup>
 
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
-                    MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                    FontSize="17">
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="AccountGroup" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Clients" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
-                    MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                    FontSize="17">
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Cogs" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Paramètres" VerticalAlignment="Center"/>
@@ -236,8 +238,8 @@
 
                     <!-- Right: Logout -->
                     <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding LogoutCommand}" 
-                HorizontalAlignment="Right" MinWidth="140" MinHeight="60"
-                FontSize="17">
+                            HorizontalAlignment="Right" MinWidth="140" MinHeight="60"
+                            FontSize="17">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Logout" Width="26" Height="26" Margin="0,0,8,0"/>
                             <TextBlock Text="Déconnexion" VerticalAlignment="Center"/>

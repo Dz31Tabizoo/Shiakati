@@ -61,5 +61,10 @@ namespace Shiakati.Views
                 e.CancelCommand();
             }
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
