@@ -24,5 +24,13 @@ namespace Shiakati.Views
         {
             InitializeComponent();
         }
+
+        private void OnlyDigits_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, "^[0-9]+$");
+        }
+
+        
+
     }
 }

@@ -1,107 +1,219 @@
 ﻿<UserControl x:Class="Shiakati.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:matDs="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             FontFamily="{StaticResource PoppinsFont}"
-             mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="1000">
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             FontFamily="{StaticResource BodyFont}"
+             Background="{StaticResource BgBrush}">
 
-    <Grid Margin="24">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Toggleable settings module card -->
+        <Style x:Key="ShiakatiSettingsCard" TargetType="RadioButton">
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+            <Setter Property="Background" Value="{StaticResource BgBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BgAltBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="card"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="card" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="card" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="card" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="16">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0">
-
-            <materialDesign:Card Padding="20" UniformCornerRadius="12" Margin="0,0,0,20" materialDesign:ElevationAssist.Elevation="DP2">
+        <!-- ═══════════ LEFT : MODULE CARDS ═══════════ -->
+        <StackPanel Grid.Column="0" VerticalAlignment="Top">
+            <!-- Ticket Printer Card -->
+            <RadioButton x:Name="rbTicket" GroupName="SettingsGroup"
+                         Style="{StaticResource ShiakatiSettingsCard}"
+                         IsChecked="True"
+                         Margin="0,0,0,12">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                        <matDs:PackIcon Kind="PrinterCheck" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
-                        <TextBlock Text="Impression Ticket Caisse" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
-                    </StackPanel>
-
-                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium"/>
-                    <ComboBox ItemsSource="{Binding InstalledPrinters}" 
-                              SelectedItem="{Binding SelectedTicketPrinterName}"
-                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
-                              Height="45"/>
-
-                    <TextBlock Text="Note : Si vide, l'imprimante par défaut sera utilisée." 
-                               FontSize="11" Foreground="Gray" Margin="5,8,0,20" FontStyle="Italic"/>
-
-                    <Button Content="ENREGISTRER TICKET" 
-                            Command="{Binding SaveTicketPrinterSettingsCommand}"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            HorizontalAlignment="Right"
-                            Width="180"/>
+                    <materialDesign:PackIcon Kind="PrinterCheck" Width="48" Height="48"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="Ticket Caisse" HorizontalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 </StackPanel>
-            </materialDesign:Card>
+            </RadioButton>
 
-            <materialDesign:Card Padding="20" UniformCornerRadius="12" materialDesign:ElevationAssist.Elevation="DP2">
+            <!-- Barcode Printer Card -->
+            <RadioButton x:Name="rbBarcode" GroupName="SettingsGroup"
+                         Style="{StaticResource ShiakatiSettingsCard}"
+                         Margin="0,0,0,12">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                        <matDs:PackIcon Kind="BarcodeScanner" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
-                        <TextBlock Text="Impression Étiquettes" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
-                    </StackPanel>
-
-                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium"/>
-                    <ComboBox ItemsSource="{Binding InstalledPrinters}" 
-                              SelectedItem="{Binding SelectedBarcodePrinterName}"
-                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
-                              Height="45"/>
-
-                    <TextBlock Text="Format recommandé : 40mm x 20mm" 
-                               FontSize="11" Foreground="Gray" Margin="5,8,0,20" FontStyle="Italic"/>
-
-                    <Button Content="ENREGISTRER ÉTIQUETTES" 
-                            Command="{Binding SaveBarcodePrinterSettingsCommand}"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            HorizontalAlignment="Right"
-                            Width="180"/>
+                    <materialDesign:PackIcon Kind="BarcodeScanner" Width="48" Height="48"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="Étiquettes" HorizontalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 </StackPanel>
-            </materialDesign:Card>
+            </RadioButton>
 
+            <!-- Categories Card -->
+            <RadioButton x:Name="rbCategories" GroupName="SettingsGroup"
+                         Style="{StaticResource ShiakatiSettingsCard}">
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="ShapePlus" Width="48" Height="48"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="Catégories" HorizontalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                </StackPanel>
+            </RadioButton>
         </StackPanel>
 
-        <materialDesign:Card Grid.Column="2" Padding="20" UniformCornerRadius="12" VerticalAlignment="Top"  materialDesign:ElevationAssist.Elevation="DP2">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                    <matDs:PackIcon Kind="ShapePlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="{StaticResource PrimaryBrush}"/>
-                    <TextBlock Text="Gestion des Catégories" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontSize="16"/>
+        <!-- ═══════════ RIGHT : DETAIL PANELS ═══════════ -->
+        <Grid Grid.Column="2">
+            <!-- TICKET PRINTER PANEL -->
+            <materialDesign:Card Visibility="{Binding IsChecked, ElementName=rbTicket, Converter={StaticResource BoolToVis}}"
+                                 Style="{StaticResource ShiakatiCard}" Padding="20">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <materialDesign:PackIcon Kind="PrinterCheck" Width="24" Height="24"
+                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Impression Ticket Caisse" FontSize="18" FontWeight="Bold"
+                                   FontFamily="{StaticResource HeadingFont}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <ComboBox ItemsSource="{Binding InstalledPrinters}"
+                              SelectedItem="{Binding SelectedTicketPrinterName}"
+                              Style="{StaticResource ShiakatiComboBox}"
+                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
+                              Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Note : Si vide, l'imprimante par défaut sera utilisée."
+                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="4,0,0,20" FontStyle="Italic"/>
+
+                    <Button 
+                            Command="{Binding SaveTicketPrinterSettingsCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Right" MinHeight="48" FontSize="14">
+
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" Width="20" Height="20"
+                                VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Button>
                 </StackPanel>
+            </materialDesign:Card>
 
-                <TextBlock Text="Liste des catégories :" Margin="0,0,0,8" FontWeight="Medium"/>
-                <ListBox ItemsSource="{Binding GlobalCategories}" 
-                         DisplayMemberPath="CategoryName"
-                         Height="200" 
-                         Margin="0,0,0,20"
-                         Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
-                         BorderThickness="1" BorderBrush="#EEEEEE">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                            <Setter Property="Padding" Value="12,8"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+            <!-- BARCODE PRINTER PANEL -->
+            <materialDesign:Card Visibility="{Binding IsChecked, ElementName=rbBarcode, Converter={StaticResource BoolToVis}}"
+                                 Style="{StaticResource ShiakatiCard}" Padding="20">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <materialDesign:PackIcon Kind="BarcodeScanner" Width="24" Height="24"
+                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Impression Étiquettes" FontSize="18" FontWeight="Bold"
+                                   FontFamily="{StaticResource HeadingFont}"/>
+                    </StackPanel>
 
-                <TextBlock Text="Nouvelle catégorie :" Margin="0,0,0,8" FontWeight="Medium"/>
-                <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}" 
-                         materialDesign:HintAssist.Hint="Ex: Chaussures, Parfums..." 
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Margin="0,0,0,20"/>
+                    <TextBlock Text="Choisir l'imprimante :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <ComboBox ItemsSource="{Binding InstalledPrinters}"
+                              SelectedItem="{Binding SelectedBarcodePrinterName}"
+                              Style="{StaticResource ShiakatiComboBox}"
+                              materialDesign:HintAssist.Hint="Sélectionner l'imprimante"
+                              Margin="0,0,0,12"/>
 
-                <Button Content="AJOUTER LA CATÉGORIE" 
-                        Command="{Binding AddCategoryCommand}"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        HorizontalAlignment="Right"
-                        Width="200"/>
-            </StackPanel>
-        </materialDesign:Card>
+                    <TextBlock Text="Format recommandé : 40mm x 20mm"
+                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="4,0,0,20" FontStyle="Italic"/>
+
+                    <Button 
+                            Command="{Binding SaveBarcodePrinterSettingsCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Right" MinHeight="48" FontSize="14">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" Width="20" Height="20"
+                                VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="ENREGISTRER" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- CATEGORIES PANEL -->
+            <materialDesign:Card Visibility="{Binding IsChecked, ElementName=rbCategories, Converter={StaticResource BoolToVis}}"
+                                 Style="{StaticResource ShiakatiCard}" Padding="20">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <materialDesign:PackIcon Kind="ShapePlus" Width="24" Height="24"
+                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Gestion des Catégories" FontSize="18" FontWeight="Bold"
+                                   FontFamily="{StaticResource HeadingFont}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Liste des catégories :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <ListBox ItemsSource="{Binding GlobalCategories}"
+                             DisplayMemberPath="CategoryName"
+                             Height="180" Margin="0,0,0,20"
+                             BorderThickness="1" BorderBrush="{StaticResource BgAltBrush}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="12,8"/>
+                                <Setter Property="FontSize" Value="14"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+
+                    <TextBlock Text="Nouvelle catégorie :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Ex: Chaussures, Parfums..."
+                             Style="{StaticResource ShiakatiTextBox}"
+                             Margin="0,0,0,20"/>
+
+                    <Button 
+                            Command="{Binding AddCategoryCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Right" MinHeight="48" FontSize="14">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ShapePlus" Width="20" Height="20"
+        VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="AJOUTER LA CATÉGORIE" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </materialDesign:Card>
+        </Grid>
     </Grid>
 </UserControl>

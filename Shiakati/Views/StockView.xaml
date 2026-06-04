@@ -153,32 +153,38 @@
                             <Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
+                                        <!-- Modifier -->
                                         <MenuItem Header="Modifier l'article"
-                                                  Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding}"
-                                                  IsEnabled="{Binding IsActive, TargetNullValue=False}">
+                              Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}"
+                              IsEnabled="{Binding IsActive, TargetNullValue=False}">
                                             <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="Edit" />
+                                                <materialDesign:PackIcon Kind="Edit" Width="16" Height="16" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <Separator/>
+
+                                        <!-- Imprimer -->
                                         <MenuItem Header="Imprimer Code-Barres"
-                                                  Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding}">
+                              Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}">
                                             <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="Printer" />
+                                                <materialDesign:PackIcon Kind="Printer" Width="16" Height="16" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <Separator/>
+
+                                        <!-- Supprimer / Restaurer (toggle) -->
                                         <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding}">
+                              CommandParameter="{Binding}">
                                             <MenuItem.Style>
                                                 <Style TargetType="MenuItem">
                                                     <Setter Property="Header" Value="Supprimer l'article"/>
                                                     <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
                                                     <Setter Property="Icon">
                                                         <Setter.Value>
-                                                            <materialDesign:PackIcon Kind="Delete" Foreground="{StaticResource DangerBrush}" />
+                                                            <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"
+                                                                 Foreground="{StaticResource DangerBrush}" />
                                                         </Setter.Value>
                                                     </Setter>
                                                     <Style.Triggers>
@@ -187,7 +193,8 @@
                                                             <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
                                                             <Setter Property="Icon">
                                                                 <Setter.Value>
-                                                                    <materialDesign:PackIcon Kind="Restore" Foreground="{StaticResource PrimaryBrush}" />
+                                                                    <materialDesign:PackIcon Kind="Restore" Width="16" Height="16"
+                                                                         Foreground="{StaticResource PrimaryBrush}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </DataTrigger>
@@ -196,11 +203,13 @@
                                             </MenuItem.Style>
                                         </MenuItem>
                                         <Separator/>
+
+                                        <!-- Inventaire -->
                                         <MenuItem Header="Lancer l'inventaire du produit"
-                                                  Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding}">
+                              Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}">
                                             <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="ClipboardCheckMultiple" />
+                                                <materialDesign:PackIcon Kind="ClipboardCheckMultiple" Width="16" Height="16" />
                                             </MenuItem.Icon>
                                         </MenuItem>
                                     </ContextMenu>
@@ -214,7 +223,6 @@
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
-
                     <DataGrid.Columns>
                         <!-- Status (unchanged) -->
                         <DataGridTemplateColumn Header="Statut" Width="Auto" MinWidth="90">

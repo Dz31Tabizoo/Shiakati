@@ -15,17 +15,30 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
-                     materialDesign:HintAssist.Hint="Rechercher par nom ou téléphone…"
-                     Style="{StaticResource ShiakatiTextBox}"
-                     Width="300" FontSize="14"/>
-            <Button Content="Ajouter un client"
-                    Command="{Binding AddNewClientCommand}"
-                    Style="{StaticResource PrimaryButton}"
-                    Margin="10,0,0,0"
-                    FontSize="14" MinHeight="48"/>
-        </StackPanel>
+            <Grid Margin="10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
+                             materialDesign:HintAssist.Hint="Rechercher par nom ou téléphone…"
+                             Style="{StaticResource ShiakatiTextBox}" 
+                             HorizontalAlignment="Left"
+                             MinWidth="300" FontSize="14"/>
+            
+                    <Button Grid.Column="1" Command="{Binding AddNewClientCommand}" 
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource PrimaryButton}"
+                            MinHeight="48" FontSize="14"
+                            Margin="10,0,0,0" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="AccountPlus" Width="20" Height="20"
+                                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                     <TextBlock Text="Ajouter un client" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+            </Grid>
+
 
         <DataGrid Grid.Row="1" ItemsSource="{Binding Clients}"
                   AutoGenerateColumns="False" IsReadOnly="True"

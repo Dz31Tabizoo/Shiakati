@@ -16,47 +16,118 @@
         </Grid.RowDefinitions>
 
         <!-- Client info -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Client.FullName}" FontSize="24" FontWeight="Bold"
-                           FontFamily="{StaticResource HeadingFont}"
-                           Foreground="{StaticResource TextPrimaryBrush}"/>
-                <Button Content="Modifier" Command="{Binding EditClientCommand}" 
-                        Style="{StaticResource SecondaryButton}"
-                        MinHeight="40" FontSize="14" Margin="10,0,0,0"/>
-            </StackPanel>
-            <TextBlock Text="{Binding Client.PhoneNumber}" FontSize="16"
-                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
-        </StackPanel>
+        <materialDesign:Card Grid.Row="0" Style="{StaticResource ShiakatiCard}" Padding="16" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Large user icon -->
+                <materialDesign:PackIcon Grid.Column="0"
+                                 Kind="AccountCircle"
+                                 Width="48" Height="48"
+                                 VerticalAlignment="Center"
+                                 Foreground="{StaticResource PrimaryBrush}"
+                                 Margin="0,0,16,0"/>
+
+                <!-- Name and phone -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Client.FullName}"
+                       FontSize="24" FontWeight="Bold"
+                       FontFamily="{StaticResource HeadingFont}"
+                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <materialDesign:PackIcon Kind="Phone"
+                                         Width="18" Height="18"
+                                         VerticalAlignment="Center"
+                                         Foreground="{StaticResource TextSecondaryBrush}"
+                                         Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding Client.PhoneNumber}"
+                           FontSize="16"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Edit button with icon -->
+                <Button Grid.Column="2"
+                Command="{Binding EditClientCommand}"
+                Style="{StaticResource SecondaryButton}"
+                MinHeight="44" FontSize="14"
+                VerticalAlignment="Center"
+                Padding="12,6">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Edit"
+                                         Width="18" Height="18"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,6,0"/>
+                        <TextBlock Text="Modifier" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </materialDesign:Card>
 
         <!-- Tabs -->
         <TabControl Grid.Row="1" Margin="0,10,0,0">
             <TabItem Header="Crédits">
-                <Grid>
+                <Grid Margin="0,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBox Text="{Binding CreditAmount}" 
-                                 materialDesign:HintAssist.Hint="Montant"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 Width="120" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding CreditNotes}" 
-                                 materialDesign:HintAssist.Hint="Notes"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 Width="180" Margin="0,0,10,0"/>
-                        <DatePicker SelectedDate="{Binding CreditExpiresAt}"
-                                    materialDesign:HintAssist.Hint="Expire le"
-                                    Width="140" Margin="0,0,10,0"/>
-                        <Button Content="Ajouter" 
-                                Command="{Binding GrantCreditCommand}" 
-                                Style="{StaticResource PrimaryButton}"
-                                MinHeight="48" FontSize="14"/>
-                    </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
+                        <!-- Montant (digits only) -->
+                        <TextBox Grid.Column="0"
+             Text="{Binding CreditAmount}"
+             materialDesign:HintAssist.Hint="Montant"
+             Style="{StaticResource ShiakatiTextBox}"
+             Width="130" Margin="0,0,10,0"
+             PreviewTextInput="OnlyDigits_PreviewTextInput"/>
+
+                        <!-- Notes -->
+                        <TextBox Grid.Column="1"
+             Text="{Binding CreditNotes}"
+             materialDesign:HintAssist.Hint="Notes"
+             Style="{StaticResource ShiakatiTextBox}"
+             Width="200" Margin="0,0,10,0"/>
+
+                        <!-- Expiration date -->
+                        <DatePicker Grid.Column="2"
+                SelectedDate="{Binding CreditExpiresAt}"
+                materialDesign:HintAssist.Hint="Expire le"
+                Width="140" Margin="0,0,10,0"/>
+
+                        <!-- Spacer to push button right -->
+                        <Grid Grid.Column="3" />
+
+                        <!-- Button on the right -->
+                        <Button Grid.Column="4"                                
+                                Command="{Binding GrantCreditCommand}"
+                                Style="{StaticResource PrimaryButton}"
+                                MinHeight="48" FontSize="14">
+
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CashMinus"
+                                                         Width="18" Height="18"
+                                                         VerticalAlignment="Center"
+                                                         Margin="5,0,8,0"/>
+                                <TextBlock Text="Ajouter Crédit" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                        </Button>
+                    </Grid>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Credits}" AutoGenerateColumns="False"
                               MinHeight="150" MaxHeight="300"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -90,20 +161,46 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBox Text="{Binding VersementAmount}" 
-                                 materialDesign:HintAssist.Hint="Montant"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 Width="120" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding VersementNotes}" 
-                                 materialDesign:HintAssist.Hint="Notes"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 Width="200" Margin="0,0,10,0"/>
-                        <Button Content="Ajouter" 
-                                Command="{Binding AddVersementCommand}" 
-                                Style="{StaticResource PrimaryButton}"
-                                MinHeight="48" FontSize="14"/>
-                    </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Montant (chiffres uniquement) -->
+                        <TextBox Grid.Column="0"
+             Text="{Binding VersementAmount}"
+             materialDesign:HintAssist.Hint="Montant"
+             Style="{StaticResource ShiakatiTextBox}"
+             Width="130" Margin="0,0,10,0"
+             PreviewTextInput="OnlyDigits_PreviewTextInput"/>
+
+                        <!-- Notes -->
+                        <TextBox Grid.Column="1"
+             Text="{Binding VersementNotes}"
+             materialDesign:HintAssist.Hint="Notes"
+             Style="{StaticResource ShiakatiTextBox}"
+             Width="200" Margin="0,0,10,0"/>
+
+                        <!-- Espaceur qui pousse le bouton à droite -->
+                        <Grid Grid.Column="2" />
+
+                        <!-- Bouton Ajouter avec icône + -->
+                        <Button Grid.Column="3"
+            Command="{Binding AddVersementCommand}"
+            Style="{StaticResource PrimaryButton}"
+            MinHeight="48" FontSize="14">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CashPlus"
+                                     Width="18" Height="18"
+                                     VerticalAlignment="Center"
+                                     Margin="5,0,8,0"/>
+                                <TextBlock Text="Ajouter Versement" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
 
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Versements}" AutoGenerateColumns="False"
                               IsReadOnly="True"
