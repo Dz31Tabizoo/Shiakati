@@ -7,13 +7,55 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1024"
-             FontFamily="{StaticResource MontserratFont}"
-             Background="{DynamicResource MaterialDesignPaper}"
-             TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+             FontFamily="{StaticResource BodyFont}"
+             Background="{StaticResource BgBrush}"
+             TextElement.Foreground="{StaticResource TextPrimaryBrush}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+
+        <!-- Help chip button for quick period selection -->
+        <Style x:Key="HelpChipButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BgAltBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DatePicker overlay style – white background, light border -->
+        <Style TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+            <Setter Property="Background" Value="{StaticResource BgBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BgAltBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="16">
@@ -25,28 +67,41 @@
             <RowDefinition Height="*"/>
             <!-- History grid -->
             <RowDefinition Height="Auto"/>
-            <!-- Bonus button + grid -->
+            <!-- Bonus section -->
         </Grid.RowDefinitions>
-        
-        <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16" UniformCornerRadius="8">
+
+        <!-- ═══════════ FILTER CARD ═══════════ -->
+        <materialDesign:Card Grid.Row="0" Margin="0,0,0,16" Padding="16"
+                             Style="{StaticResource ShiakatiCard}">
             <StackPanel>
-                <!-- Quick period chips -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <Button Content="Aujourd'hui" Command="{Binding QuickSetPeriodCommand}" CommandParameter="today"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Hier" Command="{Binding QuickSetPeriodCommand}" CommandParameter="yesterday"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Semaine passée" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastweek"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Mois passé" Command="{Binding QuickSetPeriodCommand}" CommandParameter="lastmonth"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Année" Command="{Binding QuickSetPeriodCommand}" CommandParameter="year"
-                    Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,5,0"/>
-                    <Button Content="Tout l'historique" Command="{Binding QuickSetPeriodCommand}" CommandParameter="all"
-                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                <!-- Quick period chips (now subtle help buttons) -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <Button Content="Aujourd'hui" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="today"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Hier" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="yesterday"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Semaine passée" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="lastweek"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Mois passé" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="lastmonth"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Année" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="year"
+                            Style="{StaticResource HelpChipButton}"
+                            Margin="0,0,4,0"/>
+                    <Button Content="Tout l'historique" Command="{Binding QuickSetPeriodCommand}"
+                            CommandParameter="all"
+                            Style="{StaticResource HelpChipButton}"/>
                 </StackPanel>
 
-                <!-- Original filter grid (search + datepickers + actions) -->
+                <!-- Filter grid (search + datepickers + actions) -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -55,96 +110,110 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Column="0" 
-                     Text="{Binding SearchTicketNumber, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="Scanner QR Code ou N° Ticket"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Margin="0,0,16,0" VerticalAlignment="Center">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding SearchTicketNumber, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Scanner QR Code ou N° Ticket"
+                             Style="{StaticResource ShiakatiTextBox}"
+                             Margin="0,0,16,0" VerticalAlignment="Center">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Command="{Binding LoadSalesCommand}"/>
                         </TextBox.InputBindings>
                     </TextBox>
 
-                    <DatePicker Grid.Column="1" 
-                        SelectedDate="{Binding StartDate}"
-                        materialDesign:HintAssist.Hint="Date de début"
-                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="1"
+                                SelectedDate="{Binding StartDate}"
+                                Height="40"
+                                materialDesign:HintAssist.Hint="Date de début"
+                                Margin="0,0,16,0" VerticalAlignment="Center"
+                                />
 
-                    <DatePicker Grid.Column="2" 
-                        SelectedDate="{Binding EndDate}"
-                        materialDesign:HintAssist.Hint="Date de fin"
-                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Margin="0,0,16,0" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="2"
+                                SelectedDate="{Binding EndDate}"
+                                Height="50"
+                                materialDesign:HintAssist.Hint="Date de fin"
+                                Margin="0,0,16,0" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Command="{Binding LoadSalesCommand}" 
-                        Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                        Margin="0,0,8,0" Foreground="White" Content="Rechercher" Cursor="Hand"/>
-
-                        <Button Command="{Binding ClearFiltersCommand}" 
-                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                        Content="Réinitialiser" Cursor="Hand"/>
+                        <Button Command="{Binding LoadSalesCommand}"
+                                Style="{StaticResource PrimaryButton}"
+                                MinHeight="48" FontSize="14"
+                                Margin="0,0,8,0" Content="Rechercher" Cursor="Hand"/>
+                        <Button Command="{Binding ClearFiltersCommand}"
+                                Style="{StaticResource SecondaryButton}"
+                                MinHeight="48" FontSize="14"
+                                Content="Réinitialiser" Cursor="Hand"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
         </materialDesign:Card>
 
-        <ProgressBar Grid.Row="1" VerticalAlignment="Top" 
-                     IsIndeterminate="True" 
+        <!-- Progress Bar -->
+        <ProgressBar Grid.Row="1" VerticalAlignment="Top"
+                     IsIndeterminate="True"
                      Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"
                      Panel.ZIndex="1"/>
 
-        <materialDesign:Card Grid.Row="2" UniformCornerRadius="8">
-            <DataGrid ItemsSource="{Binding Sales}" 
-                      AutoGenerateColumns="False" 
-                      CanUserAddRows="False" 
-                      IsReadOnly="True"
-                      HeadersVisibility="All"
-                      SelectionMode="Single"
-                      materialDesign:DataGridAssist.CellPadding="12"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="12">
+        <!-- ═══════════ HISTORY GRID ═══════════ -->
+        <materialDesign:Card Grid.Row="2" Style="{StaticResource ShiakatiCard}"
+                             Padding="4">
+            <DataGrid ItemsSource="{Binding Sales}"
+                      Style="{StaticResource ShiakatiDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiDataGridRow}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="N° Ticket" Binding="{Binding TicketNumber}" Width="*"/>
-                    <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy HH:mm}" Width="*"/>
+                    <DataGridTextColumn Header="N° Ticket" Binding="{Binding TicketNumber}"
+                                        Width="*" FontSize="14"/>
+                    <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy HH:mm}"
+                                        Width="*" FontSize="14"/>
 
+                    <!-- Status (annulée) -->
                     <DataGridTemplateColumn Header="Statut" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Padding="8,4" CornerRadius="4" 
-                            Visibility="{Binding IsVoided, Converter={StaticResource BoolToVis}}">
-                                    <TextBlock Text="ANNULÉE" Foreground="Red" FontWeight="Bold" FontSize="10"/>
+                                <Border Padding="8,4" CornerRadius="6"
+                                        Background="#FFEBEE"
+                                        Visibility="{Binding IsVoided, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="ANNULÉE"
+                                               Foreground="{StaticResource DangerBrush}"
+                                               FontWeight="Bold" FontSize="12"/>
                                 </Border>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="*">
+                    <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}"
+                                        Width="*" FontSize="14">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="FontWeight" Value="Bold"/>
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTemplateColumn Header="Actions" Width="150">
+                    <!-- Actions -->
+                    <DataGridTemplateColumn Header="Actions" Width="120">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
-                                ToolTip="Modifier cette vente"
-                                Command="{Binding DataContext.EditSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}">
-                                        <materialDesign:PackIcon Kind="Pencil" Foreground="{StaticResource PrimaryBrush}" />
+                                            ToolTip="Modifier cette vente"
+                                            Command="{Binding DataContext.EditSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <materialDesign:PackIcon Kind="Pencil"
+                                                                 Foreground="{StaticResource PrimaryBrush}"
+                                                                 Width="22" Height="22"/>
                                     </Button>
-
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
-                                ToolTip="Annuler la vente"
-                                Command="{Binding DataContext.VoidSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}"
-                                Margin="8,0,0,0">
-                                        <materialDesign:PackIcon Kind="DeleteForever" Foreground="Crimson" />
+                                            ToolTip="Annuler la vente"
+                                            Command="{Binding DataContext.VoidSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="8,0,0,0">
+                                        <materialDesign:PackIcon Kind="DeleteForever"
+                                                                 Foreground="{StaticResource DangerBrush}"
+                                                                 Width="22" Height="22"/>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
@@ -153,24 +222,31 @@
                 </DataGrid.Columns>
             </DataGrid>
         </materialDesign:Card>
-        <!-- Bonus section -->
+
+        <!-- ═══════════ BONUS SECTION ═══════════ -->
         <StackPanel Grid.Row="3" Margin="0,16,0,0">
-            <Button Content="Calculer les primes journalières" 
-                Command="{Binding CalculateDailyBonusesCommand}"
-                    Foreground="White"
-                Style="{StaticResource MaterialDesignFlatLightBgButton}"
-                HorizontalAlignment="Left" Margin="0,0,0,8"/>
-            <materialDesign:Card UniformCornerRadius="8" 
-Visibility="{Binding DailyBonuses.Count, Converter={StaticResource IntToVisibilityConverter}}"    >
-                <DataGrid ItemsSource="{Binding DailyBonuses}" 
-                      AutoGenerateColumns="False" 
-                      CanUserAddRows="False" IsReadOnly="True"
-                      HeadersVisibility="All">
+            <Button Content="Calculer les primes journalières"
+                    Command="{Binding CalculateDailyBonusesCommand}"
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalAlignment="Left" Margin="0,0,0,8"
+                    MinHeight="48" FontSize="14"/>
+            <materialDesign:Card Style="{StaticResource ShiakatiCard}"
+                                 Padding="4"
+                                 Visibility="{Binding DailyBonuses.Count, Converter={StaticResource IntToVisibilityConverter}}">
+                <DataGrid ItemsSource="{Binding DailyBonuses}"
+                          Style="{StaticResource ShiakatiDataGrid}"
+                          ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                          CellStyle="{StaticResource ShiakatiDataGridCell}"
+                          RowStyle="{StaticResource ShiakatiDataGridRow}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=dd/MM/yyyy}" Width="Auto"/>
-                        <DataGridTextColumn Header="Total Ventes" Binding="{Binding TotalSales, StringFormat={}{0:N2} DA}" Width="Auto"/>
-                        <DataGridTextColumn Header="% Prime" Binding="{Binding BonusPercentage, StringFormat={}{0:F1}%}" Width="Auto"/>
-                        <DataGridTextColumn Header="Montant Prime" Binding="{Binding BonusAmount, StringFormat={}{0:N2} DA}" Width="Auto"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=dd/MM/yyyy}"
+                                            Width="Auto" FontSize="14"/>
+                        <DataGridTextColumn Header="Total Ventes" Binding="{Binding TotalSales, StringFormat={}{0:N2} DA}"
+                                            Width="Auto" FontSize="14"/>
+                        <DataGridTextColumn Header="% Prime" Binding="{Binding BonusPercentage, StringFormat={}{0:F1}%}"
+                                            Width="Auto" FontSize="14"/>
+                        <DataGridTextColumn Header="Montant Prime" Binding="{Binding BonusAmount, StringFormat={}{0:N2} DA}"
+                                            Width="Auto" FontSize="14"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </materialDesign:Card>
