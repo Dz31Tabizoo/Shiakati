@@ -32,15 +32,17 @@
 
             <!-- ═══════════ LEFT PANEL ═══════════ -->
             <Border Grid.Column="0"
-                    CornerRadius="22,0,0,22"
+                    CornerRadius="22,22,22,22"
                     Background="Transparent">
                 <Grid>
                     <!-- Subtle gradient overlay -->
                     <Border Opacity="1">
                         <Border.Background>
-                            <LinearGradientBrush StartPoint="0.1,0" EndPoint="1,0">
-                                <GradientStop Offset="0.9" Color="#1D4A6B"/>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Offset="0.08" Color="#1D4A6B"/>
+                                <GradientStop Offset="0.0" Color="#286693"/>
                                 <GradientStop Offset="1" Color="#286693"/>
+                                <GradientStop Offset="0.9" Color="#1D4A6B"/>
                             </LinearGradientBrush>
                         </Border.Background>
                     </Border>

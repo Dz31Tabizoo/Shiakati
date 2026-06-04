@@ -93,7 +93,7 @@
             </Grid.RowDefinitions>
 
             <!-- ═══════════ 1. TITLE BAR ═══════════ -->
-            <Border x:Name="pnlControlBar" Grid.Row="0" Height="80" Background="{StaticResource BgBrush}"
+            <Border x:Name="pnlControlBar" Grid.Row="0" Height="80" Background="{StaticResource SurfaceBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
                     BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
                 <Grid Margin="20,0">
@@ -155,6 +155,15 @@
                 <Grid Margin="20,0">
                     <!-- Left: main navigation buttons -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button Style="{StaticResource TopNavButtonStyle}"
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17"
+                                Tag="Dashboard">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ChartBar" Width="26" Height="26" Margin="0,0,8,0"/>
+                                <TextBlock Text="Tableau Bord" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToPOSCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17">
@@ -250,8 +259,56 @@
                 </Grid>
             </Border>
 
-            <!-- ═══════════ 3. CONTENT ═══════════ -->
-            <ContentControl Grid.Row="2" Content="{Binding CurrentView}" Margin="16"/>
+            
+            <!-- ═══════════ 3. CONTENT WITH HEADER ═══════════ -->
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Header bar -->
+                    <RowDefinition Height="*"/>
+                    <!-- Main content -->
+                </Grid.RowDefinitions>
+
+                <!-- Header bar (visible when CurrentViewTitle is NOT null AND NOT empty) -->
+                <Border Grid.Row="0" Height="48"
+            Background="{StaticResource BgAltBrush}"
+            BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <!-- Default: visible -->
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <!-- Hide when null or empty -->
+                                <DataTrigger Binding="{Binding CurrentViewTitle}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentViewTitle}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Grid Margin="16,0">
+                        <TextBlock Text="{Binding CurrentViewTitle}"
+                       FontFamily="{StaticResource HeadingFont}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{StaticResource PrimaryBrush}"
+                       VerticalAlignment="Center"/>
+                        <Button HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Fermer cette vue"
+                                Margin="0,0,10,0"
+                    Command="{Binding CloseCurrentViewCommand}"
+                    Foreground="{StaticResource TextSecondaryBrush}"
+                    Width="36" Height="36">
+                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Original content area -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Margin="16"/>
+            </Grid>
         </Grid>
     </Border>
 </Window>
