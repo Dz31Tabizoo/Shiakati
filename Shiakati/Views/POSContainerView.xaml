@@ -19,8 +19,8 @@
                 <Button HorizontalAlignment="Right"
                 Command="{Binding AddNewTabCommand}"
                 Style="{StaticResource PrimaryButton}"
-                MinHeight="56"
-                MinWidth="180"
+                MinHeight="50"
+                MinWidth="150"
                 FontSize="18"
                 Padding="24,12">
                     <StackPanel Orientation="Horizontal">
