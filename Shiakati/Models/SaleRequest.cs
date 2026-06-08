@@ -10,5 +10,9 @@ namespace Shiakati.Models
     {
         public decimal? GlobalDiscount { get; set; }
         public List<SaleItemDto> Items { get; set; } = new();
+
+        public int? ClientId { get; set; }
+        public DateTime? CreditExpiresAt {  get; set; }
+        public decimal? PaidAmount { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Shiakati.Models;
+﻿using Serilog;
+using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -13,9 +14,17 @@ namespace Shiakati.Services.Implementations
 
         public async Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request)
         {
-            var response = await _http.PostAsJsonAsync("api/sales", request);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<SaleCreationResult>();
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/sales", request);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<SaleCreationResult>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating sale");
+                return null;
+            }
         }
 
         public async Task<bool> UpdateSaleAsync(int saleId, UpdateSaleRequest request)

@@ -59,6 +59,7 @@
                 
                 <ResourceDictionary>
                     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+                    <converters:CommonEqualityConverter x:Key="CommonEqualityConverter"/>
                 </ResourceDictionary>
 
             </ResourceDictionary.MergedDictionaries>

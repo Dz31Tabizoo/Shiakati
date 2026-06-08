@@ -6,9 +6,11 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace Shiakati.ViewModels
@@ -22,6 +24,7 @@ namespace Shiakati.ViewModels
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleService _saleService;
+        private readonly IClientService _clientService;
         private bool _skipGridRefresh;
 
         // ---- Stable collection for the ICollectionView ----
@@ -29,7 +32,7 @@ namespace Shiakati.ViewModels
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogService catalogDb, IProductsService productsService,
-                            IProductVariantsService stockService, ICacheService cacheService, ISaleService saleService)
+                            IProductVariantsService stockService, ICacheService cacheService, ISaleService saleService, IClientService clientService)
         {
             TabName = name;
             _logger = logger;
@@ -39,6 +42,7 @@ namespace Shiakati.ViewModels
             _stockService = stockService;
             _cacheService = cacheService;
             _saleService = saleService;
+            _clientService = clientService;
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
@@ -66,6 +70,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private string _searchText = string.Empty;
 
+
         [ObservableProperty] private ObservableCollection<string> _categories = new();
         [ObservableProperty] private ObservableCollection<string> _brands = new();
         [ObservableProperty] private ObservableCollection<string> _filterColors = new();
@@ -75,6 +80,12 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private string _selectedBrand = "TOUT";
         [ObservableProperty] private string _selectedColor = "TOUT";
         [ObservableProperty] private string _selectedSize = "TOUT";
+
+        [ObservableProperty] private ClientSummaryDto? _selectedClient;
+        [ObservableProperty] private string _clientDisplay = "Aucun";
+        [ObservableProperty] private decimal? _creditPaidAmount;
+        [ObservableProperty] private DateTime? _creditExpiresAt;
+        [ObservableProperty] private bool isCreditSale;
 
         [ObservableProperty] private bool _isEditMode;
         [ObservableProperty] private string _editTicketNumber = string.Empty;
@@ -89,9 +100,17 @@ namespace Shiakati.ViewModels
         public decimal? CartSubTotal => CartItems.Sum(x => x.RawTotal ?? 0);
         public decimal? TotalDiscountAmount => CartItems.Sum(x => x.TotalLineDiscount ?? 0);
         public decimal? CartTotal => CartSubTotal - TotalDiscountAmount;
-
+        //---------- Loading -----------------
+        private void SetFiltersToTout()
+        {
+            SelectedCategory = "TOUT";
+            SelectedBrand = "TOUT";
+            SelectedColor = "TOUT";
+            SelectedSize = "TOUT";
+        }
         public async Task LoadProductsAsync()
         {
+            SetFiltersToTout();
             try
             {
                 IsLoading = true;
@@ -155,7 +174,7 @@ namespace Shiakati.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erreur lors du chargement des produits pour le POS.");
-                MessageBox.Show("Impossible de charger le catalogue.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Impossible de charger le catalogue. "+ ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -220,6 +239,43 @@ namespace Shiakati.ViewModels
             return true;
         }
 
+        //----------- Client Sales Management --------------
+        [RelayCommand] private void OpenClientSelectionDialog()
+        {
+            var dialog = new ClientSelectorDialog(_clientService) { Owner = Application.Current.MainWindow };
+            if (dialog.ShowDialog() == true)
+            {
+                SelectedClient = dialog.SelectedClient;
+                ClientDisplay = SelectedClient != null
+                    ? $"{SelectedClient.FullName} ({SelectedClient.PhoneNumber})"
+                    : "Aucun";
+            }
+        }
+
+        [RelayCommand] private async Task OpenCreditSaleDialogAsync()
+        {
+            if (CartItems.Count == 0)
+            {
+                MessageBox.Show("Le panier est vide !", "Action requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (SelectedClient == null)
+            {
+                MessageBox.Show("Veuillez d'abord sélectionner un client.", "Client requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var total = CartTotal ?? 0;
+            var creditDialog = new Views.CreditSaleDialog(total);
+            if (creditDialog.ShowDialog() == true)
+            {
+                IsCreditSale = true;
+                CreditPaidAmount = creditDialog.PaidAmount;
+                CreditExpiresAt = creditDialog.ExpiresAt;
+                // Proceed to checkout with credit sale
+                await CheckoutAsync();
+            }
+        }
         // ────────────── Filter toggles ──────────────
         [RelayCommand] private void ToggleCategory(string category) { SelectedCategory = ToggleValue(SelectedCategory, category); FilteredProductsView.Refresh(); }
         [RelayCommand] private void ToggleBrand(string brand) { SelectedBrand = ToggleValue(SelectedBrand, brand); FilteredProductsView.Refresh(); }
@@ -354,6 +410,7 @@ namespace Shiakati.ViewModels
                 }
                 else
                 {
+
                     var saleRequest = new SaleRequest
                     {
                         GlobalDiscount = 0,
@@ -363,10 +420,23 @@ namespace Shiakati.ViewModels
                             Quantity = c.Quantity ?? 1,
                             FixedDiscountApplied = c.IsDiscountPinned,
                             ManualDiscountAmount = c.ManualDiscount
-                        }).ToList()
+                        }).ToList(),
+                        
                     };
 
+                    if (SelectedClient != null)
+                    {
+                        saleRequest.ClientId = SelectedClient.ClientId;
+                    }
+
+                    if (IsCreditSale && SelectedClient != null)
+                    {
+                        saleRequest.PaidAmount = CreditPaidAmount ?? 0;
+                        saleRequest.CreditExpiresAt = CreditExpiresAt;
+                    }
+
                     var result = await _saleService.CreateSaleAsync(saleRequest);
+
                     if (result != null)
                     {
                         var receipt = new ReceipModel
@@ -375,6 +445,7 @@ namespace Shiakati.ViewModels
                             Date = DateTime.Now,
                             TotalAmount = CartTotal ?? 0,
                             TotalDiscount = TotalDiscountAmount ?? 0,
+                            // edit recipt to handel credit and verssements
                             Items = CartItems.Select(c => new ReceiptItem
                             {
                                 Designation = c.DisplayName,
@@ -385,9 +456,24 @@ namespace Shiakati.ViewModels
                         if (PrintTicket(receipt))
                             MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
+
                         _cacheService.Remove(CacheKeys.StockVariants);
-                        _ = LoadProductsAsync();
+
                         ResetPOS();
+
+                        Task.Run(async () =>
+                        {
+                            // The HTTP call runs on a background thread
+                            await LoadProductsAsync();
+
+                            // Once data is ready, apply it safely to the UI thread
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                FilteredProductsView?.Refresh();
+                            });
+                        });
+
+
                     }
                     else
                         MessageBox.Show("Erreur lors de l'enregistrement de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -429,6 +515,11 @@ namespace Shiakati.ViewModels
             SelectedColor = "TOUT";
             SelectedSize = "TOUT";
             SearchText = string.Empty;
+            IsCreditSale = false;
+            CreditPaidAmount = 0;
+            CreditExpiresAt = null;
+            SelectedClient = null;
+            ClientDisplay = "Aucun";
             ResetCartMemorySafe();
             FilteredProductsView.Refresh();
         }

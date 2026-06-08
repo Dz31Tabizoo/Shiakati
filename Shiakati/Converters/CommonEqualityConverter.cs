@@ -8,11 +8,9 @@ namespace Shiakati.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values == null || values.Length < 2 || values[0] == null || values[1] == null)
+            if (values.Length < 2)
                 return false;
-
-            // Compare le nom de la catégorie du bouton avec la catégorie sélectionnée dans le ViewModel
-            return values[0].ToString().Equals(values[1].ToString(), StringComparison.OrdinalIgnoreCase);
+            return values[0] != null && values[0].Equals(values[1]);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

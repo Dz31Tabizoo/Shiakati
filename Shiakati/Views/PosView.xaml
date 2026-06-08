@@ -47,7 +47,8 @@
                              VerticalAlignment="Center"/>
                 </StackPanel>
             </materialDesign:Card>
-
+            <!-- Client selector -->
+            
             <!-- Filter chips -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
                 <ComboBox materialDesign:HintAssist.Hint="Catégorie"
@@ -73,6 +74,19 @@
               ItemsSource="{Binding FilterSizes}"
               SelectedItem="{Binding SelectedSize}"
               Style="{StaticResource ShiakatiComboBox}"/>
+                
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Content="👤 Client" 
+                            Command="{Binding OpenClientSelectionDialogCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            MinHeight="44" FontSize="14"
+                            Padding="12,6" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding ClientDisplay}"
+                                VerticalAlignment="Center"
+                                FontSize="14" FontWeight="SemiBold"
+                                Foreground="{StaticResource TextPrimaryBrush}"/>
+                </StackPanel>
+
             </StackPanel>
             <!-- Product grid -->
             <ListBox Grid.Row="2"
@@ -350,7 +364,7 @@
                         <TextBlock Text="{Binding TotalDiscountAmount, StringFormat={}-{0:N2} DA}"
                                    HorizontalAlignment="Right" Foreground="Green"/>
                     </Grid>
-                    <Grid Margin="0,10">
+                    <Grid Margin="0,8">
                         <TextBlock Text="TOTAL" FontSize="24" FontWeight="Bold"
                                    Foreground="{StaticResource PrimaryBrush}"/>
                         <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}"
@@ -358,7 +372,12 @@
                                    HorizontalAlignment="Right"
                                    Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
-
+                    <Button Content="CRÉDIT"
+                            Command="{Binding OpenCreditSaleDialogCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            Height="50" Width="80" FontSize="18" FontWeight="Bold"
+                            HorizontalAlignment="Left"
+                            Margin="8,0,0,0"/>
                     <Button Command="{Binding CheckoutCommand}"
                             Height="70" FontSize="24" FontWeight="Bold" Foreground ="White">
                         <Button.Style>
