@@ -17,6 +17,7 @@ namespace Shiakati.ViewModels
 {
     public partial class POSViewModel : ObservableObject
     {
+        private readonly IReservationService _reservationService;
         private readonly ILogger<POSViewModel> _logger;
         private readonly IPrintService _printService;
         private readonly ICatalogService _catalogDb;
@@ -32,7 +33,7 @@ namespace Shiakati.ViewModels
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogService catalogDb, IProductsService productsService,
-                            IProductVariantsService stockService, ICacheService cacheService, ISaleService saleService, IClientService clientService)
+                            IProductVariantsService stockService, ICacheService cacheService,IReservationService reservation , ISaleService saleService, IClientService clientService)
         {
             TabName = name;
             _logger = logger;
@@ -43,6 +44,7 @@ namespace Shiakati.ViewModels
             _cacheService = cacheService;
             _saleService = saleService;
             _clientService = clientService;
+            _reservationService = reservation;
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
@@ -597,6 +599,63 @@ namespace Shiakati.ViewModels
                 MessageBox.Show($"Erreur lors de l'impression du ticket : {ex.Message}", "Erreur Imprimante", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+        }
+
+        // ------------------- reservation ------------------
+
+        [RelayCommand]
+        private async Task OpenReservationDialogAsync()
+        {
+            if (CartItems.Count == 0)
+            {
+                MessageBox.Show("Le panier est vide !", "Action requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (SelectedClient == null)
+            {
+                MessageBox.Show("Veuillez sélectionner un client avant de faire une réservation.",
+                                "Client requis", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var total = CartTotal ?? 0;
+            var reservationDialog = new ReservationDialog(total);
+            if (reservationDialog.ShowDialog() == true)
+            {
+                await ExecuteReservationAsync(reservationDialog);
+            }
+        }
+
+        private async Task ExecuteReservationAsync(ReservationDialog dialog)
+        {
+            var request = new CreateReservationRequest
+            {
+                ClientId = SelectedClient!.ClientId,
+                DepositAmount = dialog.DepositAmount,
+                ExpirationDate = dialog.ExpirationDate,
+                Items = CartItems.Select(c => new ReservationItemDto
+                {
+                    VariantId = c.Variant!.VariantId,
+                    Quantity = c.Quantity ?? 1,
+                    UnitPrice = c.Variant?.SalePrice ?? 0
+                }).ToList()
+            };
+
+            IsLoading = true;
+            try
+            {
+                var result = await _reservationService.CreateReservationAsync(request);
+                if (result)
+                {
+                    MessageBox.Show("Réservation enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _cacheService.Remove(CacheKeys.StockVariants);
+                    ResetPOS();
+                    _ = LoadProductsAsync();
+                }
+                else
+                    MessageBox.Show("Erreur lors de l'enregistrement de la réservation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally { IsLoading = false; }
         }
     }
 }

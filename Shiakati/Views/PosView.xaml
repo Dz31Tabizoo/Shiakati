@@ -394,6 +394,11 @@
                                    HorizontalAlignment="Right"
                                    Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
+                    <Button Content="RÉSERVATION"
+        Command="{Binding OpenReservationDialogCommand}"
+        Style="{StaticResource PrimaryButton}"
+        Height="60" FontSize="18" FontWeight="Bold"
+        Margin="0,8,0,0"/>
                     <Button Content="CRÉDIT"
                             Command="{Binding OpenCreditSaleDialogCommand}"
                             Style="{StaticResource PrimaryButton}"
