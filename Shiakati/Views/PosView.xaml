@@ -50,44 +50,66 @@
             <!-- Client selector -->
             
             <!-- Filter chips -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
-                <ComboBox materialDesign:HintAssist.Hint="Catégorie"
-              FontSize="14" MinWidth="130"
-              ItemsSource="{Binding Categories}"
-              SelectedItem="{Binding SelectedCategory}"
-              Style="{StaticResource ShiakatiComboBox}"
-              Margin="0,0,10,0"/>
-                <ComboBox materialDesign:HintAssist.Hint="Marque"
-              FontSize="14" MinWidth="130"
-              ItemsSource="{Binding Brands}"
-              SelectedItem="{Binding SelectedBrand}"
-              Style="{StaticResource ShiakatiComboBox}"
-              Margin="0,0,10,0"/>
-                <ComboBox materialDesign:HintAssist.Hint="Couleur"
-              FontSize="14" MinWidth="110"
-              ItemsSource="{Binding FilterColors}"
-              SelectedItem="{Binding SelectedColor}"
-              Style="{StaticResource ShiakatiComboBox}"
-              Margin="0,0,10,0"/>
-                <ComboBox materialDesign:HintAssist.Hint="Taille"
-              FontSize="14" MinWidth="110"
-              ItemsSource="{Binding FilterSizes}"
-              SelectedItem="{Binding SelectedSize}"
-              Style="{StaticResource ShiakatiComboBox}"/>
-                
-                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,10">
-                    <Button Content="👤 Client" 
-                            Command="{Binding OpenClientSelectionDialogCommand}"
-                            Style="{StaticResource SecondaryButton}"
-                            MinHeight="44" FontSize="14"
-                            Padding="12,6" Margin="0,0,10,0"/>
-                    <TextBlock Text="{Binding ClientDisplay}"
-                                VerticalAlignment="Center"
-                                FontSize="14" FontWeight="SemiBold"
-                                Foreground="{StaticResource TextPrimaryBrush}"/>
+            <Grid Grid.Row="1" Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: filter combo boxes -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <ComboBox materialDesign:HintAssist.Hint="Catégorie"
+                  FontSize="14" MinWidth="130"
+                  ItemsSource="{Binding Categories}"
+                  SelectedItem="{Binding SelectedCategory}"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,10,0"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Marque"
+                  FontSize="14" MinWidth="130"
+                  ItemsSource="{Binding Brands}"
+                  SelectedItem="{Binding SelectedBrand}"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,10,0"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Couleur"
+                  FontSize="14" MinWidth="110"
+                  ItemsSource="{Binding FilterColors}"
+                  SelectedItem="{Binding SelectedColor}"
+                  Style="{StaticResource ShiakatiComboBox}"
+                  Margin="0,0,10,0"/>
+                    <ComboBox materialDesign:HintAssist.Hint="Taille"
+                  FontSize="14" MinWidth="110"
+                  ItemsSource="{Binding FilterSizes}"
+                  SelectedItem="{Binding SelectedSize}"
+                  Style="{StaticResource ShiakatiComboBox}"/>
                 </StackPanel>
 
-            </StackPanel>
+                <!-- Right: client chip -->
+                <Border Grid.Column="1"
+            CornerRadius="8"
+            BorderBrush="{StaticResource SecondaryBrush}"
+            BorderThickness="1.5"
+            Background="{StaticResource BgBrush}"
+            Padding="10,6">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AccountCircle"
+                                     Width="20" Height="20"
+                                     VerticalAlignment="Center"
+                                     Foreground="{StaticResource SecondaryBrush}"
+                                     Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding ClientDisplay}"
+                       VerticalAlignment="Center"
+                       FontSize="14" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       Margin="0,0,8,0"/>
+                        <Button Content="Sélectionner"
+                    Command="{Binding OpenClientSelectionDialogCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    MinHeight="32" FontSize="13"
+                    Padding="8,4"
+                    VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
             <!-- Product grid -->
             <ListBox Grid.Row="2"
          ItemsSource="{Binding FilteredProductsView}"
