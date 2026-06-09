@@ -295,22 +295,18 @@ namespace Shiakati.ViewModels
             if (e.OldItems != null) foreach (CartItem item in e.OldItems) item.PropertyChanged -= CartItem_PropertyChanged;
             UpdateCartTotal();
         }
-
         private void CartItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName is nameof(CartItem.TotalPrice) or nameof(CartItem.RawTotal) or nameof(CartItem.TotalLineDiscount) or nameof(CartItem.Quantity))
                 UpdateCartTotal();
         }
-
         private void UpdateCartTotal()
         {
             OnPropertyChanged(nameof(CartSubTotal));
             OnPropertyChanged(nameof(TotalDiscountAmount));
             OnPropertyChanged(nameof(CartTotal));
         }
-
-        [RelayCommand]
-        private void AddToCart(ProductVariantModel selectedVariant)
+        [RelayCommand] private void AddToCart(ProductVariantModel selectedVariant)
         {
             if (selectedVariant == null) return;
             var existingItem = CartItems.FirstOrDefault(c => c.Variant?.VariantId == selectedVariant.VariantId);
@@ -320,7 +316,6 @@ namespace Shiakati.ViewModels
                 CartItems.Add(new CartItem(selectedVariant));
             SearchText = string.Empty;
         }
-
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
         [RelayCommand] private void IncrementQty(CartItem item)
         {
@@ -340,7 +335,6 @@ namespace Shiakati.ViewModels
             else CartItems.Remove(item);
         }
         [RelayCommand] private void CancelEdit() => ResetPOS();
-
         [RelayCommand] private async Task CheckoutAsync()
         {
             if (CartItems.Count == 0)
@@ -411,6 +405,7 @@ namespace Shiakati.ViewModels
                 else
                 {
 
+
                     var saleRequest = new SaleRequest
                     {
                         GlobalDiscount = 0,
@@ -421,7 +416,7 @@ namespace Shiakati.ViewModels
                             FixedDiscountApplied = c.IsDiscountPinned,
                             ManualDiscountAmount = c.ManualDiscount
                         }).ToList(),
-                        
+
                     };
 
                     if (SelectedClient != null)
@@ -453,7 +448,10 @@ namespace Shiakati.ViewModels
                                 UnitPrice = c.Variant?.SalePrice ?? 0
                             }).ToList()
                         };
-                        if (PrintTicket(receipt))
+
+
+                        PrintTicket(receipt);
+
                             MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -461,17 +459,12 @@ namespace Shiakati.ViewModels
 
                         ResetPOS();
 
-                        Task.Run(async () =>
-                        {
-                            // The HTTP call runs on a background thread
-                            await LoadProductsAsync();
 
-                            // Once data is ready, apply it safely to the UI thread
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                FilteredProductsView?.Refresh();
-                            });
-                        });
+
+                        // await LoadProductsAsync();
+                        // Reload products in background → UI stays completely responsive
+                        Task.Run(() => ReloadProductsInBackground());
+
 
 
                     }
@@ -479,9 +472,71 @@ namespace Shiakati.ViewModels
                         MessageBox.Show("Erreur lors de l'enregistrement de la vente.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de l'enregistrement de la vente : "+ ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
             finally { IsLoading = false; }
         }
 
+        private async Task ReloadProductsInBackground()
+        {
+            try
+            {
+                var items = await _cacheService.GetOrLoadAsync("StockVariants", _stockService.GetProductVariantsAsync);
+                var filteredItems = items.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
+
+                // Build filter lists from the loaded items
+                var distinctBrands = filteredItems
+                    .Where(p => !string.IsNullOrWhiteSpace(p.BrandName))
+                    .Select(p => p.BrandName!)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(b => b).ToList();
+                var distinctColors = filteredItems
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Color))
+                    .Select(p => p.Color!)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(c => c).ToList();
+                var distinctSizes = filteredItems
+                    .Where(p => !string.IsNullOrWhiteSpace(p.FullSize))
+                    .Select(p => p.FullSize!)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(s => s).ToList();
+
+                // ---- Update the UI on the dispatcher thread ----
+                Application.Current.Dispatcher.Invoke(() =>
+                {                    
+                    // Replace the product collection safely
+                    _allProducts = filteredItems;
+                    _skuLookup = _allProducts
+                        .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
+                        .ToDictionary(p => p.Sku!, StringComparer.OrdinalIgnoreCase);
+
+                    _posProducts.Clear();
+                    foreach (var p in _allProducts) _posProducts.Add(p);
+
+                    // Update brand / color / size filters
+                    Brands.Clear(); Brands.Add("TOUT");
+                    foreach (var b in distinctBrands) Brands.Add(b);
+
+                    FilterColors.Clear(); FilterColors.Add("TOUT");
+                    foreach (var c in distinctColors) FilterColors.Add(c);
+
+                    FilterSizes.Clear(); FilterSizes.Add("TOUT");
+                    foreach (var s in distinctSizes) FilterSizes.Add(s);
+
+                    // Refresh the product grid (filters are already "TOUT")
+                    FilteredProductsView?.Refresh();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur rechargement produits en arrière‑plan");
+                Application.Current.Dispatcher.Invoke(() =>
+                    MessageBox.Show("Impossible de recharger le catalogue.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error));
+            }
+        }
         public void LoadSaleForEditing(SaleModel sale, IEnumerable<SaleItemModel> items)
         {
             if (sale == null || items == null) return;
