@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Sélectionner un client" Width="720" Height="520"
+        Title="Sélectionner un client" Width="850" Height="520"
         WindowStartupLocation="CenterScreen"
         FontFamily="{StaticResource BodyFont}">
     <Grid Margin="16">
@@ -36,8 +36,10 @@
                 <DataGridTextColumn Header="Téléphone" Binding="{Binding PhoneNumber}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Crédits" Binding="{Binding TotalCredits, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Versements" Binding="{Binding TotalVersements, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Achats" Binding="{Binding TotalPurchases, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"
+                        Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold"/>
                 <DataGridTextColumn Header="Solde" Binding="{Binding NetBalance, StringFormat={}{0:N2} DA}" Width="Auto" FontWeight="SemiBold"
-                                    Foreground="{StaticResource SecondaryBrush}"/>
+                        Foreground="{StaticResource SecondaryBrush}"/>
             </DataGrid.Columns>
         </DataGrid>
 

@@ -106,6 +106,11 @@ namespace Shiakati
                 client.BaseAddress = new Uri(baseUrl);
             }).AddHttpMessageHandler<AuthenticationHandler>();
 
+            services.AddHttpClient<IReservationService, ReservationService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            }).AddHttpMessageHandler<AuthenticationHandler>();
+
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
             // ---------------------------------------------------------

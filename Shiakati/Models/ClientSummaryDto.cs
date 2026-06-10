@@ -12,6 +12,8 @@ namespace Shiakati.Models
         public string FullName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public decimal TotalCredits { get; set; }
+
+        public decimal TotalPurchases { get; set; }
         public decimal TotalVersements { get; set; }
         public decimal NetBalance { get; set; }
     }

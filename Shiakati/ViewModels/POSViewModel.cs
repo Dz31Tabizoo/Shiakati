@@ -406,8 +406,6 @@ namespace Shiakati.ViewModels
                 }
                 else
                 {
-
-
                     var saleRequest = new SaleRequest
                     {
                         GlobalDiscount = 0,
@@ -424,6 +422,7 @@ namespace Shiakati.ViewModels
                     if (SelectedClient != null)
                     {
                         saleRequest.ClientId = SelectedClient.ClientId;
+                        saleRequest.PaidAmount = CartTotal;
                     }
 
                     if (IsCreditSale && SelectedClient != null)
@@ -458,7 +457,7 @@ namespace Shiakati.ViewModels
                                 MessageBoxButton.OK, MessageBoxImage.Information);
 
                         _cacheService.Remove(CacheKeys.StockVariants);
-
+                       
                         ResetPOS();
 
 
