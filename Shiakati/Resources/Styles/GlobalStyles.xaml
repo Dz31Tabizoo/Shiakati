@@ -310,8 +310,8 @@
     </Style>
 
     <!-- ═══════════════════════════════════════
-         DATA GRID
-         ═══════════════════════════════════════ -->
+                    DATA GRID
+            ═══════════════════════════════════════ -->
     <Style x:Key="ShiakatiDataGrid" TargetType="DataGrid">
         <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
         <Setter Property="FontSize" Value="15"/>
@@ -366,6 +366,55 @@
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ═══════════════════════════════════════
+                SUB DATA GRID
+      ═══════════════════════════════════════ -->
+
+
+    <Style x:Key="ShiakatiSubDataGrid" TargetType="DataGrid" BasedOn="{StaticResource ShiakatiDataGrid}">
+        <Setter Property="RowHeight" Value="40"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+    </Style>
+
+    <Style x:Key="ShiakatiSubDataGridColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+    </Style>
+
+    <Style x:Key="ShiakatiSubDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource ShiakatiDataGridCell}">
+        <Setter Property="Padding" Value="10,2"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextOnPrimaryBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ShiakatiSubDataGridRow" TargetType="DataGridRow">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Height" Value="40"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#F5F7FA"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -20,6 +20,7 @@ namespace Shiakati.Models
             public string? Notes { get; set; }
             public bool IsFulfilled { get; set; }
             public bool IsCancelled { get; set; }
+            public bool IsActive => !IsCancelled && !IsFulfilled;
             public List<ReservationItemDto> Items { get; set; } = new();
         }
     

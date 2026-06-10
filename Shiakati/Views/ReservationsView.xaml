@@ -4,34 +4,43 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              FontFamily="{StaticResource BodyFont}"
              Background="{StaticResource BgBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="ReservationsParentGrid" TargetType="DataGrid" BasedOn="{StaticResource ShiakatiDataGrid}">
+            <Setter Property="RowHeight" Value="NaN"/>
+        </Style>
+
+        <Style x:Key="ReservationsParentRow" TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
+            <Setter Property="Height" Value="NaN"/>
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnDataGridRowPreviewMouseLeftButtonDown"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header: title + filter buttons -->
         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
             <TextBlock Text="Réservations" FontSize="22" FontWeight="Bold"
                        Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-            <Button Content="Actives" Command="{Binding LoadCommand}" CommandParameter="active"
-                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Honorées" Command="{Binding LoadCommand}" CommandParameter="fulfilled"
-                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Annulées" Command="{Binding LoadCommand}" CommandParameter="cancelled"
-                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Toutes" Command="{Binding LoadCommand}" CommandParameter=""
-                    Style="{StaticResource HelpChipButton}"/>
+            <Button Content="Actives" Command="{Binding LoadCommand}" CommandParameter="active" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Honorées" Command="{Binding LoadCommand}" CommandParameter="fulfilled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Annulées" Command="{Binding LoadCommand}" CommandParameter="cancelled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Toutes" Command="{Binding LoadCommand}" CommandParameter="" Style="{StaticResource HelpChipButton}"/>
         </StackPanel>
 
-        <!-- Main DataGrid -->
         <DataGrid Grid.Row="1" ItemsSource="{Binding Reservations}"
                   AutoGenerateColumns="False"
-                  Style="{StaticResource ShiakatiDataGrid}"
+                  Style="{StaticResource ReservationsParentGrid}"
+                  RowStyle="{StaticResource ReservationsParentRow}"
                   ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
                   CellStyle="{StaticResource ShiakatiDataGridCell}"
-                  RowStyle="{StaticResource ShiakatiDataGridRow}"
                   RowDetailsVisibilityMode="VisibleWhenSelected">
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="N°" Binding="{Binding ReservationId}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Client" Binding="{Binding ClientFullName}" Width="*" FontSize="14"/>
@@ -39,47 +48,94 @@
                 <DataGridTextColumn Header="Expire" Binding="{Binding ExpirationDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Dépôt" Binding="{Binding DepositAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
-                <DataGridTextColumn Header="Statut" Width="Auto" FontSize="14"/>
-                <!-- Actions -->
+
+                <DataGridTemplateColumn Header="Statut" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Padding="8,4" CornerRadius="6">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCancelled}" Value="True">
+                                                <Setter Property="Background" Value="#FFEBEE"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsFulfilled}" Value="True">
+                                                <Setter Property="Background" Value="#E8F5E9"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                <Setter Property="Background" Value="#E3F2FD"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock FontWeight="SemiBold" FontSize="13">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCancelled}" Value="True">
+                                                    <Setter Property="Text" Value="Annulée"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsFulfilled}" Value="True">
+                                                    <Setter Property="Text" Value="Honorée"/>
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                    <Setter Property="Text" Value="Active"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTemplateColumn Header="Actions" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Style="{StaticResource MaterialDesignIconButton}"
-                                        ToolTip="Honorer"
-                                        Command="{Binding DataContext.FulfillReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"
+                                <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Honorer"
+                                        Command="{Binding DataContext.FulfillReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                         IsEnabled="{Binding IsFulfilled, Converter={StaticResource InvertBooleanConverter}}">
                                     <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="20" Height="20"/>
                                 </Button>
-                                <Button Style="{StaticResource MaterialDesignIconButton}"
-                                        ToolTip="Annuler"
-                                        Command="{Binding DataContext.CancelReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"
+                                <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Annuler"
+                                        Command="{Binding DataContext.CancelReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                         IsEnabled="{Binding IsCancelled, Converter={StaticResource InvertBooleanConverter}}">
                                     <materialDesign:PackIcon Kind="CloseCircle" Foreground="{StaticResource DangerBrush}" Width="20" Height="20"/>
                                 </Button>
                             </StackPanel>
-                        </DataTemplate>
+                            </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
 
-            <!-- Expandable details: reserved items -->
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False"
-                              Style="{StaticResource ShiakatiDataGrid}"
-                              Margin="20,8" MinHeight="0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" Width="Auto" FontSize="13"/>
-                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*" FontSize="13"/>
-                            <DataGridTextColumn Header="Quantité" Binding="{Binding Quantity}" Width="Auto" FontSize="13"/>
-                            <DataGridTextColumn Header="Prix unit." Binding="{Binding UnitPrice, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="13"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Border Padding="24,12,24,16" Background="{StaticResource BgAltBrush}">
+
+                        <DataGrid ItemsSource="{Binding Items}"
+                                  AutoGenerateColumns="False"
+                                  Style="{StaticResource ShiakatiSubDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
+                                  RowStyle="{StaticResource ShiakatiSubDataGridRow}"
+                                  CellStyle="{StaticResource ShiakatiSubDataGridCell}"
+                                  MaxHeight="250">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" Width="Auto" FontSize="13"/>
+                                <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="Auto" MinWidth="260" FontSize="13"/>
+                                <DataGridTextColumn Header="Quantité" Binding="{Binding Quantity}" Width="Auto" FontSize="13"/>
+                                <DataGridTextColumn Header="Prix unit." Binding="{Binding UnitPrice, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="13"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </Border>
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
         </DataGrid>
     </Grid>
-</UserControl>
+</UserControl>    
