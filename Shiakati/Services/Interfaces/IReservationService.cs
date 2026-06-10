@@ -11,5 +11,9 @@ namespace Shiakati.Services.Interfaces
 
     {
         Task<bool> CreateReservationAsync(CreateReservationRequest request);
+
+        Task<List<ReservationDto>> GetReservationsAsync(string? status = null);
+        Task<bool> CancelReservationAsync(int id);
+        Task<bool> FulfillReservationAsync(int id);
     }
 }

@@ -25,6 +25,8 @@ namespace Shiakati.ViewModels
         public SalesHistoryViewModel SalesHistory { get; }
         public PosContainerViewModel PosContainer { get; }
 
+        public ReservationsViewModel ReservationsVM { get; }
+
         public StockMovementsViewModel StockMovements { get; }
         public StockViewModel Stock { get; }
 
@@ -38,8 +40,9 @@ namespace Shiakati.ViewModels
                             SalesHistoryViewModel salesHistory,
                             SettingsViewModel settingsViewModel,
                             StockMovementsViewModel stockMovementsViewModel,
-                            ClientListViewModel clientList)
+                            ClientListViewModel clientList, ReservationsViewModel reservationsViewModel)
         {
+            ReservationsVM = reservationsViewModel;
             StockMovements = stockMovementsViewModel;
             _authService = authService;
             PosContainer = posContainer;
@@ -117,5 +120,6 @@ namespace Shiakati.ViewModels
             CurrentView = null;
             CurrentViewTitle = null;  // also hides the header bar
         }
+        [RelayCommand] private void NavigateToReservations() => CurrentView = ReservationsVM;
     }
 }

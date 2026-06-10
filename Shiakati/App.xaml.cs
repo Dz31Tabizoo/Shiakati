@@ -132,6 +132,8 @@ namespace Shiakati
             services.AddTransient<ClientListView>();
             services.AddTransient<ClientDetailViewModel>();
             services.AddTransient<ClientDetailView>();
+            services.AddTransient<ReservationsViewModel>();
+            services.AddTransient<ReservationsView>();
 
             // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();

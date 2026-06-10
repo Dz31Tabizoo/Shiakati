@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Shiakati.Views.ReservationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FontFamily="{StaticResource BodyFont}"
+             Background="{StaticResource BgBrush}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header: title + filter buttons -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Réservations" FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <Button Content="Actives" Command="{Binding LoadCommand}" CommandParameter="active"
+                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Honorées" Command="{Binding LoadCommand}" CommandParameter="fulfilled"
+                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Annulées" Command="{Binding LoadCommand}" CommandParameter="cancelled"
+                    Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Toutes" Command="{Binding LoadCommand}" CommandParameter=""
+                    Style="{StaticResource HelpChipButton}"/>
+        </StackPanel>
+
+        <!-- Main DataGrid -->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Reservations}"
+                  AutoGenerateColumns="False"
+                  Style="{StaticResource ShiakatiDataGrid}"
+                  ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                  CellStyle="{StaticResource ShiakatiDataGridCell}"
+                  RowStyle="{StaticResource ShiakatiDataGridRow}"
+                  RowDetailsVisibilityMode="VisibleWhenSelected">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="N°" Binding="{Binding ReservationId}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Client" Binding="{Binding ClientFullName}" Width="*" FontSize="14"/>
+                <DataGridTextColumn Header="Date" Binding="{Binding ReservationDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Expire" Binding="{Binding ExpirationDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Dépôt" Binding="{Binding DepositAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
+                <DataGridTextColumn Header="Statut" Width="Auto" FontSize="14"/>
+                <!-- Actions -->
+                <DataGridTemplateColumn Header="Actions" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                        ToolTip="Honorer"
+                                        Command="{Binding DataContext.FulfillReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        IsEnabled="{Binding IsFulfilled, Converter={StaticResource InvertBooleanConverter}}">
+                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="20" Height="20"/>
+                                </Button>
+                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                        ToolTip="Annuler"
+                                        Command="{Binding DataContext.CancelReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        IsEnabled="{Binding IsCancelled, Converter={StaticResource InvertBooleanConverter}}">
+                                    <materialDesign:PackIcon Kind="CloseCircle" Foreground="{StaticResource DangerBrush}" Width="20" Height="20"/>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+            <!-- Expandable details: reserved items -->
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False"
+                              Style="{StaticResource ShiakatiDataGrid}"
+                              Margin="20,8" MinHeight="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" Width="Auto" FontSize="13"/>
+                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*" FontSize="13"/>
+                            <DataGridTextColumn Header="Quantité" Binding="{Binding Quantity}" Width="Auto" FontSize="13"/>
+                            <DataGridTextColumn Header="Prix unit." Binding="{Binding UnitPrice, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="13"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+    </Grid>
+</UserControl>

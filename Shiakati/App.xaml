@@ -55,6 +55,10 @@
                         <views:ClientDetailView />
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type viewModels:ReservationsViewModel}">
+                        <views:ReservationsView />
+                    </DataTemplate>
+
                 </ResourceDictionary>
                 
                 <ResourceDictionary>
