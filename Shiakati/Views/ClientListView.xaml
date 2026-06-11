@@ -54,8 +54,6 @@
                 <DataGridTextColumn Header="Versements" Binding="{Binding TotalVersements, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Achats" Binding="{Binding TotalPurchases, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"
                         Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold"/>
-                <DataGridTextColumn Header="Solde" Binding="{Binding NetBalance, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14" FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryBrush}"/>
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">

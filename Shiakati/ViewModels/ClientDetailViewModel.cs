@@ -23,9 +23,11 @@ namespace Shiakati.ViewModels
 
         [ObservableProperty] private decimal _totalCreditsAvailable;
         [ObservableProperty] private decimal _totalPayments;
+        [ObservableProperty] private ObservableCollection<ClientSaleDto> _sales = new();
 
 
-        
+
+
 
         // Credits tab
         public ObservableCollection<CreditDto> Credits { get; } = new();
@@ -50,6 +52,8 @@ namespace Shiakati.ViewModels
             await LoadAsync();
         }
 
+
+        // In LoadAsync, call the sales endpoint:
         private async Task LoadAsync()
         {
             IsLoading = true;
@@ -66,10 +70,14 @@ namespace Shiakati.ViewModels
                 }
                 TotalCreditsAvailable = Credits.Where(c => !c.IsRedeemed).Sum(c => c.Amount);
                 TotalPayments = Versements.Sum(v => v.Amount);
+
+                // Load sales
+                var salesList = await _clientService.GetClientSalesAsync(_clientId);
+                Sales.Clear();
+                foreach (var s in salesList) Sales.Add(s);
             }
             finally { IsLoading = false; }
         }
-
         [RelayCommand] private async Task EditClient()
         {
             if (Client == null) return;

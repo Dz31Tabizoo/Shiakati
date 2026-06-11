@@ -100,12 +100,10 @@ namespace Shiakati.ViewModels
             if (reservation == null || reservation.IsFulfilled) return;
 
             decimal remaining = reservation.TotalAmount - reservation.DepositAmount;
-            var dialog = new HonorReservationDialog(remaining);
+            var dialog = new HonorReservationDialog(reservation.DepositAmount, remaining);
             if (dialog.ShowDialog() == true)
             {
-                // call the backend with the amount paid
-                var amountPaid = dialog.AmountPaid;
-                var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId, amountPaid);
+                var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId, dialog.AmountPaid);
                 if (success)
                 {
                     MessageBox.Show("Réservation honorée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);

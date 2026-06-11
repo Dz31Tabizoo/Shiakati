@@ -43,7 +43,7 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="N°" Binding="{Binding ReservationId}" Width="Auto" FontSize="14"/>
-                <DataGridTextColumn Header="Client" Binding="{Binding ClientFullName}" Width="*" FontSize="14"/>
+                <DataGridTextColumn Header="Client" Binding="{Binding ClientFullName}" Width="Auto" MinWidth="250" FontSize="14"/>
                 <DataGridTextColumn Header="Date" Binding="{Binding ReservationDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Expire" Binding="{Binding ExpirationDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>

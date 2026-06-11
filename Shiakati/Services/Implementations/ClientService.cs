@@ -55,5 +55,13 @@ namespace Shiakati.Services.Implementations
             var response = await _http.PostAsJsonAsync("api/versements", request);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<List<ClientSaleDto>> GetClientSalesAsync(int clientId)
+        {
+            var response = await _http.GetAsync($"api/clients/{clientId}/sales");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<ClientSaleDto>>() ?? new();
+            return new();
+        }
     }
 }

@@ -9,6 +9,19 @@
              FontFamily="{StaticResource BodyFont}"
              Background="{StaticResource BgBrush}">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="ReservationsParentGrid" TargetType="DataGrid" BasedOn="{StaticResource ShiakatiDataGrid}">
+            <Setter Property="RowHeight" Value="NaN"/>
+        </Style>
+
+        <Style x:Key="ReservationsParentRow" TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
+            <Setter Property="Height" Value="NaN"/>
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnDataGridRowPreviewMouseLeftButtonDown"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -230,6 +243,48 @@
                         <Run Text="{Binding TotalPayments, StringFormat={}{0:N2} DA}"/>
                     </TextBlock>
                 </Grid>
+            </TabItem>
+
+            <TabItem Header="Achats">
+                <DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="False"
+                            Style="{StaticResource ReservationsParentGrid}"
+                            RowDetailsVisibilityMode="VisibleWhenSelected"
+                            ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                            CellStyle="{StaticResource ShiakatiDataGridCell}"
+                            RowStyle="{StaticResource ReservationsParentRow}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ticket" Binding="{Binding TicketNumber}" Width="Auto" FontSize="14"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy}" Width="Auto" FontSize="14"/>
+                        <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
+                    </DataGrid.Columns>
+
+                    <!-- Expandable items -->
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate>
+                            <Border Padding="12" Background="{StaticResource BgAltBrush}"
+                                    MinHeight="80" MaxHeight="250">
+
+                                <DataGrid ItemsSource="{Binding Items}"
+                                  AutoGenerateColumns="False"
+                                  Style="{StaticResource ShiakatiSubDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
+                                  RowStyle="{StaticResource ShiakatiSubDataGridRow}"
+                                  CellStyle="{StaticResource ShiakatiSubDataGridCell}"
+                                  MaxHeight="250">
+                                    
+                                    
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" Width="Auto" FontSize="13"/>
+                                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="Auto" FontSize="13"/>
+                                        <DataGridTextColumn Header="Qté" Binding="{Binding Quantity}" Width="Auto" FontSize="13"/>
+                                        <DataGridTextColumn Header="Prix unit." Binding="{Binding UnitPrice, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="13"/>
+                                        <DataGridTextColumn Header="Ligne" Binding="{Binding TotalLine, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="13"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
+                </DataGrid>
             </TabItem>
         </TabControl>
     </Grid>

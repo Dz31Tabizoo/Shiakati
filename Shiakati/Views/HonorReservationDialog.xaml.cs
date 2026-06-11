@@ -7,20 +7,23 @@ namespace Shiakati.Views
 {
     public partial class HonorReservationDialog : Window, INotifyPropertyChanged
     {
+        private decimal _deposit;
         private decimal _remaining;
         private decimal _amountPaid;
         private decimal _newDebt;
 
+        public decimal Deposit { get => _deposit; set { _deposit = value; OnPropertyChanged(); } }
         public decimal Remaining { get => _remaining; set { _remaining = value; OnPropertyChanged(); CalculateNewDebt(); } }
         public decimal AmountPaid { get => _amountPaid; set { _amountPaid = value; OnPropertyChanged(); CalculateNewDebt(); } }
         public decimal NewDebt { get => _newDebt; set { _newDebt = value; OnPropertyChanged(); } }
 
-        public HonorReservationDialog(decimal remaining)
+        public HonorReservationDialog(decimal deposit, decimal remaining)
         {
             InitializeComponent();
             DataContext = this;
+            Deposit = deposit;
             Remaining = remaining;
-            AmountPaid = remaining;   // default: full payment
+            AmountPaid = 0;   // default: no additional payment; the credit will be cancelled
         }
 
         private void CalculateNewDebt()

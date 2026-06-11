@@ -10,5 +10,7 @@ namespace Shiakati.Services.Interfaces
         Task<List<ClientSummaryDto>> GetClientSummariesAsync(string? search);
         Task<bool> GrantCreditAsync(CreateCreditRequest request);
         Task<bool> UpdateClientAsync(int clientId, CreateClientRequest request);
+
+        Task<List<ClientSaleDto>> GetClientSalesAsync(int clientId);
     }
 }
