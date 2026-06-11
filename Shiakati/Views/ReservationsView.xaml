@@ -27,10 +27,10 @@
         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
             <TextBlock Text="Réservations" FontSize="22" FontWeight="Bold"
                        Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-            <Button Content="Actives" Command="{Binding LoadCommand}" CommandParameter="active" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Honorées" Command="{Binding LoadCommand}" CommandParameter="fulfilled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Annulées" Command="{Binding LoadCommand}" CommandParameter="cancelled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
-            <Button Content="Toutes" Command="{Binding LoadCommand}" CommandParameter="" Style="{StaticResource HelpChipButton}"/>
+            <Button Content="Actives" Command="{Binding FilterByStatusCommand}" CommandParameter="active" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Honorées" Command="{Binding FilterByStatusCommand}" CommandParameter="fulfilled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Annulées" Command="{Binding FilterByStatusCommand}" CommandParameter="cancelled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
+            <Button Content="Toutes" Command="{Binding FilterByStatusCommand}" CommandParameter="" Style="{StaticResource HelpChipButton}"/>
         </StackPanel>
 
         <DataGrid Grid.Row="1" ItemsSource="{Binding Reservations}"

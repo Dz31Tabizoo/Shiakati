@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,28 +17,65 @@ namespace Shiakati.ViewModels
     {
         private readonly IReservationService _reservationService;
 
+        private List<ReservationDto> _allReservations = new();
+
         [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string? _statusFilter = "active"; // default: show active
+        [ObservableProperty] private string? _statusFilter = "active";   // current selected filter
 
         public ObservableCollection<ReservationDto> Reservations { get; } = new();
 
         public ReservationsViewModel(IReservationService reservationService)
         {
             _reservationService = reservationService;
-            _ = LoadAsync();
+            _ = LoadAllAsync();   // fetch everything once at startup
         }
 
         [RelayCommand]
-        private async Task LoadAsync()
+        private async Task LoadAllAsync()
         {
             IsLoading = true;
             try
             {
-                var list = await _reservationService.GetReservationsAsync(StatusFilter);
-                Reservations.Clear();
-                foreach (var r in list) Reservations.Add(r);
+                _allReservations = await _reservationService.GetReservationsAsync(null);  // null = no filter
             }
-            finally { IsLoading = false; }
+            finally
+            {
+                IsLoading = false;
+                ApplyFilter();   // show only "active" by default
+            }
+        }
+
+        [RelayCommand]
+        private void FilterByStatus(string? status)
+        {
+            StatusFilter = status;
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            var filtered = _allReservations.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(StatusFilter))
+            {
+                switch (StatusFilter.ToLower())
+                {
+                    case "active":
+                        filtered = filtered.Where(r => r.IsActive);
+                        break;
+                    case "fulfilled":
+                        filtered = filtered.Where(r => r.IsFulfilled);
+                        break;
+                    case "cancelled":
+                        filtered = filtered.Where(r => r.IsCancelled);
+                        break;
+                        // "all" or empty → no filter
+                }
+            }
+
+            Reservations.Clear();
+            foreach (var r in filtered)
+                Reservations.Add(r);
         }
 
         [RelayCommand]
@@ -52,7 +90,7 @@ namespace Shiakati.ViewModels
             if (success)
             {
                 MessageBox.Show("Réservation annulée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                await LoadAsync();
+                await LoadAllAsync();
             }
         }
 
@@ -60,16 +98,25 @@ namespace Shiakati.ViewModels
         private async Task FulfillReservationAsync(ReservationDto reservation)
         {
             if (reservation == null || reservation.IsFulfilled) return;
-            if (MessageBox.Show("Honorer cette réservation ? Une vente sera créée.",
-                "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-                return;
 
-            var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId);
-            if (success)
+            decimal remaining = reservation.TotalAmount - reservation.DepositAmount;
+            var dialog = new HonorReservationDialog(remaining);
+            if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show("Réservation honorée – vente créée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                await LoadAsync();
+                // call the backend with the amount paid
+                var amountPaid = dialog.AmountPaid;
+                var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId, amountPaid);
+                if (success)
+                {
+                    MessageBox.Show("Réservation honorée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await LoadAllAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de l'opération.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
+
     }
 }

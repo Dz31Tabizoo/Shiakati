@@ -33,11 +33,10 @@ namespace Shiakati.Services.Implementations
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> FulfillReservationAsync(int id)
+        public async Task<bool> FulfillReservationAsync(int id, decimal amountPaid)
         {
-            var response = await _http.PutAsync($"api/reservations/{id}/fulfill", null);
+            var response = await _http.PutAsJsonAsync($"api/reservations/{id}/fulfill", new { amountPaid });
             return response.IsSuccessStatusCode;
         }
-
     }
 }
