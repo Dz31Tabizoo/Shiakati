@@ -22,5 +22,9 @@ namespace Shiakati.Models
         public decimal DepositAmount { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public decimal TotalBeforeDeposit { get; set; }
+
+        public string? BrandName { get; set; }
+        public string? ProductName { get; set; }
+
     }    
 }

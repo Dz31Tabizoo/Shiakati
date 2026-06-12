@@ -61,6 +61,34 @@ namespace Shiakati.Services.Implementations
                 FormatFlags = StringFormatFlags.DirectionRightToLeft
             };
 
+            if (_currentReceip.DocumentType == "INVENTORY")
+            {
+                // Title
+                g.DrawString("INVENTAIRE", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 25;
+
+                // Brand and product name
+                g.DrawString($"Marque : {_currentReceip.BrandName}", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Produit : {_currentReceip.ProductName}", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 20;
+
+                // Variant lines (each item's Designation already contains the formatted line)
+                foreach (var item in _currentReceip.Items)
+                {
+                    g.DrawString(item.Designation, regularFont, Brushes.Black, leftMargin + 5, yPos);
+                    yPos += 15;
+                }
+                yPos += 10;
+
+                // No totals or prices – just a clean inventory list
+                // Skip the normal items loop (we'll need to return early or use a flag)
+                // We'll set a flag to skip the normal item printing
+                _currentReceip.DocumentType = "DONE"; // temporary hack to prevent default printing? Better to restructure.
+                                                      // Actually, the normal items loop runs after the initial header. We need to prevent that for inventory.
+                                                      // Simplest: add a return after printing the inventory block.
+                return;
+            }
 
             try
             {

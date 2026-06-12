@@ -28,6 +28,7 @@ namespace Shiakati.ViewModels
         private readonly IProductsService _productsService;
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
+        private readonly IPrintService _printService;
 
         // ─────────────────────────────────────────────────────────
         //   Private source collection (stable) and master list
@@ -39,9 +40,10 @@ namespace Shiakati.ViewModels
                               ICatalogService db,
                               IProductVariantsService stockService,
                               ICacheService cacheService,
-                              IProductsService productsService)
+                              IProductsService productsService,IPrintService printServ)
         {
             _printerService = printerService;
+            _printService = printServ;
             _catalogDb = db;
             _productsService = productsService;
             _stockService = stockService;
@@ -658,6 +660,87 @@ namespace Shiakati.ViewModels
                 if (result == MessageBoxResult.No) return false;
             }
             return true;
+        }
+
+
+        // inventaire 
+
+        [RelayCommand]
+        private async Task PrintInventory()
+        {
+            // 1. Build list of unique (BrandName, ProductName) from the master list
+            var productGroups = _allStockItems
+                .Select(v => new { v.BrandName, v.ProductName })
+                .Distinct()
+                .OrderBy(g => g.BrandName)
+                .ThenBy(g => g.ProductName)
+                .Select(g => new ProductSelectionItem
+                {
+                    BrandName = g.BrandName ?? "",
+                    ProductName = g.ProductName ?? ""
+                })
+                .ToList();
+
+            if (!productGroups.Any())
+            {
+                MessageBox.Show("Aucun produit dans le stock.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // 2. Show selection dialog
+            var dialog = new ProductSelectionForInventoryDialog(productGroups) { Owner = Application.Current.MainWindow };
+            if (dialog.ShowDialog() != true) return;
+
+            var selectedProducts = dialog.SelectedProducts;
+
+            // 3. For each selected product, build the variant list and print
+            string printerName = Properties.Settings.Default.TicketPrinterName;
+            if (string.IsNullOrWhiteSpace(printerName))
+            {
+                MessageBox.Show("Aucune imprimante ticket configurée.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                foreach (var product in selectedProducts)
+                {
+                    var variants = _allStockItems
+                        .Where(v => v.BrandName == product.BrandName && v.ProductName == product.ProductName)
+                        .OrderBy(v => v.Color)
+                        .ThenBy(v => v.FullSize)
+                        .ToList();
+
+                    if (!variants.Any()) continue;
+
+                    var receipt = new ReceipModel
+                    {
+                        TicketNumber = $"INV-{DateTime.Now:yyyyMMddHHmmss}",
+                        Date = DateTime.Now,
+                        DocumentType = "INVENTORY",
+                        BrandName = product.BrandName,
+                        ProductName = product.ProductName,
+                        Items = variants.Select(v => new ReceiptItem
+                        {
+                            Designation = $"{v.Sku} | {v.Color} | {v.FullSize} | Qté: {v.StockQuantity}",
+                            Quantity = v.StockQuantity ?? 0
+                        }).ToList()
+                    };
+
+                    PrintTicket(receipt);
+                }
+                MessageBox.Show($"Inventaire imprimé : {selectedProducts.Count} produit(s).", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur d'impression : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void PrintTicket(ReceipModel receipt)
+        {
+            string printerName = Properties.Settings.Default.TicketPrinterName;
+            _printService.PrintReceipt(receipt, printerName);
         }
     }
 }
