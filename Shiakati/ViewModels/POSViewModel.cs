@@ -441,7 +441,10 @@ namespace Shiakati.ViewModels
                             Date = DateTime.Now,
                             TotalAmount = CartTotal ?? 0,
                             TotalDiscount = TotalDiscountAmount ?? 0,
-                            // edit recipt to handel credit and verssements
+                            ClientName = SelectedClient?.FullName,
+                            PaidAmount = CreditPaidAmount ?? 0,
+                            RemainingDebt = (CartTotal ?? 0) - (CreditPaidAmount ?? 0),
+                            DocumentType = "CREDIT_SALE",
                             Items = CartItems.Select(c => new ReceiptItem
                             {
                                 Designation = c.DisplayName,
@@ -646,7 +649,27 @@ namespace Shiakati.ViewModels
                 var result = await _reservationService.CreateReservationAsync(request);
                 if (result)
                 {
+                    var receipt = new ReceipModel
+                    {
+                        TicketNumber = "RES-" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+                        Date = DateTime.Now,
+                        TotalAmount = CartTotal ?? 0,
+                        DepositAmount = dialog.DepositAmount,
+                        RemainingDebt = dialog.Remaining,   // the debt after deposit
+                        ClientName = SelectedClient?.FullName,
+                        ExpirationDate = dialog.ExpirationDate,
+                        DocumentType = "RESERVATION",
+                        Items = CartItems.Select(c => new ReceiptItem
+                        {
+                            Designation = c.DisplayName,
+                            Quantity = c.Quantity ?? 0,
+                            UnitPrice = c.Variant?.SalePrice ?? 0
+                        }).ToList()
+                    };
+                    PrintTicket(receipt);
+
                     MessageBox.Show("Réservation enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
                     _cacheService.Remove(CacheKeys.StockVariants);
                     ResetPOS();
                     _ = LoadProductsAsync();

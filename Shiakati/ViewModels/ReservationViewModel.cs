@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
+using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
 using System;
@@ -16,6 +17,7 @@ namespace Shiakati.ViewModels
     public partial class ReservationsViewModel : ObservableObject
     {
         private readonly IReservationService _reservationService;
+        private readonly IPrintService _printService;
 
         private List<ReservationDto> _allReservations = new();
 
@@ -24,12 +26,27 @@ namespace Shiakati.ViewModels
 
         public ObservableCollection<ReservationDto> Reservations { get; } = new();
 
-        public ReservationsViewModel(IReservationService reservationService)
+        public ReservationsViewModel(IReservationService reservationService,IPrintService print)
         {
+            _printService = print;
             _reservationService = reservationService;
             _ = LoadAllAsync();   // fetch everything once at startup
         }
 
+        private bool PrintTicket(ReceipModel receipt)
+        {
+            try
+            {
+                string printerToUse = Settings.Default.TicketPrinterName;
+                _printService.PrintReceipt(receipt, printerToUse);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'impression du ticket : {ex.Message}", "Erreur Imprimante", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
 
         [RelayCommand]
         private async Task LoadAllAsync()
@@ -107,6 +124,20 @@ namespace Shiakati.ViewModels
                 var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId, dialog.AmountPaid);
                 if (success)
                 {
+                    // Print honor ticket
+                    var receipt = new ReceipModel
+                    {
+                        TicketNumber = "HONOR-" + reservation.ReservationId,
+                        Date = DateTime.Now,
+                        TotalAmount = reservation.TotalAmount,
+                        PaidAmount = dialog.AmountPaid,
+                        RemainingDebt = dialog.NewDebt,      // NewDebt is calculated by the dialog
+                        ClientName = reservation.ClientFullName,
+                        DocumentType = "HONOR",
+                        Items = new List<ReceiptItem>()       // can be empty; the reservation already lists items
+                    };
+                    PrintTicket(receipt);
+
                     MessageBox.Show("Réservation honorée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadAllAsync();
                 }

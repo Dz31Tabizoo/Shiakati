@@ -114,6 +114,47 @@ namespace Shiakati.Services.Implementations
             }                
             g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
             yPos += 22;
+            // Reservation 
+            if (_currentReceip.DocumentType == "RESERVATION")
+            {
+                g.DrawString($"RÉSERVATION", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 20;
+                if (!string.IsNullOrEmpty(_currentReceip.ClientName))
+                {
+                    g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+                }
+                g.DrawString($"Dépôt : {_currentReceip.DepositAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Reste à payer : {_currentReceip.RemainingDebt:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                if (_currentReceip.ExpirationDate.HasValue)
+                {
+                    g.DrawString($"Expire le : {_currentReceip.ExpirationDate:dd/MM/yyyy}", regularFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+                }
+                // extra space before the separator
+                yPos += 8;
+            }
+            // Honor Reservation 
+            if (_currentReceip.DocumentType == "HONOR")
+            {
+                g.DrawString($"RÉSERVATION HONORÉE", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 20;
+                if (!string.IsNullOrEmpty(_currentReceip.ClientName))
+                {
+                    g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+                }
+                g.DrawString($"Montant total : {_currentReceip.TotalAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                yPos += 8;
+            }
+
 
             //separation  -                                                       -  
             g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
@@ -162,6 +203,18 @@ namespace Shiakati.Services.Implementations
 
             g.DrawString("TOTAL A PAYER :", titleFont, Brushes.Black, leftMargin, yPos);
             g.DrawString($" {_currentReceip.TotalAmount:N2} DA", titleFont, Brushes.Black, rightMargin, yPos, rightFormat);
+
+            // Client Name
+            if (_currentReceip.ClientName != null)
+            {
+                yPos += 15;
+                g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Payé : {_currentReceip.PaidAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+            }
+
             yPos += 30;
             
             // 5. MESSAGE DE REMERCIEMENT (En Arabe)
