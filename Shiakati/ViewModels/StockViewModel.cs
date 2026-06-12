@@ -693,7 +693,6 @@ namespace Shiakati.ViewModels
 
             var selectedProducts = dialog.SelectedProducts;
 
-            // 3. For each selected product, build the variant list and print
             string printerName = Properties.Settings.Default.TicketPrinterName;
             if (string.IsNullOrWhiteSpace(printerName))
             {
@@ -705,14 +704,15 @@ namespace Shiakati.ViewModels
             {
                 foreach (var product in selectedProducts)
                 {
+                    // Get ALL variants for this product, sorted by color
                     var variants = _allStockItems
                         .Where(v => v.BrandName == product.BrandName && v.ProductName == product.ProductName)
                         .OrderBy(v => v.Color)
-                        .ThenBy(v => v.FullSize)
                         .ToList();
 
                     if (!variants.Any()) continue;
 
+                    // Build a receipt with one ReceiptItem per variant
                     var receipt = new ReceipModel
                     {
                         TicketNumber = $"INV-{DateTime.Now:yyyyMMddHHmmss}",
@@ -729,6 +729,7 @@ namespace Shiakati.ViewModels
 
                     PrintTicket(receipt);
                 }
+
                 MessageBox.Show($"Inventaire imprimé : {selectedProducts.Count} produit(s).", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -736,7 +737,6 @@ namespace Shiakati.ViewModels
                 MessageBox.Show($"Erreur d'impression : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private void PrintTicket(ReceipModel receipt)
         {
             string printerName = Properties.Settings.Default.TicketPrinterName;
