@@ -40,6 +40,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal _versementAmount;
         [ObservableProperty] private string? _versementNotes;
         [ObservableProperty] private DateTime? _creditExpiresAt;
+        [ObservableProperty] private decimal _totalPurchases;
 
         public ClientDetailViewModel(IClientService clientService)
         {
@@ -70,11 +71,13 @@ namespace Shiakati.ViewModels
                 }
                 TotalCreditsAvailable = Credits.Where(c => !c.IsRedeemed).Sum(c => c.Amount);
                 TotalPayments = Versements.Sum(v => v.Amount);
+                
 
                 // Load sales
                 var salesList = await _clientService.GetClientSalesAsync(_clientId);
                 Sales.Clear();
                 foreach (var s in salesList) Sales.Add(s);
+                TotalPurchases = Sales.Sum(s => s.TotalAmount ?? 0);
             }
             finally { IsLoading = false; }
         }

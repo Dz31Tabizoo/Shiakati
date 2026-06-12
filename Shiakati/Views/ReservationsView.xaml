@@ -99,12 +99,12 @@
                             <StackPanel Orientation="Horizontal">
                                 <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Honorer"
                                         Command="{Binding DataContext.FulfillReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                        IsEnabled="{Binding IsFulfilled, Converter={StaticResource InvertBooleanConverter}}">
+                                        IsEnabled="{Binding CanModify}">
                                     <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="20" Height="20"/>
                                 </Button>
                                 <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Annuler"
                                         Command="{Binding DataContext.CancelReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                        IsEnabled="{Binding IsCancelled, Converter={StaticResource InvertBooleanConverter}}">
+                                        IsEnabled="{Binding CanModify}">
                                     <materialDesign:PackIcon Kind="CloseCircle" Foreground="{StaticResource DangerBrush}" Width="20" Height="20"/>
                                 </Button>
                             </StackPanel>

@@ -30,6 +30,7 @@ namespace Shiakati.ViewModels
             _ = LoadAllAsync();   // fetch everything once at startup
         }
 
+
         [RelayCommand]
         private async Task LoadAllAsync()
         {

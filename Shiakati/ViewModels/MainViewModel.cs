@@ -113,7 +113,7 @@ namespace Shiakati.ViewModels
         [RelayCommand] private void NavigateToClients()
         {
             CurrentView = ClientList;
-            CurrentViewTitle = "Clients C/V";
+            CurrentViewTitle = "Clients details";
         }
         [RelayCommand] private void CloseCurrentView()
         {

@@ -17,17 +17,17 @@
             <Grid>
                 <!-- Larger, touch‑optimised “Nouvelle vente” button -->
                 <Button HorizontalAlignment="Right"
-                Command="{Binding AddNewTabCommand}"
-                Style="{StaticResource PrimaryButton}"
-                MinHeight="50"
-                MinWidth="150"
-                FontSize="18"
-                Padding="24,12">
+                        Command="{Binding AddNewTabCommand}"
+                        Style="{StaticResource PrimaryButton}"
+                        MinHeight="35"
+                        MinWidth="120"
+                        FontSize="18"
+                        Padding="20,8">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Plus"
                                          Width="24" Height="24"
                                          VerticalAlignment="Center"
-                                         Margin="0,0,10,0"/>
+                                         Margin="0,0,8,0"/>
                         <TextBlock FontWeight="SemiBold" Foreground="{StaticResource BgBrush}" Text="Nouvelle vente" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>

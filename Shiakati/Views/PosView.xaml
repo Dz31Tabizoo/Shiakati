@@ -48,7 +48,7 @@
                 </StackPanel>
             </materialDesign:Card>
             <!-- Client selector -->
-            
+
             <!-- Filter chips -->
             <Grid Grid.Row="1" Margin="0,0,0,12">
                 <Grid.ColumnDefinitions>
@@ -83,32 +83,7 @@
                   Style="{StaticResource ShiakatiComboBox}"/>
                 </StackPanel>
 
-                <!-- Right: client chip -->
-                <Border Grid.Column="1"
-                        CornerRadius="8"
-                        BorderBrush="{StaticResource SecondaryBrush}"
-                        BorderThickness="1.5"
-                        Background="{StaticResource BgBrush}"
-                        Padding="10,6">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="AccountCircle"
-                                     Width="20" Height="20"
-                                     VerticalAlignment="Center"
-                                     Foreground="{StaticResource SecondaryBrush}"
-                                     Margin="0,0,8,0"/>
-                        <TextBlock Text="{Binding ClientDisplay}"
-                                   VerticalAlignment="Center"
-                                   FontSize="14" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   Margin="0,0,8,0"/>
-                        <Button Content="Clients Shiakati"
-                                Command="{Binding OpenClientSelectionDialogCommand}"
-                                Style="{StaticResource SecondaryButton}"
-                                MinHeight="32" FontSize="13"
-                                Padding="8,4"
-                                VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+
             </Grid>
             <!-- Product grid -->
             <ListBox Grid.Row="2"
@@ -238,6 +213,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="30.5"/>
+                    <RowDefinition Height="24.5"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
@@ -265,7 +242,7 @@
                 <TextBlock Grid.Row="1" Text="Ticket Actuel"
                            FontSize="20" FontWeight="Bold"
                            Foreground="{StaticResource PrimaryBrush}"
-                           Margin="0,0,0,15"/>
+                           Margin="0,0,0,8"/>
 
                 <!-- Cart DataGrid (keep existing logic) -->
                 <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}"
@@ -274,9 +251,9 @@
                           BorderThickness="0"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           GridLinesVisibility="None"
-                          HorizontalAlignment="Stretch"
                           SelectionMode="Single"
-                          Style="{StaticResource ShiakatiDataGrid}">
+                          Style="{StaticResource ShiakatiDataGrid}"
+                          >
 
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader"
@@ -372,9 +349,36 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-
+                <!-- Right: client chip -->
+                <Border Grid.Row="3"
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource SecondaryBrush}"
+                        BorderThickness="1.5"
+                        Background="{StaticResource BgBrush}"
+                        Padding="5,5"
+                        HorizontalAlignment="Left"
+                        Margin="180,5,0,5" Grid.RowSpan="2">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AccountCircle"
+                                                 Width="20" Height="20"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{StaticResource SecondaryBrush}"
+                                                 Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding ClientDisplay}"
+                                   VerticalAlignment="Center"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Margin="0,0,8,0"/>
+                        <Button Content="Clients Shiakati"
+                                Command="{Binding OpenClientSelectionDialogCommand}"
+                                Style="{StaticResource SecondaryButton}"
+                                MinHeight="32" FontSize="13"
+                                Padding="8,4"
+                                VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
                 <!-- Totals & Checkout -->
-                <StackPanel Grid.Row="3" Margin="0,15,0,0">
+                <StackPanel Grid.Row="5" Margin="0,5,0,0">
                     <Separator Margin="0,0,0,10"/>
                     <Grid Margin="0,2">
                         <TextBlock Text="Sous-total :" FontSize="16"/>
@@ -417,6 +421,7 @@
                         <Button Grid.Column="0" Command="{Binding OpenCreditSaleDialogCommand}"
                              Style="{StaticResource PrimaryGoldenButton}"
                              FontSize="18" FontWeight="Bold"
+                                
                              Margin="0,8,0,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CreditCardClock"
@@ -430,7 +435,7 @@
 
 
                     </Grid>
-                    <Button Command="{Binding CheckoutCommand}" Height="70" MinWidth="340">
+                    <Button Command="{Binding CheckoutCommand}" Height="60" MinWidth="340">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
                                 <Setter Property="Foreground" Value="White"/>
