@@ -77,6 +77,8 @@ namespace Shiakati.ViewModels
         /// </summary>
         public ICollectionView FilteredStockView { get; }
 
+        [ObservableProperty] private int _totalFilteredQuantity;
+
         public ObservableCollection<string> FilterColors { get; }
         public ObservableCollection<string> FilterSizes { get; }
         public ObservableCollection<string> AllColors { get; }
@@ -182,7 +184,7 @@ namespace Shiakati.ViewModels
                     UpdateFilterOptions(distinctColors, distinctSizes);
 
                     // Refresh the view – the filter is reapplied automatically
-                    FilteredStockView.Refresh();
+                    RefreshFilteredView();
                 });
             }
             catch (Exception ex)
@@ -237,11 +239,11 @@ namespace Shiakati.ViewModels
         private CancellationTokenSource? _searchDebounceToken;
 
         partial void OnSearchTextChanged(string value) => DebounceRefresh();
-        partial void OnSelectedCategoryChanged(CategoryModel value) => FilteredStockView?.Refresh();
-        partial void OnSelectedBrandChanged(BrandsModel value) => FilteredStockView?.Refresh();
-        partial void OnFilterColorChanged(string value) => FilteredStockView?.Refresh();
-        partial void OnFilterFullSizeChanged(string value) => FilteredStockView?.Refresh();
-        partial void OnIsNonActiveItemsVisibleChanged(bool value) => FilteredStockView?.Refresh();
+        partial void OnSelectedCategoryChanged(CategoryModel value) => RefreshFilteredView();
+        partial void OnSelectedBrandChanged(BrandsModel value) => RefreshFilteredView();
+        partial void OnFilterColorChanged(string value) => RefreshFilteredView();
+        partial void OnFilterFullSizeChanged(string value) => RefreshFilteredView();
+        partial void OnIsNonActiveItemsVisibleChanged(bool value) => RefreshFilteredView();
         partial void OnIsEditModeChanged(bool value) => IsNotEditMode = !value;
 
         partial void OnDraftCategoryChanged(CategoryModel value)
@@ -270,7 +272,7 @@ namespace Shiakati.ViewModels
             FilterFullSize = null;
             IsManualSkuEnabled = false;
             DraftSKU = string.Empty;
-            FilteredStockView?.Refresh();
+            RefreshFilteredView();
         }
 
         [RelayCommand]
@@ -558,7 +560,7 @@ namespace Shiakati.ViewModels
             Task.Delay(500, token).ContinueWith(_ =>
             {
                 if (!token.IsCancellationRequested)
-                    Application.Current.Dispatcher.Invoke(() => FilteredStockView?.Refresh());
+                    Application.Current.Dispatcher.Invoke(() => RefreshFilteredView());
             }, token);
         }
 
@@ -662,7 +664,11 @@ namespace Shiakati.ViewModels
             return true;
         }
 
-
+        private void RefreshFilteredView()
+        {
+            FilteredStockView?.Refresh();
+            UpdateTotalFilteredQuantity();
+        }
         // inventaire 
 
         [RelayCommand]
@@ -741,6 +747,21 @@ namespace Shiakati.ViewModels
         {
             string printerName = Properties.Settings.Default.TicketPrinterName;
             _printService.PrintReceipt(receipt, printerName);
+        }
+        private void UpdateTotalFilteredQuantity()
+        {
+            if (FilteredStockView == null)
+            {
+                TotalFilteredQuantity = 0;
+                return;
+            }
+
+            int total = 0;
+            foreach (ProductVariantModel item in FilteredStockView)
+            {
+                total += item.StockQuantity ?? 0;
+            }
+            TotalFilteredQuantity = total;
         }
     }
 }

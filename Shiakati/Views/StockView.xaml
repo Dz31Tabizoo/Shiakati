@@ -128,11 +128,36 @@
             </materialDesign:Card>
 
             <!-- ====== DATA GRID ====== -->
-            <materialDesign:Card Grid.Row="2" UniformCornerRadius="12"
+            <materialDesign:Card Grid.Row="2" 
+                                 UniformCornerRadius="12"
                                  Background="{StaticResource BgBrush}"
                                  Style="{StaticResource ShiakatiCard}"
                                  Padding="4">
-                <DataGrid ItemsSource="{Binding FilteredStockView}"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="1"
+                Padding="10,6"
+                Background="{StaticResource BgAltBrush}"
+                CornerRadius="8,8,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Total quantité affichée : "
+                           FontWeight="Medium"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding TotalFilteredQuantity}"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <DataGrid Grid.Row="0" ItemsSource="{Binding FilteredStockView}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           IsReadOnly="True"
@@ -141,194 +166,199 @@
                           SelectedItem="{Binding SelectedStockItem}"
                           Style="{StaticResource ShiakatiDataGrid}">
 
-                    <!-- Cell style with status triggers -->
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell" BasedOn="{StaticResource ShiakatiDataGridCell}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                    <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-                                </DataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding IsActive}" Value="True"/>
-                                        <Condition Binding="{Binding StockQuantity}" Value="0"/>
-                                    </MultiDataTrigger.Conditions>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.CellStyle>
+                        <!-- Cell style with status triggers -->
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell" BasedOn="{StaticResource ShiakatiDataGridCell}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                        <Setter Property="FontStyle" Value="Italic"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsActive}" Value="True"/>
+                                            <Condition Binding="{Binding StockQuantity}" Value="0"/>
+                                        </MultiDataTrigger.Conditions>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
 
-                    <!-- Row style with context menu -->
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
-                            <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-                            <Setter Property="ContextMenu">
-                                <Setter.Value>
-                                    <ContextMenu>
-                                        <!-- Modifier -->
-                                        <MenuItem Header="Modifier l'article"
+                        <!-- Row style with context menu -->
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
+                                <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <!-- Modifier -->
+                                            <MenuItem Header="Modifier l'article"
                               Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}"
                               IsEnabled="{Binding IsActive, TargetNullValue=False}">
-                                            <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="Edit" Width="16" Height="16" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <Separator/>
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="Edit" Width="16" Height="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator/>
 
-                                        <!-- Imprimer -->
-                                        <MenuItem Header="Imprimer Code-Barres"
+                                            <!-- Imprimer -->
+                                            <MenuItem Header="Imprimer Code-Barres"
                               Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
-                                            <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="Printer" Width="16" Height="16" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <Separator/>
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="Printer" Width="16" Height="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator/>
 
-                                        <!-- Supprimer / Restaurer (toggle) -->
-                                        <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                            <!-- Supprimer / Restaurer (toggle) -->
+                                            <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
-                                            <MenuItem.Style>
-                                                <Style TargetType="MenuItem">
-                                                    <Setter Property="Header" Value="Supprimer l'article"/>
-                                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
-                                                    <Setter Property="Icon">
-                                                        <Setter.Value>
-                                                            <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="Header" Value="Supprimer l'article"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+                                                        <Setter Property="Icon">
+                                                            <Setter.Value>
+                                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"
                                                                  Foreground="{StaticResource DangerBrush}" />
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                                            <Setter Property="Header" Value="Restaurer l'article"/>
-                                                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
-                                                            <Setter Property="Icon">
-                                                                <Setter.Value>
-                                                                    <materialDesign:PackIcon Kind="Restore" Width="16" Height="16"
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                                <Setter Property="Header" Value="Restaurer l'article"/>
+                                                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                                                <Setter Property="Icon">
+                                                                    <Setter.Value>
+                                                                        <materialDesign:PackIcon Kind="Restore" Width="16" Height="16"
                                                                          Foreground="{StaticResource PrimaryBrush}" />
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </MenuItem.Style>
-                                        </MenuItem>
-                                        <Separator/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                            <Separator/>
 
-                                        <!-- Inventaire -->
-                                        <MenuItem Header="Lancer l'inventaire du produit"
+                                            <!-- Inventaire -->
+                                            <MenuItem Header="Lancer l'inventaire du produit"
                               Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
-                                            <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="ClipboardCheckMultiple" Width="16" Height="16" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                    <Setter Property="Opacity" Value="0.55"/>
-                                    <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.RowStyle>
-                    <DataGrid.Columns>
-                        <!-- Status (unchanged) -->
-                        <DataGridTemplateColumn Header="Statut" Width="Auto" MinWidth="90">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                                        <Border x:Name="DeleteBadge" Background="{StaticResource DangerBrush}"
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ClipboardCheckMultiple" Width="16" Height="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                        <Setter Property="Opacity" Value="0.55"/>
+                                        <Setter Property="Background" Value="{StaticResource BgAltBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <!-- Status (unchanged) -->
+                            <DataGridTemplateColumn Header="Statut" Width="Auto" MinWidth="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
+                                            <Border x:Name="DeleteBadge" Background="{StaticResource DangerBrush}"
                         CornerRadius="6" Padding="8,4" Visibility="Collapsed">
-                                            <TextBlock Text="SUPPRIMÉ" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                                        </Border>
-                                        <Border x:Name="RuptureBadge" Background="#FFEDD5"
+                                                <TextBlock Text="SUPPRIMÉ" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                            <Border x:Name="RuptureBadge" Background="#FFEDD5"
                         CornerRadius="6" Padding="8,4" Visibility="Collapsed">
-                                            <TextBlock Text="RUPTURE" Foreground="#C2410C" FontSize="10" FontWeight="Bold"/>
-                                        </Border>
-                                        <Border x:Name="ActiveBadge" Background="#DCFCE7"
+                                                <TextBlock Text="RUPTURE" Foreground="#C2410C" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                            <Border x:Name="ActiveBadge" Background="#DCFCE7"
                         CornerRadius="6" Padding="8,4" Visibility="Visible">
-                                            <TextBlock Text="ACTIF" Foreground="#166534" FontSize="10" FontWeight="Bold"/>
-                                        </Border>
-                                    </Grid>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                            <Setter TargetName="DeleteBadge" Property="Visibility" Value="Visible"/>
-                                            <Setter TargetName="ActiveBadge" Property="Visibility" Value="Collapsed"/>
-                                            <Setter TargetName="RuptureBadge" Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding IsActive}" Value="True"/>
-                                                <Condition Binding="{Binding StockQuantity}" Value="0"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter TargetName="RuptureBadge" Property="Visibility" Value="Visible"/>
-                                            <Setter TargetName="ActiveBadge" Property="Visibility" Value="Collapsed"/>
-                                            <Setter TargetName="DeleteBadge" Property="Visibility" Value="Collapsed"/>
-                                        </MultiDataTrigger>
-                                    </DataTemplate.Triggers>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <!-- SKU (unchanged) -->
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"
+                                                <TextBlock Text="ACTIF" Foreground="#166534" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                        </Grid>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                <Setter TargetName="DeleteBadge" Property="Visibility" Value="Visible"/>
+                                                <Setter TargetName="ActiveBadge" Property="Visibility" Value="Collapsed"/>
+                                                <Setter TargetName="RuptureBadge" Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsActive}" Value="True"/>
+                                                    <Condition Binding="{Binding StockQuantity}" Value="0"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter TargetName="RuptureBadge" Property="Visibility" Value="Visible"/>
+                                                <Setter TargetName="ActiveBadge" Property="Visibility" Value="Collapsed"/>
+                                                <Setter TargetName="DeleteBadge" Property="Visibility" Value="Collapsed"/>
+                                            </MultiDataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <!-- SKU (unchanged) -->
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"
                         FontWeight="Normal" FontSize="11"
                         Foreground="{StaticResource TextSecondaryBrush}"
                         Width="Auto" MinWidth="90"/>
 
-                        <!-- Catégorie (unchanged) -->
-                        <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}"
+                            <!-- Catégorie (unchanged) -->
+                            <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}"
                         Width="Auto" MinWidth="110" FontSize="13"/>
 
-                        <!-- Marque – slightly larger -->
-                        <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}"
+                            <!-- Marque – slightly larger -->
+                            <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}"
                         FontSize="15" FontWeight="Medium"
                         Width="Auto" MinWidth="110"/>
 
-                        <!-- Produit – prominent -->
-                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}"
+                            <!-- Produit – prominent -->
+                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}"
                         FontSize="16" FontWeight="SemiBold"
                         Foreground="{StaticResource TextPrimaryBrush}"
                         Width="*" MinWidth="200"/>
 
-                        <!-- Couleur – slightly larger -->
-                        <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"
+                            <!-- Couleur – slightly larger -->
+                            <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"
                         Width="Auto" MinWidth="90" FontSize="15"/>
 
-                        <!-- Taille – slightly larger -->
-                        <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"
+                            <!-- Taille – slightly larger -->
+                            <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"
                         Width="Auto" MinWidth="70" FontSize="15"/>
 
-                        <!-- Stock (unchanged) -->
-                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}"
+                            <!-- Stock (unchanged) -->
+                            <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}"
                         FontWeight="SemiBold" FontSize="14"
                         Foreground="{StaticResource TextPrimaryBrush}"
                         Width="Auto" MinWidth="70"/>
 
-                        <!-- Prix de vente – larger -->
-                        <DataGridTextColumn Header="P. Vente"
+                            <!-- Prix de vente – larger -->
+                            <DataGridTextColumn Header="P. Vente"
                         Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}"
                         Foreground="{StaticResource SecondaryBrush}"
                         FontWeight="Bold" FontSize="16" Width="Auto" MinWidth="100"/>
 
-                        <!-- Prix d'achat (unchanged) -->
-                        <DataGridTextColumn Header="P. Achat"
+                            <!-- Prix d'achat (unchanged) -->
+                            <DataGridTextColumn Header="P. Achat"
                         Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}"
                         Foreground="{StaticResource DangerBrush}"
                         FontSize="13" Width="Auto" MinWidth="90"/>
 
-                        <!-- Remise Fixe – slightly larger -->
-                        <DataGridTextColumn Header="Remise Fixe"
+                            <!-- Remise Fixe – slightly larger -->
+                            <DataGridTextColumn Header="Remise Fixe"
                         Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}"
                         Foreground="Orange"
                         FontWeight="SemiBold" FontSize="15" Width="Auto" MinWidth="90"/>
-                    </DataGrid.Columns>
+                        </DataGrid.Columns>
 
-                </DataGrid>
+                    </DataGrid>
+
+
+
+                </Grid>
+
             </materialDesign:Card>
         </Grid>
 
