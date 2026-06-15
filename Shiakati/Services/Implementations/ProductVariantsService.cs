@@ -64,7 +64,13 @@ namespace Shiakati.Services.Implementations
             return null;
         }
 
-
+        public async Task<List<ProductVariantResponse>?> BulkAddVariantsAsync(BulkAddVariantsRequest request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/stock/bulk-add", request);
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<ProductVariantResponse>>();
+            return null;
+        }
 
     }
 }
