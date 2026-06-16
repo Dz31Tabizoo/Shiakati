@@ -122,4 +122,5 @@ namespace Shiakati.ViewModels
         }
         [RelayCommand] private void NavigateToReservations() => CurrentView = ReservationsVM;
     }
+    //comment
 }

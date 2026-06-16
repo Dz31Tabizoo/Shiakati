@@ -57,7 +57,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: filter combo boxes -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <StackPanel Margin="0,10,0,0" Grid.Column="0" Orientation="Horizontal">
                     <ComboBox materialDesign:HintAssist.Hint="Catégorie"
                   FontSize="14" MinWidth="130"
                   ItemsSource="{Binding Categories}"
@@ -208,7 +208,7 @@
         <materialDesign:Card Grid.Column="1" UniformCornerRadius="16"
                      Width="Auto" MinWidth="420" Background="White"
                      Style="{StaticResource ShiakatiCard}">
-            <Grid Margin="14">
+            <Grid Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <!-- Edit banner -->
@@ -242,10 +242,44 @@
                 </materialDesign:Card>
 
                 <!-- Title -->
-                <TextBlock Grid.Row="1" Text="Ticket Actuel"
-                   FontSize="20" FontWeight="Bold"
-                   Foreground="{StaticResource PrimaryBrush}"
-                   Margin="0,0,0,8"/>
+                <Grid Grid.Row="1" Margin="0,0,0,8" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Text="Ticket Actuel"
+                               FontSize="20" FontWeight="Bold" Padding="0,10"
+                               Foreground="{StaticResource PrimaryBrush}" />
+
+                    <Border HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0"
+                                CornerRadius="8"
+                                BorderBrush="{StaticResource SecondaryBrush}"
+                                BorderThickness="1.5"
+                                Background="{StaticResource BgBrush}"
+                                Padding="8,6" Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountCircle"
+                                             Width="20" Height="20"
+                                             VerticalAlignment="Center"
+                                             Foreground="{StaticResource SecondaryBrush}"
+                                             Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding ClientDisplay}"
+                               VerticalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="0,0,8,0"/>
+                            <Button Content="Clients Shiakati"
+                            Command="{Binding OpenClientSelectionDialogCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            MinHeight="32" FontSize="13"
+                            Padding="8,4"
+                            VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+                
 
                 <!-- Cart DataGrid -->
                 <DataGrid Grid.Row="2" ItemsSource="{Binding CartItems}"
@@ -354,36 +388,11 @@
                 </DataGrid>
 
                 <!-- Totals & Checkout area -->
-                <StackPanel Grid.Row="3" Margin="0,10,0,0">
+                <StackPanel Grid.Row="3" Margin="0,5,0,0">
 
                     <!-- Client chip – always right‑aligned -->
-                    <Border HorizontalAlignment="Right"
-                    CornerRadius="8"
-                    BorderBrush="{StaticResource SecondaryBrush}"
-                    BorderThickness="1.5"
-                    Background="{StaticResource BgBrush}"
-                    Padding="8,6" Margin="0,0,0,8">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AccountCircle"
-                                             Width="20" Height="20"
-                                             VerticalAlignment="Center"
-                                             Foreground="{StaticResource SecondaryBrush}"
-                                             Margin="0,0,8,0"/>
-                            <TextBlock Text="{Binding ClientDisplay}"
-                               VerticalAlignment="Center"
-                               FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}"
-                               Margin="0,0,8,0"/>
-                            <Button Content="Clients Shiakati"
-                            Command="{Binding OpenClientSelectionDialogCommand}"
-                            Style="{StaticResource SecondaryButton}"
-                            MinHeight="32" FontSize="13"
-                            Padding="8,4"
-                            VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
 
-                    <Separator Margin="0,0,0,10"/>
+                    <Separator Margin="0,0,0,3"/>
 
                     <!-- Sub‑total -->
                     <Grid Margin="0,2">
@@ -400,26 +409,36 @@
                     </Grid>
 
                     <!-- Total -->
-                    <Grid Margin="0,8">
-                        <TextBlock Text="TOTAL" FontSize="24" FontWeight="Bold"
-                           Foreground="{StaticResource PrimaryBrush}"/>
-                        <TextBlock Text="{Binding CartTotal, StringFormat={}{0:N2} DA}"
+                    <Grid Height="Auto" Margin="0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="TOTAL" FontSize="24" FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,15,0"/>
+                        <TextBlock Grid.Column="1" Text="{Binding CartTotal, StringFormat={}{0:N2} DA}"
                            FontSize="32" FontWeight="Bold"
                            HorizontalAlignment="Right"
                            Foreground="{StaticResource SecondaryBrush}"/>
                     </Grid>
 
                     <!-- Credit / Reservation buttons -->
-                    <Grid Margin="8,0,8,5">
+                    <Grid Margin="5,5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="1" 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Column="2" Grid.Row="1"
                         Command="{Binding OpenReservationDialogCommand}"
                         Style="{StaticResource PrimaryGoldenButton}"
                         FontSize="18" FontWeight="Bold"
-                        Margin="8,8,0,0">
+                        Margin="5,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="StoreClock"
                                                   Width="32" Height="32"
@@ -428,65 +447,70 @@
                                 <TextBlock Text="RÉSERVATION" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Grid.Column="0" Command="{Binding OpenCreditSaleDialogCommand}"
-                        Style="{StaticResource PrimaryGoldenButton}"
-                        FontSize="18" FontWeight="Bold"
-                        Margin="0,8,0,0">
+                        <Button Grid.Column="1" Grid.Row="2" Command="{Binding OpenCreditSaleDialogCommand}"
+                                Style="{StaticResource PrimaryGoldenButton}"
+                                FontSize="18" FontWeight="Bold"
+                                Margin="5,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CreditCardClock"
                                                   Width="32" Height="32"
                                                   VerticalAlignment="Center"
                                                   Margin="0,0,10,0"/>
-                                <TextBlock Text="CRÉDIT" VerticalAlignment="Center"/>
+                                <TextBlock  Text="CRÉDIT" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                    </Grid>
 
-                    <!-- Checkout button -->
-                    <Button Command="{Binding CheckoutCommand}" Height="60" MinWidth="340">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-                                <Setter Property="Foreground" Value="White"/>
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="CashRegister"
+                        <Button Grid.Column="0" Grid.Row="1"
+                            Command="{Binding CheckoutCommand}" Height="60" MinWidth="340" Margin="5,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CashRegister"
                                                               Width="32" Height="32"
                                                               VerticalAlignment="Center"
                                                               Margin="0,0,15,0"/>
-                                            <TextBlock Text="E N C A I S S E R   (F12)"
+                                                <TextBlock Text="E N C A I S S E R   (F12)"
                                                FontSize="24"
                                                FontWeight="Bold"
                                                VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                                        <Setter Property="Background" Value="#FF9800"/>
-                                        <Setter Property="Foreground" Value="#1E1E1E"/>
-                                        <Setter Property="Content">
-                                            <Setter.Value>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <materialDesign:PackIcon Kind="StoreClock"
+                                            </StackPanel>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditMode}" Value="True">
+                                            <Setter Property="Background" Value="#FF9800"/>
+                                            <Setter Property="Foreground" Value="#1E1E1E"/>
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="StoreClock"
                                                                       Width="32" Height="32"
                                                                       VerticalAlignment="Center"
                                                                       Margin="0,0,15,0"/>
-                                                    <TextBlock Text="M E T T R E   À   J O U R   (F12)"
+                                                        <TextBlock Text="M E T T R E   À   J O U R   (F12)"
                                                        FontSize="24"
                                                        FontWeight="Bold"
                                                        VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                                                    </StackPanel>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+
+                    </Grid>
+
+                    <!-- Checkout button -->
 
                 </StackPanel>
             </Grid>
         </materialDesign:Card>
     </Grid>
+
 </UserControl>

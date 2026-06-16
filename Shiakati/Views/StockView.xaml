@@ -54,10 +54,10 @@
                         </TextBox>
                     </StackPanel>
                     <Button Grid.Column="1"
-        Command="{Binding PrintInventoryCommand}"
-        Style="{StaticResource PrimaryGoldenButton}"
-        VerticalAlignment="Center"
-        MinHeight="48" FontSize="14" Margin="10,0,10,0">
+                            Command="{Binding PrintInventoryCommand}"
+                            Style="{StaticResource PrimaryGoldenButton}"
+                            VerticalAlignment="Center"
+                            MinHeight="48" FontSize="14" Margin="10,0,10,0">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="ClipboardCheckMultiple" Width="20" Height="20"
                                  VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -432,15 +432,14 @@
                     <StackPanel>
                         <TextBlock Text="1. Informations Produit" FontWeight="SemiBold"
                    Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,10"/>
+                   FontSize="14" Margin="0,0,0,5"/>
 
                         <ComboBox materialDesign:HintAssist.Hint="Catégorie"
                   ItemsSource="{Binding Categories}"
                   DisplayMemberPath="CategoryName"
                   SelectedItem="{Binding DraftCategory}"
                   Style="{StaticResource ShiakatiComboBox}"
-                  Margin="0,0,0,14"/>
-
+                  Margin="0,0,0,5"/>
                         <ComboBox materialDesign:HintAssist.Hint="Marque"
                   ItemsSource="{Binding FilteredBrands}"
                   Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
@@ -448,7 +447,7 @@
                   DisplayMemberPath="BrandName"
                   IsEditable="True"
                   Style="{StaticResource ShiakatiComboBox}"
-                  Margin="0,0,0,14"/>
+                  Margin="0,0,0,5"/>
 
                         <ComboBox materialDesign:HintAssist.Hint="Nom du produit"
                   IsEditable="True"
@@ -457,11 +456,11 @@
                   DisplayMemberPath="ProductName"
                   SelectedItem="{Binding DraftSelectedProduct}"
                   Style="{StaticResource ShiakatiComboBox}"
-                  Margin="0,0,0,20"/>
+                  Margin="0,0,0,5"/>
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold"
                    Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,10"/>
+                   FontSize="14" Margin="0,0,0,5"/>
 
                         <CheckBox Content="Saisir code-barres manuellement"
                   IsChecked="{Binding IsManualSkuEnabled}"
@@ -471,11 +470,11 @@
                  Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}"
                  IsEnabled="{Binding IsManualSkuEnabled}"
                  Style="{StaticResource ShiakatiTextBox}"
-                 Margin="0,0,0,14">
+                 Margin="0,0,0,5">
                             <TextBox.ToolTip>Laissez vide pour générer automatiquement, ou scannez le code-barres existant</TextBox.ToolTip>
                         </TextBox>
 
-                        <Grid Margin="0,0,0,14">
+                        <Grid Margin="0,0,0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
@@ -511,9 +510,9 @@
                             </Grid>
                         </Grid>
 
-                        <Separator Margin="0,0,0,14"/>
+                        <Separator Margin="0,0,0,5" Style="{StaticResource MaterialDesignDarkSeparator}"/>
 
-                        <Grid Margin="0,0,0,20">
+                        <Grid Margin="0,5,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -526,12 +525,12 @@
                      materialDesign:HintAssist.Hint="Prix d'achat (DA)"
                      Text="{Binding DraftPurchasePrice, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ShiakatiTextBox}"
-                     Margin="0,0,10,14"/>
+                     Margin="0,0,10,8"/>
                             <TextBox Grid.Row="0" Grid.Column="1"
                      materialDesign:HintAssist.Hint="Prix de vente (DA)"
                      Text="{Binding DraftSalePrice, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ShiakatiTextBox}"
-                     Margin="0,0,0,14"/>
+                     Margin="0,0,0,8"/>
                             <TextBox Grid.Row="1" Grid.Column="1"
                      materialDesign:HintAssist.Hint="Remise fixe (DA)"
                      Text="{Binding DraftFixedDiscount, UpdateSourceTrigger=PropertyChanged}"
@@ -540,13 +539,13 @@
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold"
                    Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,10"/>
+                   FontSize="14" Margin="0,0,0,5"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Quantité reçue"
                  Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource ShiakatiTextBox}"
                  FontSize="22" FontWeight="Bold"
-                 Margin="0,0,0,14"
+                 Margin="0,0,0,8"
                  Foreground="{StaticResource PrimaryBrush}"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">

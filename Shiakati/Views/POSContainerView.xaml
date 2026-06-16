@@ -7,22 +7,25 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Padding="12,10" Background="{StaticResource BgBrush}"
-        BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
+        <Border  Grid.Row="0" Background="{StaticResource BgBrush}"
+                BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
             <Grid>
                 <!-- Larger, touch‑optimised “Nouvelle vente” button -->
                 <Button HorizontalAlignment="Right"
+                        VerticalAlignment= "Top"
                         Command="{Binding AddNewTabCommand}"
                         Style="{StaticResource PrimaryButton}"
                         MinHeight="35"
                         MinWidth="120"
                         FontSize="18"
-                        Padding="20,8">
+                        Margin="0,-6,8,0"
+                        
+                        >
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Plus"
                                          Width="24" Height="24"

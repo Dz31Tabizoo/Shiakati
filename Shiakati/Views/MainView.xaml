@@ -260,7 +260,7 @@
                     </StackPanel>
 
                     <!-- Right: Logout -->
-                    <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding LogoutCommand}" 
+                    <Button Style="{StaticResource SecondaryButton}" Command="{Binding LogoutCommand}" 
                             HorizontalAlignment="Right" MinWidth="140" MinHeight="60"
                             FontSize="17">
                         <StackPanel Orientation="Horizontal">
