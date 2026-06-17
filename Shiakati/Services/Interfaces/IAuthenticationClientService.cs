@@ -15,5 +15,9 @@ namespace Shiakati.Services.Interfaces
 
         Task<LoginResponseModel> LoginAsync(string username, string password);
         void Logout();
+
+        Task<bool> ChangePasswordAsync(string oldPassword, string newPassword);
+        Task<bool> ChangeUsernameAsync(string password, string newUsername);
+
     }
 }

@@ -92,6 +92,17 @@
                                              Foreground="{StaticResource PrimaryBrush}"
                                              HorizontalAlignment="Center"/>
                     <TextBlock Text="Catégories" HorizontalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold" Margin="0,8,0,12"/>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton Margin="0,12,0,0" x:Name="UserManagement" GroupName="SettingsGroup"
+             Style="{StaticResource ShiakatiSettingsCard}">
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="UserSettings" Width="48" Height="48"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             HorizontalAlignment="Center"/>
+                    <TextBlock Text="Utilisateurs" HorizontalAlignment="Center"
                                FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 </StackPanel>
             </RadioButton>
@@ -214,6 +225,48 @@
 
                 </StackPanel>
             </materialDesign:Card>
+
+            <!-- User MANAGEMENT PANEL -->
+            <materialDesign:Card Visibility="{Binding IsChecked, ElementName=UserManagement, Converter={StaticResource BoolToVis}}"
+                                 Style="{StaticResource ShiakatiCard}" Padding="20">
+                <StackPanel Orientation ="Vertical">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <materialDesign:PackIcon Kind="UserSettings" Width="24" Height="24"
+                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Gestion du compte" FontSize="18" FontWeight="Bold"
+                                   FontFamily="{StaticResource HeadingFont}"/>
+                    </StackPanel>
+
+
+
+                    <Button Margin="12,12" 
+                            Command="{Binding ChangeUsernameCommand}"
+                            Style="{StaticResource PrimaryGoldenButton}"
+                            HorizontalAlignment="Left" MaxHeight="48" MinWidth="200" FontSize="14">
+
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Rename" Width="20" Height="20"
+                                VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Nom d'utilisateur" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Button>
+
+                    <Button Margin="12,12" Command="{Binding ChangePasswordCommand}"
+                            Style="{StaticResource PrimaryGoldenButton}"
+                            HorizontalAlignment="Left" MaxHeight="40" MinWidth="200" FontSize="14">
+
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="PasswordWarning" Width="20" Height="20"
+                                                      VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,25,0"/>
+                            <TextBlock Text="Mot de passe" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Button>
+
+                </StackPanel>
+            </materialDesign:Card>
+
         </Grid>
     </Grid>
 </UserControl>

@@ -166,6 +166,8 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="N° Ticket" Binding="{Binding TicketNumber}"
                                         Width="*" FontSize="14"/>
+                    <DataGridTextColumn Header="Vendeur" Binding="{Binding UserName}"
+                                        Width="*" FontSize="14"/>
                     <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy HH:mm}"
                                         Width="*" FontSize="14"/>
 

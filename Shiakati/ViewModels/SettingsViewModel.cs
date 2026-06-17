@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.Windows;
@@ -14,19 +15,21 @@ namespace Shiakati.ViewModels
     {
         private readonly ICacheService _cache;
         private readonly ICatalogService _catalogDb;
+        private readonly IAuthenticationClientService _authService;
 
         [ObservableProperty] private string? _selectedTicketPrinterName;
         [ObservableProperty] private string? _selectedBarcodePrinterName;
         [ObservableProperty] private string _newCategoryName = string.Empty;
 
         public ObservableCollection<CategoryModel> GlobalCategories { get; } = new();
-        public ObservableCollection<string> InstalledPrinters { get; } = new ();
+        public ObservableCollection<string> InstalledPrinters { get; } = new();
 
         //constractor
-        public SettingsViewModel(ICacheService cacheService,ICatalogService catalogService)
+        public SettingsViewModel(ICacheService cacheService, ICatalogService catalogService, IAuthenticationClientService authenticationClientService)
         {
             _cache = cacheService;
             _catalogDb = catalogService;
+            _authService = authenticationClientService;
 
             LoadPrinters();
             SelectedTicketPrinterName = Settings.Default.TicketPrinterName;
@@ -51,24 +54,26 @@ namespace Shiakati.ViewModels
                             GlobalCategories.Add(cat);
                     }
                 });
-            } catch(Exception ex) 
-            {
-                MessageBox.Show($"Erreur chargement paramètres: { ex.Message}");
             }
-                
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur chargement paramètres: {ex.Message}");
+            }
+
         }
-        [RelayCommand] private async Task AddCategory()
+        [RelayCommand]
+        private async Task AddCategory()
         {
             if (string.IsNullOrWhiteSpace(NewCategoryName)) return;
-            
+
             var newCategory = new CategoryModel
             {
                 CategoryName = NewCategoryName.Trim()
             };
-            
+
 
             await _catalogDb.AddCategoryModelAsync(newCategory);
-            
+
             await LoadCategoriesAsync();
             NewCategoryName = string.Empty;
         }
@@ -80,15 +85,17 @@ namespace Shiakati.ViewModels
                 InstalledPrinters.Add(printer);
             }
         }
-        [RelayCommand] private void SaveTicketPrinterSettings()
+        [RelayCommand]
+        private void SaveTicketPrinterSettings()
         {
             // Save the selected printer name to application settings
-             Properties.Settings.Default.TicketPrinterName = SelectedTicketPrinterName;
-             Properties.Settings.Default.Save();
+            Properties.Settings.Default.TicketPrinterName = SelectedTicketPrinterName;
+            Properties.Settings.Default.Save();
 
             System.Windows.MessageBox.Show("Settings saved successfully!", "Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
-        [RelayCommand] private void SaveBarcodePrinterSettings()
+        [RelayCommand]
+        private void SaveBarcodePrinterSettings()
         {
             // Save the selected printer name to application settings
             Properties.Settings.Default.BarcodePrinterName = SelectedBarcodePrinterName;
@@ -97,5 +104,36 @@ namespace Shiakati.ViewModels
             System.Windows.MessageBox.Show("Settings saved successfully!", "Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
 
+        [RelayCommand]
+        private async Task ChangePassword()
+        {
+            var dialog = new ChangePasswordDialog { Owner = Application.Current.MainWindow };
+            if (dialog.ShowDialog() == true)
+            {
+                dynamic data = dialog.Tag;
+                bool success = await _authService.ChangePasswordAsync((string)data.OldPassword, (string)data.NewPassword);
+                if (success)
+                    MessageBox.Show("Mot de passe modifié avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                else
+                    MessageBox.Show("Erreur lors du changement de mot de passe.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ChangeUsername()
+        {
+            var dialog = new ChangeUsernameDialog { Owner = Application.Current.MainWindow };
+            if (dialog.ShowDialog() == true)
+            {
+                dynamic data = dialog.Tag;
+                bool success = await _authService.ChangeUsernameAsync((string)data.Password, (string)data.NewUsername);
+                if (success)
+                    MessageBox.Show("Nom d'utilisateur modifié avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                else
+                    MessageBox.Show("Erreur lors du changement de nom d'utilisateur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
+        }
     }
 }

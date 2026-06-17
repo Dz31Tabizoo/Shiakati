@@ -10,5 +10,6 @@ namespace Shiakati.Models
         [ObservableProperty] private decimal? _totalAmount;
         [ObservableProperty] private decimal? _globalDiscount;
         [ObservableProperty] private bool _isVoided;
+        [ObservableProperty] private string? _userName = string.Empty;
     }
 }

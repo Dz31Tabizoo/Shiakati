@@ -75,4 +75,37 @@ public class AuthService : IAuthenticationClientService
         CurrentSession = null;
         OnAuthenticationStateChanged?.Invoke();
     }
+
+
+    public async Task<bool> ChangePasswordAsync(string oldPassword, string newPassword)
+    {
+        SetAuthHeader();
+        var response = await _httpClient.PutAsJsonAsync("api/auth/change-password", new
+        {
+            oldPassword,
+            newPassword
+        });
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> ChangeUsernameAsync(string password, string newUsername)
+    {
+        SetAuthHeader();
+        var response = await _httpClient.PutAsJsonAsync("api/auth/change-username", new
+        {
+            password,
+            newUsername
+        });
+        return response.IsSuccessStatusCode;
+    }
+
+    private void SetAuthHeader()
+    {
+        if (CurrentSession != null && !string.IsNullOrWhiteSpace(CurrentSession.Token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", CurrentSession.Token);
+        }
+    }
+
 }
