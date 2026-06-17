@@ -93,7 +93,7 @@
             </Grid.RowDefinitions>
 
             <!-- ═══════════ 1. TITLE BAR ═══════════ -->
-            <Border x:Name="pnlControlBar" Grid.Row="0" Height="60" Background="{StaticResource SecondaryBrush}"
+            <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{StaticResource SecondaryBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
                     BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
                 <Grid Margin="20,0">
