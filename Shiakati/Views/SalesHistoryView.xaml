@@ -165,11 +165,11 @@
                       RowStyle="{StaticResource ShiakatiDataGridRow}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="N° Ticket" Binding="{Binding TicketNumber}"
-                                        Width="*" FontSize="14"/>
+                                        Width="Auto" FontSize="14"/>
                     <DataGridTextColumn Header="Vendeur" Binding="{Binding UserName}"
-                                        Width="*" FontSize="14"/>
+                                        Width="Auto" FontSize="14"/>
                     <DataGridTextColumn Header="Date" Binding="{Binding SaleDate, StringFormat=dd/MM/yyyy HH:mm}"
-                                        Width="*" FontSize="14"/>
+                                        Width="Auto" FontSize="14"/>
 
                     <!-- Status (annulée) -->
                     <DataGridTemplateColumn Header="Statut" Width="Auto">
@@ -191,7 +191,7 @@
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="FontWeight" Value="Bold"/>
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
                                 <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>

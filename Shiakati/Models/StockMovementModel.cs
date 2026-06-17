@@ -16,6 +16,8 @@ namespace Shiakati.Models
         public int? ReferenceId { get; set; }
         public string? Notes { get; set; }
         public int? UserId { get; set; }
+
+        public string? UserName { get; set; }
         public string? Sku { get; set; }
         public string? ProductName { get; set; }
         public string? Color { get; set; }

@@ -116,7 +116,7 @@
                                         Foreground="{StaticResource TextSecondaryBrush}"/>
                     <DataGridTextColumn Header="Produit"
                                         Binding="{Binding ProductName}"
-                                        Width="*" FontSize="14"
+                                        Width="Auto" FontSize="14"
                                         FontWeight="SemiBold"
                                         Foreground="{StaticResource TextPrimaryBrush}"/>
                     <DataGridTextColumn Header="Couleur"
@@ -129,9 +129,12 @@
                                         Binding="{Binding Quantity}"
                                         Width="Auto" FontSize="14"
                                         FontWeight="SemiBold"/>
+                    <DataGridTextColumn Header="Vendeur"
+                                        Binding="{Binding UserName}"
+                                        Width="Auto" FontSize="14"/>
                     <DataGridTextColumn Header="Notes"
                                         Binding="{Binding Notes}"
-                                        Width="2*" FontSize="14"
+                                        Width="*" FontSize="14"
                                         Foreground="{StaticResource TextSecondaryBrush}"/>
                 </DataGrid.Columns>
             </DataGrid>
