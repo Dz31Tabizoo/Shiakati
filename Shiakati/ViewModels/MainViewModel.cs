@@ -19,6 +19,7 @@ namespace Shiakati.ViewModels
         private readonly ICacheService _cacheService;
         [ObservableProperty] private object? _currentView;
         [ObservableProperty] private string? _currentViewTitle;
+        [ObservableProperty] private string? _toDay;
 
         // On garde les instances des ViewModels pour ne pas les recréer à chaque click
 
@@ -30,10 +31,14 @@ namespace Shiakati.ViewModels
         public StockMovementsViewModel StockMovements { get; }
         public StockViewModel Stock { get; }
 
+        
+
         public ClientListViewModel ClientList { get; }
         public SettingsViewModel Settings { get; }
 
-        public MainViewModel(ICacheService cacheService,
+        [ObservableProperty] private string _userName;
+
+        public MainViewModel(  ICacheService cacheService,
                             IAuthenticationClientService authService,
                             PosContainerViewModel posContainer,
                             StockViewModel stockViewModel,
@@ -42,6 +47,7 @@ namespace Shiakati.ViewModels
                             StockMovementsViewModel stockMovementsViewModel,
                             ClientListViewModel clientList, ReservationsViewModel reservationsViewModel)
         {
+
             ReservationsVM = reservationsViewModel;
             StockMovements = stockMovementsViewModel;
             _authService = authService;
@@ -54,12 +60,27 @@ namespace Shiakati.ViewModels
             CurrentViewTitle = "Point de Vente";
             ClientList = clientList;
 
+            LoadUserData();
+
             WeakReferenceMessenger.Default.Register<NavigateToPosMessage>(this, (r, m) =>
             {
                 CurrentView = PosContainer;
             });
 
         }
+
+        private void LoadUserData()
+        {
+            var session = _authService.CurrentSession;
+            if (session != null)
+            {
+                UserName = session.UserName;
+                
+            }
+            ToDay = DateTime.Now.ToString("D");
+        }
+
+
 
         [RelayCommand] private async Task NavigateToStock()
         {

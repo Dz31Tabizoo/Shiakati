@@ -88,6 +88,7 @@ namespace Shiakati.ViewModels
         // ─────────────────────────────────────────────────────────
         //   UI States
         // ─────────────────────────────────────────────────────────
+        [ObservableProperty] private bool _isSaving;
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private bool _isReceptionVisible;
         [ObservableProperty] private bool _isEditMode;
@@ -370,101 +371,60 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private async Task ReceiveStockAsync()
         {
+            if (IsSaving) return;
+            IsSaving = true;
+            if (DraftCategory?.CategoryID <= 0)
+            {
+                MessageBox.Show("Category must be selected.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             int numericSize = 0;
             bool hasNumericSize = int.TryParse(DraftNumericSize, out numericSize);
 
-            if (IsEditMode && SelectedStockItem != null)
+            try
             {
-                var updateRequest = new UpdateVariantRequest
+                if (IsEditMode && SelectedStockItem != null)
                 {
-                    VariantId = SelectedStockItem.VariantId,
-                    CategoryId = DraftCategory?.CategoryID,
-                    BrandId = (DraftBrand != null && DraftBrand.BrandID > 0) ? DraftBrand.BrandID : null,
-                    BrandName = (DraftBrand == null || DraftBrand.BrandID <= 0) && !string.IsNullOrWhiteSpace(DraftNewBrandName)
-                                  ? DraftNewBrandName : null,
-                    ProductId = DraftSelectedProduct?.ProductID,
-                    ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
-                    Color = DraftColor,
-                    PurchasePrice = DraftPurchasePrice,
-                    SalePrice = DraftSalePrice,
-                    DiscountFixed = DraftFixedDiscount,
-                    StockQuantity = DraftQuantity
-                };
-
-                if (IsNumericSizeVisible)
-                {
-                    updateRequest.Length = hasNumericSize ? numericSize : null;
-                    updateRequest.Width = null;
-                }
-                else if (IsDimensionSizeVisible)
-                {
-                    updateRequest.Length = int.TryParse(DraftLength?.ToString(), out int l) ? l : null;
-                    updateRequest.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
-                }
-                if (!IsFormValid()) return;
-
-                var UpdatedVariant = await _stockService.UpdateProductVariantAsync(updateRequest);
-
-                if (UpdatedVariant != null)
-                {
-                    _cacheService.Remove(CacheKeys.StockVariants);
-                    if (!string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
-                        _cacheService.Remove(CacheKeys.Catalog);
-
-                    await ForceReloadAllDataAsync();
-                    MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                    await PrintBarCodeOnReciveStock(UpdatedVariant, LabelsToPrint);
-                    IsReceptionVisible = false;
-                    IsEditMode = false;
-                    ClearDraft();
-                    WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
-                }
-                else
-                {
-                    MessageBox.Show("Erreur lors de la modification.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                if (!IsBulkMode)
-                {
-                    var request = new AddVariantRequest
+                    var updateRequest = new UpdateVariantRequest
                     {
-                        CategoryId = DraftCategory.CategoryID,
-                        BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
-                        BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
+                        VariantId = SelectedStockItem.VariantId,
+                        CategoryId = DraftCategory?.CategoryID,
+                        BrandId = (DraftBrand != null && DraftBrand.BrandID > 0) ? DraftBrand.BrandID : null,
+                        BrandName = (DraftBrand == null || DraftBrand.BrandID <= 0) && !string.IsNullOrWhiteSpace(DraftNewBrandName)
+                                      ? DraftNewBrandName : null,
+                        ProductId = DraftSelectedProduct?.ProductID,
                         ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
-                        Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU,
-                        Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
+                        Color = DraftColor,
                         PurchasePrice = DraftPurchasePrice,
                         SalePrice = DraftSalePrice,
                         DiscountFixed = DraftFixedDiscount,
-                        StockQuantity = DraftQuantity.GetValueOrDefault()
+                        StockQuantity = DraftQuantity
                     };
 
                     if (IsNumericSizeVisible)
                     {
-                        request.Length = hasNumericSize ? numericSize : null;
-                        request.Width = null;
+                        updateRequest.Length = hasNumericSize ? numericSize : null;
+                        updateRequest.Width = null;
                     }
                     else if (IsDimensionSizeVisible)
                     {
-                        request.Length = int.TryParse(DraftLength?.ToString(), out int length) ? length : null;
-                        request.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
+                        updateRequest.Length = int.TryParse(DraftLength?.ToString(), out int l) ? l : null;
+                        updateRequest.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
                     }
                     if (!IsFormValid()) return;
-                    var newVariant = await _stockService.AddProductVariantAsync(request);
 
-                    if (newVariant != null)
+                    var UpdatedVariant = await _stockService.UpdateProductVariantAsync(updateRequest);
+
+                    if (UpdatedVariant != null)
                     {
                         _cacheService.Remove(CacheKeys.StockVariants);
-                        if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
+                        if (!string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
                             _cacheService.Remove(CacheKeys.Catalog);
-                        await Task.Delay(300);
-                        IsLoading = false;
-                        await LoadInitialDataAsync(forceRefresh: true);
-                        MessageBox.Show("Stock enregistré avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                        await PrintBarCodeOnReciveStock(newVariant, LabelsToPrint);
+
+                        await ForceReloadAllDataAsync();
+                        MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                        await PrintBarCodeOnReciveStock(UpdatedVariant, LabelsToPrint);
                         IsReceptionVisible = false;
                         IsEditMode = false;
                         ClearDraft();
@@ -472,64 +432,132 @@ namespace Shiakati.ViewModels
                     }
                     else
                     {
-                        IsLoading = false;
-                        MessageBox.Show("Erreur lors de l'enregistrement.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Erreur lors de la modification.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    // Bulk add
-                    if (BulkVariants.Count == 0)
+                    if (!IsBulkMode)
                     {
-                        MessageBox.Show("Aucune variante à ajouter.", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
+                        if (!IsFormValid()) return;
 
-                    var skus = BulkVariants
-                                    .Select(v => v.Sku?.Trim())
-                                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                                    .ToList();
+                        var request = new AddVariantRequest
+                        {
+                            
+                            CategoryId = (DraftCategory?.CategoryID > 0) ? DraftCategory.CategoryID : throw new InvalidOperationException("Category must be selected."),
 
-                    
-                    if (skus.Count != skus.Distinct(StringComparer.OrdinalIgnoreCase).Count())
-                    {
-                        MessageBox.Show("Certaines variantes ont le même Code à Barres. Veuillez vérifier.", "Code à Barres en double", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
+                            BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
+                            BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
+                            ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
+                            Sku = string.IsNullOrWhiteSpace(DraftSKU) ? null : DraftSKU,
+                            Color = string.IsNullOrWhiteSpace(DraftColor) ? null : DraftColor,
+                            PurchasePrice = DraftPurchasePrice,
+                            SalePrice = DraftSalePrice,
+                            DiscountFixed = DraftFixedDiscount,
+                            StockQuantity = DraftQuantity.GetValueOrDefault()
+                        };
 
-                    var bulkRequest = new BulkAddVariantsRequest
-                    {
-                        CategoryId = DraftCategory.CategoryID,
-                        BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
-                        BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
-                        ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
-                        Variants = BulkVariants.ToList()
-                    };
+                        if (IsNumericSizeVisible)
+                        {
+                            request.Length = hasNumericSize ? numericSize : null;
+                            request.Width = null;
+                        }
+                        else if (IsDimensionSizeVisible)
+                        {
+                            request.Length = int.TryParse(DraftLength?.ToString(), out int length) ? length : null;
+                            request.Width = string.IsNullOrWhiteSpace(DraftWidth) ? null : DraftWidth;
+                        }
+                        var newVariant = await _stockService.AddProductVariantAsync(request);
 
-                    var result = await _stockService.BulkAddVariantsAsync(bulkRequest);
-
-                    if (result != null && result.Any())
-                    {
-                        _cacheService.Remove(CacheKeys.StockVariants);
-                        if (bulkRequest.BrandId == null && !string.IsNullOrWhiteSpace(bulkRequest.BrandName))
-                            _cacheService.Remove(CacheKeys.Catalog);
-                        await Task.Delay(300);
-                        IsLoading = false;
-                        await LoadInitialDataAsync(forceRefresh: true);
-                        MessageBox.Show($"{result.Count} variantes enregistrées avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                        BulkVariants.Clear();
-                        IsBulkMode = false;
-                        IsReceptionVisible = false;
-                        ClearDraft();
-                        WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
+                        if (newVariant != null)
+                        {
+                            _cacheService.Remove(CacheKeys.StockVariants);
+                            if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
+                                _cacheService.Remove(CacheKeys.Catalog);
+                            await Task.Delay(300);
+                            IsLoading = false;
+                            await LoadInitialDataAsync(forceRefresh: true);
+                            MessageBox.Show("Stock enregistré avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                            await PrintBarCodeOnReciveStock(newVariant, LabelsToPrint);
+                            IsReceptionVisible = false;
+                            IsEditMode = false;
+                            ClearDraft();
+                            WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
+                        }
+                        else
+                        {
+                            IsLoading = false;
+                            MessageBox.Show("Erreur lors de l'enregistrement.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                     else
                     {
-                        IsLoading = false;
-                        MessageBox.Show("Erreur lors de l'enregistrement groupé.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
+                        // Bulk add
+                        if (BulkVariants.Count == 0)
+                        {
+                            MessageBox.Show("Aucune variante à ajouter.", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
 
+                        var skus = BulkVariants
+                                        .Select(v => v.Sku?.Trim())
+                                        .Where(s => !string.IsNullOrWhiteSpace(s))
+                                        .ToList();
+
+
+                        if (skus.Count != skus.Distinct(StringComparer.OrdinalIgnoreCase).Count())
+                        {
+                            MessageBox.Show("Certaines variantes ont le même Code à Barres. Veuillez vérifier.", "Code à Barres en double", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        var bulkRequest = new BulkAddVariantsRequest
+                        {
+                            CategoryId = DraftCategory.CategoryID,
+                            BrandId = DraftBrand?.BrandID > 0 ? DraftBrand.BrandID : null,
+                            BrandName = (DraftBrand?.BrandID == 0 || DraftBrand == null) ? DraftNewBrandName : null,
+                            ProductName = DraftSelectedProduct?.ProductName ?? DraftProductName,
+                            Variants = BulkVariants.ToList()
+                        };
+
+                        var result = await _stockService.BulkAddVariantsAsync(bulkRequest);
+
+                        if (result != null && result.Any())
+                        {
+                            _cacheService.Remove(CacheKeys.StockVariants);
+                            if (bulkRequest.BrandId == null && !string.IsNullOrWhiteSpace(bulkRequest.BrandName))
+                                _cacheService.Remove(CacheKeys.Catalog);
+                            await Task.Delay(300);
+                            IsLoading = false;
+                            await LoadInitialDataAsync(forceRefresh: true);
+                            MessageBox.Show($"{result.Count} variantes enregistrées avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                            BulkVariants.Clear();
+                            IsBulkMode = false;
+                            IsReceptionVisible = false;
+                            ClearDraft();
+                            WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
+                        }
+                        else
+                        {
+                            IsLoading = false;
+                            MessageBox.Show("Erreur lors de l'enregistrement groupé.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+
+                }
+            }
+            catch (InvalidOperationException ex) when (ex.Message == "Category must be selected.")
+            {
+                MessageBox.Show("Please select a category before receiving stock.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                // log and show generic error
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsSaving = false;
             }
         }
     
@@ -841,6 +869,8 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private void AddBulkVariant()
         {
+            
+
             int numericSize = 0;
             bool hasNumericSize = int.TryParse(DraftNumericSize, out numericSize);
 

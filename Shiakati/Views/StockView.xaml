@@ -614,8 +614,10 @@
                             Command="{Binding StockAddingFiledsClearCommand}"
                             Style="{StaticResource SecondaryButton}"
                             Height="52" FontSize="15" Margin="0,0,10,0"/>
+                    
                     <Button Grid.Column="1"
-                            Command="{Binding ReceiveStockCommand}"                            
+                            Command="{Binding ReceiveStockCommand}"  
+                            IsEnabled="{Binding IsSaving, Converter={StaticResource InvertBooleanConverter}}"
                             Height="52" FontSize="16">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">

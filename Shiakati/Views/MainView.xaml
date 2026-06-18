@@ -96,19 +96,43 @@
             <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{StaticResource SecondaryBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
                     BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
-                <Grid Margin="20,0">
+                <Grid Margin="10,0">
                     <!-- App logo + name (left) -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
-                               Width="48" Height="48" VerticalAlignment="Center" Stretch="Uniform"/>
+                               Width="25" Height="36" VerticalAlignment="Center" Stretch="Uniform"/>
                         <TextBlock Text=" Shiakati  شياكتي" 
                                    FontFamily="{StaticResource HeadingFont}" 
-                                   FontSize="28" FontWeight="Bold" Margin="10,0"
+                                   FontSize="24" FontWeight="Bold" Margin="8,0"
                                    Foreground="White" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Right side controls: navigation toggle + window buttons -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="12,8,12,0"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource BgAltBrush}"/>
+                            <materialDesign:PackIcon Foreground="White" Kind="CalendarToday" Width="36" Height="36" VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="{Binding UserName}" VerticalAlignment="Center" Margin="12,8,12,0"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource BgAltBrush}"/>
+                            <materialDesign:PackIcon Foreground="White" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
+                            
+                        </StackPanel>
+
+                        <StackPanel Margin="8,5" Orientation="Horizontal">
+                            <materialDesign:PackIcon Foreground="White" Kind="Notifications" Width="36" Height="36" VerticalAlignment="Center"/>
+                            
+                        </StackPanel>
+
                         <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
                         <ToggleButton x:Name="NavVisibilityToggle" 
                                       Style="{StaticResource NavToggleStyle}"
