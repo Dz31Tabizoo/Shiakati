@@ -68,6 +68,13 @@
                 <ResourceDictionary>
                     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
                     <converters:CommonEqualityConverter x:Key="CommonEqualityConverter"/>
+                    <!-- Converter: > 0 returns true -->
+                    <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+
+                    <!-- Converter: int to Visibility -->
+                    <converters:IntToVisibilityConverter x:Key="IntToVisibility"/>
+
+
                 </ResourceDictionary>
 
             </ResourceDictionary.MergedDictionaries>

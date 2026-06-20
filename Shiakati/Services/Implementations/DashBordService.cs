@@ -21,7 +21,7 @@ namespace Shiakati.Services.Implementations
 
         public async Task<bool> AcknowledgeAlertAsync(int variantId)
         {
-            var response = await _http.PostAsync($"aapi/DashBord/acknowledge/{variantId}", null);
+            var response = await _http.PostAsync($"api/DashBord/acknowledge/{variantId}", null);
             return response.IsSuccessStatusCode;
         }
     }

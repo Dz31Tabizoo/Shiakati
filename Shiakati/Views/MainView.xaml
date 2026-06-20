@@ -4,6 +4,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:Shiakati.Converters"
         Title="Shiakati POS" Height="800" Width="1280"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         Background="Transparent"
         WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
@@ -127,12 +128,105 @@
                             <materialDesign:PackIcon Foreground="White" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
                             
                         </StackPanel>
+                        <!-- ============ NOTIFICATION BUTTON ============ -->
+                        <Button Command="{Binding NavigateToDashBordCommand}" 
+                                Background="Transparent" BorderThickness="0"
+                                Height="Auto"
+                                Cursor="Hand" Margin="8,5"
+                                ToolTip="{Binding AlertBadgeCount, StringFormat='{}{0} alerte(s) stock'}">
 
-                        <StackPanel Margin="8,5" Orientation="Horizontal">
-                            <materialDesign:PackIcon Foreground="White" Kind="Notifications" Width="36" Height="36" VerticalAlignment="Center"/>
-                            
-                        </StackPanel>
+                            <Button.Resources>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Resources>
 
+                            <Grid>
+                                <materialDesign:PackIcon Kind="Notifications" Width="36" Height="36" VerticalAlignment="Center"/>
+
+                                <Grid>
+                                    <!-- Badge Border – Visibility controlled by DataTrigger, not animated -->
+                                    <Border x:Name="BadgeBorder"
+                                            Background="{StaticResource DangerBrush}" CornerRadius="10" 
+                                            Width="20" Height="20" 
+                                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Margin="0,2,-5,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1" CenterX="10" CenterY="10"/>
+                                        </Border.RenderTransform>
+                                        <TextBlock Text="{Binding AlertBadgeCount}" 
+                           Foreground="White" FontSize="12" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- VisualStateManager – only animates ScaleTransform -->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="AlertStates">
+                                            <VisualState x:Name="NoAlert">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1" Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1" Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="HasAlertPulse">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                             From="1" To="1.4" Duration="0:0:0.4" 
+                                             AutoReverse="True" RepeatBehavior="Forever"/>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                             From="1" To="1.4" Duration="0:0:0.4" 
+                                             AutoReverse="True" RepeatBehavior="Forever"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="HasAlertStatic">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1" Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1" Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <!-- Triggers to switch states based on ViewModel properties -->
+                                    <i:Interaction.Triggers>
+                                        <i:DataTrigger Binding="{Binding IsAlertPulsing}" Value="True">
+                                            <i:GoToStateAction StateName="HasAlertPulse"/>
+                                        </i:DataTrigger>
+                                        <i:DataTrigger Binding="{Binding IsAlertStatic}" Value="True">
+                                            <i:GoToStateAction StateName="HasAlertStatic"/>
+                                        </i:DataTrigger>
+                                        <i:DataTrigger Binding="{Binding IsAlertActive}" Value="False">
+                                            <i:GoToStateAction StateName="NoAlert"/>
+                                        </i:DataTrigger>
+                                    </i:Interaction.Triggers>
+                                </Grid>
+                            </Grid>
+                        </Button>
                         <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
                         <ToggleButton x:Name="NavVisibilityToggle" 
                                       Style="{StaticResource NavToggleStyle}"

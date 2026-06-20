@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
+using CommunityToolkit.Mvvm.Messaging;
 using Shiakati.Services;
 using Shiakati.Services.Interfaces;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using LiveCharts;
 using LiveCharts.Wpf;
+using Shiakati.Messages;
 
 namespace Shiakati.ViewModels
 {
@@ -78,7 +80,10 @@ namespace Shiakati.ViewModels
                 IsLoading = true;
                 var success = await _dashboardService.AcknowledgeAlertAsync(variantId);
                 if (success)
+                {
                     StockAlerts.Remove(alert);
+                    UpdateAlertCount();
+                }
                 else
                     MessageBox.Show("Erreur lors de l'arrêt de l'alerte.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -142,6 +147,7 @@ namespace Shiakati.ViewModels
                 UpdateCollection(TopSellingProducts, data.TopSellingProducts);
                 UpdateCollection(TopProfitableProducts, data.TopProfitableProducts);
                 UpdateCollection(StockAlerts, data.StockAlerts);
+                UpdateAlertCount();
                 UpdateCollection(UserPerformances, data.UserPerformances);
                 UpdateCollection(DailyTrend, data.DailyTrend);
 
@@ -182,6 +188,13 @@ namespace Shiakati.ViewModels
             target.Clear();
             if (source == null) return;
             foreach (var item in source) target.Add(item);
+        }
+
+        //message 
+        private void UpdateAlertCount()
+        {
+            int count = StockAlerts.Count;
+            WeakReferenceMessenger.Default.Send(new StockAlertCountMessage(count));
         }
     }
 }

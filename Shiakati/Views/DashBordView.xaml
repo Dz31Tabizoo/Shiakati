@@ -128,27 +128,28 @@
             <Grid Grid.Row="2" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <!-- Chart takes all remaining -->
+                    <ColumnDefinition Width="350"/>
+                    <!-- User perf fixed width -->
                 </Grid.ColumnDefinitions>
 
-                <!-- Left : Daily Sales Trend (placeholder) -->
                 <!-- Left : Daily Sales Trend (LiveCharts) -->
-                <materialDesign:Card Grid.Column="0" Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="0,0,8,0">
+                <materialDesign:Card Grid.Column="0" Style="{StaticResource ShiakatiCard}" Margin="0,0,8,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="Évolution des ventes" 
-                   FontFamily="{StaticResource HeadingFont}"
-                   FontSize="18" FontWeight="SemiBold"
-                   Foreground="{StaticResource PrimaryBrush}"
-                   Margin="0,0,0,12"/>
+                       FontFamily="{StaticResource HeadingFont}"
+                       FontSize="18" FontWeight="SemiBold"
+                       Foreground="{StaticResource PrimaryBrush}"
+                       Margin="0,0,0,12"/>
                         <Border Grid.Row="1" Background="{StaticResource BgAltBrush}" CornerRadius="8" Padding="10">
                             <lvc:CartesianChart Series="{Binding DailySalesSeries}" Margin="0" MinHeight="180">
                                 <lvc:CartesianChart.AxisX>
                                     <lvc:Axis Title="Date" Labels="{Binding DailyLabels}" 
-                              LabelFormatter="{Binding DateLabelFormatter}"/>
+                                  LabelFormatter="{Binding DateLabelFormatter}"/>
                                 </lvc:CartesianChart.AxisX>
                                 <lvc:CartesianChart.AxisY>
                                     <lvc:Axis Title="CA (DZD)" LabelFormatter="{Binding CurrencyFormatter}"/>
@@ -157,31 +158,34 @@
                         </Border>
                     </Grid>
                 </materialDesign:Card>
+
                 <!-- Right : User Performance -->
-                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0,0,0">
+                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="Performance des vendeurs" 
-                                   FontFamily="{StaticResource HeadingFont}"
-                                   FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"
-                                   Margin="0,0,0,12"/>
+                       FontFamily="{StaticResource HeadingFont}"
+                       FontSize="18" FontWeight="SemiBold"
+                       Foreground="{StaticResource PrimaryBrush}"
+                       Margin="0,0,0,12"/>
+                        <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
-                                  Style="{StaticResource ShiakatiSubDataGrid}"
-                                  ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
-                                  CellStyle="{StaticResource ShiakatiSubDataGridCell}"
-                                  RowStyle="{StaticResource ShiakatiSubDataGridRow}"
-                                  ItemsSource="{Binding UserPerformances}"
-                                  AutoGenerateColumns="False" >
+                      Style="{StaticResource ShiakatiSubDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiSubDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiSubDataGridRow}"
+                      ItemsSource="{Binding UserPerformances}"
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Auto"
+                      MaxWidth="350">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Vendeur" Binding="{Binding Username}" Width="*"/>
                                 <DataGridTextColumn Header="Ventes" Binding="{Binding OrdersCount}" Width="Auto"/>
                                 <DataGridTextColumn Header="CA" Binding="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
                                 <DataGridTextColumn Header="Marge" Binding="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
-
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
@@ -191,28 +195,33 @@
             <!-- ═══════ ROW 3 : TOP SELLING + TOP PROFITABLE ═══════ -->
             <Grid Grid.Row="3" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Left card takes half -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Right card takes half -->
                 </Grid.ColumnDefinitions>
 
-                <materialDesign:Card Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="0,0,8,0">
+                <!-- Left : Top Selling -->
+                <materialDesign:Card Grid.Column="0" Style="{StaticResource ShiakatiCard}" Margin="0,0,8,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="📈 Top ventes" 
-                                   FontFamily="{StaticResource HeadingFont}"
-                                   FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"
-                                   Margin="0,0,0,12"/>
+                       FontFamily="{StaticResource HeadingFont}"
+                       FontSize="18" FontWeight="SemiBold"
+                       Foreground="{StaticResource PrimaryBrush}"
+                       Margin="0,0,0,12"/>
+                        <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
-                                  Style="{StaticResource ShiakatiDataGrid}"
-                                  ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
-                                  CellStyle="{StaticResource ShiakatiDataGridCell}"
-                                  RowStyle="{StaticResource ShiakatiDataGridRow}"
-                                  ItemsSource="{Binding TopSellingProducts}"
-                                  AutoGenerateColumns="False">
+                      Style="{StaticResource ShiakatiDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiDataGridRow}"
+                      ItemsSource="{Binding TopSellingProducts}"
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}" Width="Auto"/>
                                 <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="Auto"/>
@@ -226,24 +235,27 @@
                     </Grid>
                 </materialDesign:Card>
 
-                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Width="Auto" HorizontalAlignment="Right" Margin="8,0,0,0">
+                <!-- Right : Top Profitable -->
+                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="💰 Top rentabilité" 
-                                   FontFamily="{StaticResource HeadingFont}"
-                                   FontSize="18" FontWeight="SemiBold"
-                                   Foreground="{StaticResource SecondaryBrush}"
-                                   Margin="0,0,0,12"/>
+                       FontFamily="{StaticResource HeadingFont}"
+                       FontSize="18" FontWeight="SemiBold"
+                       Foreground="{StaticResource SecondaryBrush}"
+                       Margin="0,0,0,12"/>
+                        <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
-                                  Style="{StaticResource ShiakatiDataGrid}"
-                                  ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
-                                  CellStyle="{StaticResource ShiakatiDataGridCell}"
-                                  RowStyle="{StaticResource ShiakatiDataGridRow}"
-                                  ItemsSource="{Binding TopProfitableProducts}"
-                                  AutoGenerateColumns="False">
+                      Style="{StaticResource ShiakatiDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiDataGridRow}"
+                      ItemsSource="{Binding TopProfitableProducts}"
+                      AutoGenerateColumns="False"
+                      HorizontalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}" Width="Auto"/>
                                 <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="Auto"/>
