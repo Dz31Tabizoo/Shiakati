@@ -16,5 +16,7 @@ namespace Shiakati.Models
         public decimal TotalMargin { get; set; }
         public decimal MarginPercentage { get; set; } // Optional, you calculated it
         public int CurrentStock { get; set; }
+
+        public string SizeColor { get; set; }
     }
 }

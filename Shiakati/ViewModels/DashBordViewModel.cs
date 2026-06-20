@@ -49,14 +49,15 @@ namespace Shiakati.ViewModels
         public DashBordViewModel(IDashBordService dashboardService, IAuthenticationClientService authservice)
         {
             _dashboardService = dashboardService;
+            this.authservice = authservice; // ✅ Fix order
+
             EndDate = DateTime.Today;
             StartDate = EndDate.Value.AddDays(-30);
 
             DateLabelFormatter = date => ((DateTime)date).ToString("dd/MM");
-            CurrencyFormatter = value => value.ToString("C0");
+            CurrencyFormatter = value => value.ToString("N2") + " DA";
 
             _ = LoadDashboardAsync();
-            this.authservice = authservice;
         }
 
         [RelayCommand]
@@ -125,7 +126,7 @@ namespace Shiakati.ViewModels
                 {
                     StartDate = StartDate,
                     EndDate = EndDate,
-                    UserId = authservice.CurrentSession?.UserId //problem
+                    //UserId = authservice.CurrentSession?.UserId 
                 };
 
                 var data = await _dashboardService.GetDashBordDataAsync(filter); // 👈 CORRECT method name
@@ -148,16 +149,16 @@ namespace Shiakati.ViewModels
                 {
                     DailyLabels = data.DailyTrend.Select(d => d.Date.ToString("dd/MM")).ToList();
                     var series = new SeriesCollection
-    {
-        new LineSeries
-        {
-            Title = "CA",
-            Values = new ChartValues<decimal>(data.DailyTrend.Select(d => d.Revenue)),
-            PointGeometry = DefaultGeometries.Circle,
-            PointGeometrySize = 8,
-            StrokeThickness = 3
-        }
-    };
+                        {
+                            new LineSeries
+                            {
+                                Title = "CA",
+                                Values = new ChartValues<decimal>(data.DailyTrend.Select(d => d.Revenue)),
+                                PointGeometry = DefaultGeometries.Circle,
+                                PointGeometrySize = 8,
+                                StrokeThickness = 3
+                            }
+                        };
                     DailySalesSeries = series;
                 }
                 else

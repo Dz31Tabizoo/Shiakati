@@ -13,7 +13,7 @@ namespace Shiakati.Services.Implementations
 
         public async Task<DashboardStatsResponse> GetDashBordDataAsync(DashboardFilterRequest filter)
         {
-            var response = await _http.GetAsync($"api/dashboard/stats?StartDate={filter.StartDate:yyyy-MM-dd}&EndDate={filter.EndDate:yyyy-MM-dd}&UserId={filter.UserId}");
+            var response = await _http.GetAsync($"api/DashBord/stats?StartDate={filter.StartDate:yyyy-MM-dd}&EndDate={filter.EndDate:yyyy-MM-dd}&UserId={filter.UserId}");
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadFromJsonAsync<DashboardStatsResponse>() ?? new DashboardStatsResponse();
             return new DashboardStatsResponse();
@@ -21,7 +21,7 @@ namespace Shiakati.Services.Implementations
 
         public async Task<bool> AcknowledgeAlertAsync(int variantId)
         {
-            var response = await _http.PostAsync($"api/dashboard/acknowledge/{variantId}", null);
+            var response = await _http.PostAsync($"aapi/DashBord/acknowledge/{variantId}", null);
             return response.IsSuccessStatusCode;
         }
     }
