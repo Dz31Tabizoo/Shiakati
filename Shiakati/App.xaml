@@ -59,6 +59,10 @@
                         <views:ReservationsView />
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type viewModels:DashBordViewModel}">
+                        <views:DashBordView />
+                    </DataTemplate>
+
                 </ResourceDictionary>
                 
                 <ResourceDictionary>

@@ -30,8 +30,9 @@ namespace Shiakati.ViewModels
 
         public StockMovementsViewModel StockMovements { get; }
         public StockViewModel Stock { get; }
+        public DashBordViewModel DashBord { get; }
 
-        
+
 
         public ClientListViewModel ClientList { get; }
         public SettingsViewModel Settings { get; }
@@ -45,7 +46,7 @@ namespace Shiakati.ViewModels
                             SalesHistoryViewModel salesHistory,
                             SettingsViewModel settingsViewModel,
                             StockMovementsViewModel stockMovementsViewModel,
-                            ClientListViewModel clientList, ReservationsViewModel reservationsViewModel)
+                            ClientListViewModel clientList, ReservationsViewModel reservationsViewModel, DashBordViewModel dashBordViewModel)
         {
 
             ReservationsVM = reservationsViewModel;
@@ -53,6 +54,7 @@ namespace Shiakati.ViewModels
             _authService = authService;
             PosContainer = posContainer;
             Stock = stockViewModel;
+            DashBord = dashBordViewModel;
             SalesHistory = salesHistory;
             Settings = settingsViewModel;
             // Vue par défaut au démarrage
@@ -101,6 +103,14 @@ namespace Shiakati.ViewModels
             CurrentViewTitle = "Historique des Ventes";
 
         }
+
+        [RelayCommand]
+        private void NavigateToDashBord()
+        {
+            CurrentView = DashBord;
+            CurrentViewTitle = "Tableau de Bord";
+        }
+
         [RelayCommand] private void ExitApplication()
         {
             // Logique pour fermer l'application

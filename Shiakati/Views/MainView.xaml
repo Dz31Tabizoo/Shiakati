@@ -185,6 +185,7 @@
                         <Button Style="{StaticResource TopNavButtonStyle}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
+                                Command="{Binding NavigateToDashBordCommand}"
                                 Tag="Dashboard">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ChartBar" Width="26" Height="26" Margin="0,0,8,0"/>
@@ -347,4 +348,6 @@
             </Grid>
         </Grid>
     </Border>
+    
+    
 </Window>

@@ -1,0 +1,297 @@
+﻿<UserControl x:Class="Shiakati.Views.DashBordView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="1400">
+
+    <UserControl.Resources>
+        <!-- ✅ sys namespace fixed -->
+        <sys:String x:Key="CurrencyFormat">{0:C0}</sys:String>
+        <sys:String x:Key="NumberFormat">{0:N0}</sys:String>
+        <sys:String x:Key="PercentFormat">{0:P1}</sys:String>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                  Background="{StaticResource BgAltBrush}">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ═══════ ROW 0 : TOOLBAR ═══════ -->
+            <Border Grid.Row="0" Background="{StaticResource BgBrush}" CornerRadius="12"
+                    Padding="16,12" Margin="0,0,0,16"
+                    materialDesign:ElevationAssist.Elevation="Dp4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                        <materialDesign:PackIcon Kind="ViewDashboardOutline" 
+                                                  Foreground="{StaticResource PrimaryBrush}"
+                                                  Width="28" Height="28" Margin="0,0,12,0"/>
+                        <TextBlock Text="Tableau de bord" 
+                                   FontFamily="{StaticResource HeadingFont}"
+                                   FontSize="24" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
+                        <TextBlock Text="Du" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   FontFamily="{StaticResource BodyFont}" FontSize="14"/>
+                        <DatePicker SelectedDate="{Binding StartDate}"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                    Width="140" Margin="0,0,16,0"/>
+
+                        <TextBlock Text="Au" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   FontFamily="{StaticResource BodyFont}" FontSize="14"/>
+                        <DatePicker SelectedDate="{Binding EndDate}"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                    Width="140" Margin="0,0,16,0"/>
+
+                        <!-- ✅ Fixed duplicate Content error -->
+                        <Button Command="{Binding RefreshCommand}"
+                                Style="{StaticResource PrimaryGoldenButton}"
+                                Width="120" Height="40" Margin="8,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Actualiser"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ═══════ ROW 1 : KPI CARDS ═══════ -->
+            <!-- ✅ Removed WrapPanelAssist, using simple WrapPanel with Orientation -->
+            <WrapPanel Grid.Row="1" Margin="0,0,0,16" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="220" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Chiffre d'affaires" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}"
+                                   FontSize="28" FontFamily="{StaticResource HeadingFont}"
+                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="180" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Commandes" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TotalOrders, StringFormat={StaticResource NumberFormat}}"
+                                   FontSize="28" FontFamily="{StaticResource HeadingFont}"
+                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="200" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Panier moyen" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding AverageBasket, StringFormat={StaticResource CurrencyFormat}}"
+                                   FontSize="28" FontFamily="{StaticResource HeadingFont}"
+                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="200" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Marge totale" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}"
+                                   FontSize="28" FontFamily="{StaticResource HeadingFont}"
+                                   Foreground="{StaticResource SecondaryBrush}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="200" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Marge moyenne" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding AverageMarginPercentage, StringFormat={StaticResource PercentFormat}}"
+                                   FontSize="28" FontFamily="{StaticResource HeadingFont}"
+                                   Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </materialDesign:Card>
+            </WrapPanel>
+
+            <!-- ═══════ ROW 2 : CHART + USER PERFORMANCE ═══════ -->
+            <Grid Grid.Row="2" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="320"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left : Daily Sales Trend (placeholder) -->
+                <!-- Left : Daily Sales Trend (LiveCharts) -->
+                <materialDesign:Card Grid.Column="0" Style="{StaticResource ShiakatiCard}" Margin="0,0,8,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Évolution des ventes" 
+                   FontFamily="{StaticResource HeadingFont}"
+                   FontSize="18" FontWeight="SemiBold"
+                   Foreground="{StaticResource PrimaryBrush}"
+                   Margin="0,0,0,12"/>
+                        <Border Grid.Row="1" Background="{StaticResource BgAltBrush}" CornerRadius="8" Padding="10">
+                            <lvc:CartesianChart Series="{Binding DailySalesSeries}" Margin="0" MinHeight="180">
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis Title="Date" Labels="{Binding DailyLabels}" 
+                              LabelFormatter="{Binding DateLabelFormatter}"/>
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="CA (DZD)" LabelFormatter="{Binding CurrencyFormatter}"/>
+                                </lvc:CartesianChart.AxisY>
+                            </lvc:CartesianChart>
+                        </Border>
+                    </Grid>
+                </materialDesign:Card>
+                <!-- Right : User Performance -->
+                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Performance des vendeurs" 
+                                   FontFamily="{StaticResource HeadingFont}"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <DataGrid Grid.Row="1" 
+                                  Style="{StaticResource ShiakatiSubDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
+                                  CellStyle="{StaticResource ShiakatiSubDataGridCell}"
+                                  RowStyle="{StaticResource ShiakatiSubDataGridRow}"
+                                  ItemsSource="{Binding UserPerformances}"
+                                  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Vendeur" Binding="{Binding Username}" Width="*"/>
+                                <DataGridTextColumn Header="Ventes" Binding="{Binding OrdersCount}" Width="Auto"/>
+                                <DataGridTextColumn Header="CA" Binding="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </materialDesign:Card>
+            </Grid>
+
+            <!-- ═══════ ROW 3 : TOP SELLING + TOP PROFITABLE ═══════ -->
+            <Grid Grid.Row="3" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <materialDesign:Card Grid.Column="0" Style="{StaticResource ShiakatiCard}" Margin="0,0,8,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="📈 Top ventes" 
+                                   FontFamily="{StaticResource HeadingFont}"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <DataGrid Grid.Row="1" 
+                                  Style="{StaticResource ShiakatiDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                                  CellStyle="{StaticResource ShiakatiDataGridCell}"
+                                  RowStyle="{StaticResource ShiakatiDataGridRow}"
+                                  ItemsSource="{Binding TopSellingProducts}"
+                                  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="100"/>
+                                <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="Qté" Binding="{Binding TotalQuantitySold}" Width="Auto"/>
+                                <DataGridTextColumn Header="CA" Binding="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
+                                <DataGridTextColumn Header="Stock" Binding="{Binding CurrentStock}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </materialDesign:Card>
+
+                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="💰 Top rentabilité" 
+                                   FontFamily="{StaticResource HeadingFont}"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{StaticResource SecondaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <DataGrid Grid.Row="1" 
+                                  Style="{StaticResource ShiakatiDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                                  CellStyle="{StaticResource ShiakatiDataGridCell}"
+                                  RowStyle="{StaticResource ShiakatiDataGridRow}"
+                                  ItemsSource="{Binding TopProfitableProducts}"
+                                  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="100"/>
+                                <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="Marge" Binding="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
+                                <DataGridTextColumn Header="Qté" Binding="{Binding TotalQuantitySold}" Width="Auto"/>
+                                <DataGridTextColumn Header="Stock" Binding="{Binding CurrentStock}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </materialDesign:Card>
+            </Grid>
+
+            <!-- ═══════ ROW 4 : STOCK ALERTS ═══════ -->
+            <Grid Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="⚠️ Alertes stock" 
+                           FontFamily="{StaticResource HeadingFont}"
+                           FontSize="18" FontWeight="SemiBold"
+                           Foreground="{StaticResource DangerBrush}"
+                           Margin="0,0,0,8"/>
+
+                <!-- ✅ Fixed DataGrid: removed problematic NoRowsIndicatorKey -->
+                <DataGrid Grid.Row="1" 
+                          Style="{StaticResource ShiakatiDataGrid}"
+                          ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                          CellStyle="{StaticResource ShiakatiDataGridCell}"
+                          RowStyle="{StaticResource ShiakatiDataGridRow}"
+                          ItemsSource="{Binding StockAlerts}"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="120"/>
+                        <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" Width="*"/>
+                        <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="100"/>
+                        <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="80"/>
+                        <DataGridTemplateColumn Header="Action" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Arrêter alerte"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AcknowledgeAlertCommand}"
+                                            CommandParameter="{Binding VariantId}"
+                                            Style="{StaticResource DangerButton}"
+                                            Height="32" MinWidth="100" FontSize="12"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
