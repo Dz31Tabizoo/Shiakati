@@ -1,17 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Shiakati.Models;
 using CommunityToolkit.Mvvm.Messaging;
+using LiveCharts;
+using LiveCharts.Wpf;
+using Shiakati.Messages;
+using Shiakati.Models;
 using Shiakati.Services;
 using Shiakati.Services.Interfaces;
+using Shiakati.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using LiveCharts;
-using LiveCharts.Wpf;
-using Shiakati.Messages;
 
 namespace Shiakati.ViewModels
 {
@@ -20,6 +21,7 @@ namespace Shiakati.ViewModels
         private readonly IDashBordService _dashboardService;
         private CancellationTokenSource? _loadCts;
         private readonly IAuthenticationClientService authservice;
+        private readonly IProductVariantsService _stockService;
 
         // Chart properties
         [ObservableProperty] private SeriesCollection _dailySalesSeries;
@@ -48,10 +50,11 @@ namespace Shiakati.ViewModels
         // UI state
         [ObservableProperty] private bool _isLoading;
 
-        public DashBordViewModel(IDashBordService dashboardService, IAuthenticationClientService authservice)
+        public DashBordViewModel(IDashBordService dashboardService,IProductVariantsService stockService , IAuthenticationClientService authservice)
         {
             _dashboardService = dashboardService;
             this.authservice = authservice; // ✅ Fix order
+            _stockService = stockService;
 
             EndDate = DateTime.Today;
             StartDate = EndDate.Value.AddDays(-30);
@@ -60,6 +63,25 @@ namespace Shiakati.ViewModels
             CurrencyFormatter = value => value.ToString("N2") + " DA";
 
             _ = LoadDashboardAsync();
+        }
+
+
+        [RelayCommand]
+        private void OpenStockValuation()
+        {
+            try
+            {
+                var window = new StockValuationWindow(_stockService)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'ouverture de l'état du stock : {ex.Message}",
+                                "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         [RelayCommand]

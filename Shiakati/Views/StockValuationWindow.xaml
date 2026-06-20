@@ -1,0 +1,315 @@
+﻿<Window x:Class="Shiakati.Views.StockValuationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:models="clr-namespace:Shiakati.Models"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        Title="État du Stock" Height="700" Width="1100"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="{StaticResource BodyFont}"
+        Background="{StaticResource BgAltBrush}">
+
+    <Window.Resources>
+        <sys:String x:Key="CurrencyFormat">{0:N2} DA</sys:String>
+
+        <!-- Product level -->
+        <DataTemplate DataType="{x:Type models:ProductStockDto}">
+            <Border Padding="4,2" Margin="0">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="350"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="160"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding ProductName}" 
+                               FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="10,0,0,0"/>
+                    <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
+                               FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
+                               FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
+                               FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
+                               FontSize="14" Foreground="{StaticResource SecondaryBrush}"
+                               HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!-- Brand level -->
+        <DataTemplate DataType="{x:Type models:BrandStockDto}">
+            <Expander IsExpanded="False" Margin="0,0,0,0"
+                      Padding="0"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <Grid Margin="0,4" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="340"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="160"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding BrandName}" 
+                                   FontSize="16" FontWeight="SemiBold" 
+                                   Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource SecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+                </Expander.Header>
+                <ItemsControl ItemsSource="{Binding Products}" 
+                              Margin="20,0,0,0"
+                              HorizontalAlignment="Stretch"/>
+            </Expander>
+        </DataTemplate>
+
+        <!-- Category level -->
+        <DataTemplate DataType="{x:Type models:CategoryStockDto}">
+            <Expander IsExpanded="True" Margin="0,0,0,0"
+                      Padding="0"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <Grid Margin="0,4" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="345"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="160"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding CategoryName}" 
+                                   FontSize="18" FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource SecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+                </Expander.Header>
+                <ItemsControl ItemsSource="{Binding Brands}" 
+                              Margin="20,0,0,0"
+                              HorizontalAlignment="Stretch"/>
+            </Expander>
+        </DataTemplate>
+
+        <!-- TreeViewItem style – no indentation, full width -->
+        <Style x:Key="TreeViewItemStyle" TargetType="TreeViewItem">
+            <Setter Property="IsExpanded" Value="True"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TreeViewItem">
+                        <StackPanel HorizontalAlignment="Stretch">
+                            <Border x:Name="Bd" 
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="0"
+                                    HorizontalAlignment="Stretch">
+                                <ContentPresenter x:Name="PART_Header" 
+                                                  ContentSource="Header"
+                                                  HorizontalAlignment="Stretch"
+                                                  Margin="0"/>
+                            </Border>
+                            <ItemsPresenter x:Name="ItemsHost" 
+                                            HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource BgBrush}" Padding="16,12" 
+                CornerRadius="8,8,0,0"
+                materialDesign:ElevationAssist.Elevation="Dp4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="💰 État du Stock" 
+                           FontFamily="{StaticResource HeadingFont}"
+                           FontSize="22" FontWeight="SemiBold"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+                <Button Grid.Column="1" x:Name="RefreshButton"
+                        Style="{StaticResource PrimaryGoldenButton}"
+                        Width="140" Height="40" Click="RefreshButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" Margin="0,0,8,0"/>
+                        <TextBlock Text="Actualiser"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="1" Background="{StaticResource BgBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Column Headers -->
+            <Border Grid.Row="0" Background="{StaticResource BgAltBrush}" Padding="10,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="360"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="180"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Nom" 
+                               FontFamily="{StaticResource HeadingFont}" 
+                               FontWeight="SemiBold" FontSize="14"
+                               Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Grid.Column="1" Text="Qté" 
+                               FontFamily="{StaticResource HeadingFont}" 
+                               FontWeight="SemiBold" FontSize="14"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Achat" 
+                               FontFamily="{StaticResource HeadingFont}" 
+                               FontWeight="SemiBold" FontSize="14"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="Vente" 
+                               FontFamily="{StaticResource HeadingFont}" 
+                               FontWeight="SemiBold" FontSize="14"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="4" Text="Marge potentielle" 
+                               FontFamily="{StaticResource HeadingFont}" 
+                               FontWeight="SemiBold" FontSize="14"
+                               Foreground="{StaticResource SecondaryBrush}"
+                               HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+
+            <!-- TreeView -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Stretch">
+                <TreeView x:Name="StockTreeView" 
+                          BorderThickness="0" Background="Transparent"
+                          Padding="0"
+                          HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding Categories, RelativeSource={RelativeSource AncestorType=Window}}"
+                          ItemContainerStyle="{StaticResource TreeViewItemStyle}"/>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="{StaticResource PrimaryBrush}" Padding="16,12" CornerRadius="0,0,8,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="360"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="180"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="TOTAL GÉNÉRAL" 
+                           FontFamily="{StaticResource HeadingFont}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="White"/>
+                <TextBlock Grid.Column="1" x:Name="TotalQtyTextBlock" 
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="White" Text="0"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="2" x:Name="TotalPurchaseTextBlock" 
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="White" Text="0 DA"
+                           HorizontalAlignment="Right"/>
+                <TextBlock Grid.Column="3" x:Name="TotalSaleTextBlock" 
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="White" Text="0 DA"
+                           HorizontalAlignment="Right"/>
+                <TextBlock Grid.Column="4" x:Name="TotalMarginTextBlock" 
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="White" Text="0 DA"
+                           HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
+
+        <!-- Loading overlay -->
+        <Grid Grid.RowSpan="3" Background="#80FFFFFF" Visibility="Collapsed" x:Name="LoadingOverlay">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <materialDesign:PackIcon Kind="Loading" Width="48" Height="48" 
+                                         Foreground="{StaticResource PrimaryBrush}">
+                    <materialDesign:PackIcon.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                     From="0" To="360" Duration="0:0:1" RepeatBehavior="Forever"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </materialDesign:PackIcon.Triggers>
+                    <materialDesign:PackIcon.RenderTransform>
+                        <RotateTransform CenterX="24" CenterY="24"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <TextBlock Text="Chargement..." FontSize="18" Foreground="{StaticResource PrimaryBrush}"
+                           Margin="0,12,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

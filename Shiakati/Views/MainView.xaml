@@ -13,7 +13,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
-
         <!-- ============ Gradient brush reused by all nav buttons ============ -->
         <LinearGradientBrush x:Key="NavGradientBrush" StartPoint="0,0" EndPoint="1,0">
             <GradientStop Offset="0" Color="#13314B"/>
@@ -23,7 +22,6 @@
             <GradientStop Offset="0" Color="#1D4A6B"/>
             <GradientStop Offset="1" Color="#2A5B7A"/>
         </LinearGradientBrush>
-
         <!-- ============ NAV BUTTON STYLE (for regular Button) ============ -->
         <Style x:Key="TopNavButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="48"/>
@@ -50,7 +48,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <!-- ============ NAV TOGGLE BUTTON STYLE (for ToggleButton – same look) ============ -->
         <Style x:Key="TopNavToggleButtonStyle" TargetType="ToggleButton">
             <Setter Property="Height" Value="48"/>
@@ -77,7 +74,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <!-- The global NavToggleStyle from GlobalStyles.xaml will be used – no need to redefine here -->
     </Window.Resources>
 

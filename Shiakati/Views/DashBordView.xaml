@@ -7,7 +7,7 @@
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
-             d:DesignHeight="900" d:DesignWidth="1400">
+             d:DesignHeight="768" d:DesignWidth="1024">
 
     <UserControl.Resources>
         <!-- ✅ sys namespace fixed -->
@@ -36,6 +36,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" Grid.Column="0">
@@ -71,7 +72,17 @@
                                 <TextBlock Text="Actualiser"/>
                             </StackPanel>
                         </Button>
-                    </StackPanel>
+                        <Button Command="{Binding OpenStockValuationCommand}"
+                                Style="{StaticResource PrimaryGoldenButton}"
+                                Width="160" Height="40" Margin="8,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CashMultiple" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="État du stock"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>                
+                
                 </Grid>
             </Border>
 
@@ -182,10 +193,22 @@
                       HorizontalScrollBarVisibility="Auto"
                       MaxWidth="350">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Vendeur" Binding="{Binding Username}" Width="*"/>
-                                <DataGridTextColumn Header="Ventes" Binding="{Binding OrdersCount}" Width="Auto"/>
-                                <DataGridTextColumn Header="CA" Binding="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
-                                <DataGridTextColumn Header="Marge" Binding="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}" Width="Auto"/>
+                                <DataGridTextColumn Header="Vendeur" 
+                        Binding="{Binding Username}" 
+                        Width="*" 
+                        MinWidth="110"/>
+
+                                <DataGridTextColumn Header="Ventes" 
+                        Binding="{Binding OrdersCount}" 
+                        Width="Auto"/>
+
+                                <DataGridTextColumn Header="CA" 
+                        Binding="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}" 
+                        Width="Auto"/>
+
+                                <DataGridTextColumn Header="Marge" 
+                        Binding="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}" 
+                        Width="Auto"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

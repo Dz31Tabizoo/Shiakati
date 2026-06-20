@@ -72,5 +72,12 @@ namespace Shiakati.Services.Implementations
             return null;
         }
 
+        public async Task<StockValuationResponse> GetStockValuationAsync()
+        {
+            var response = await _httpClient.GetAsync("api/stock/valuation");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<StockValuationResponse>() ?? new StockValuationResponse();
+            return new StockValuationResponse();
+        }
     }
 }

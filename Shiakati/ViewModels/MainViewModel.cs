@@ -141,6 +141,9 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private async Task NavigateToStock()
         {
+            if(_authService.CurrentSession?.Role != "admin" && _authService.CurrentSession?.Role != "owner")
+                return;
+
             CurrentView = Stock;
             CurrentViewTitle = "Stock";
             await Stock.LoadInitialDataAsync(true);
@@ -165,6 +168,9 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private void NavigateToDashBord()
         {
+            if (_authService.CurrentSession?.Role != "admin" && _authService.CurrentSession?.Role != "owner")
+                return;
+
             CurrentView = DashBord;
             CurrentViewTitle = "Tableau de Bord";
         }

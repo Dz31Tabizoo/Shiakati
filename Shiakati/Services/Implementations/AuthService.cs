@@ -39,7 +39,9 @@ public class AuthService : IAuthenticationClientService
                     CurrentSession = new AuthSession
                     {
                         UserName = result.Username,
-                        Token = result.Token
+                        Token = result.Token,
+                        Role = result.Role,
+                        UserId = result.UserID
                     };
 
                     _logger.LogInformation("Login successful for user: {Username}", username);

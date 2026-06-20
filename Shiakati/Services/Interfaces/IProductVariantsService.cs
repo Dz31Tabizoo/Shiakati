@@ -13,6 +13,6 @@ namespace Shiakati.Services.Interfaces
         Task<ProductVariantResponse> AddProductVariantAsync(AddVariantRequest request);
         Task<ProductVariantResponse> UpdateProductVariantAsync(UpdateVariantRequest request);
         Task<List<ProductVariantResponse>?> BulkAddVariantsAsync(BulkAddVariantsRequest request);
-
+        Task<StockValuationResponse> GetStockValuationAsync();
     }
 }
