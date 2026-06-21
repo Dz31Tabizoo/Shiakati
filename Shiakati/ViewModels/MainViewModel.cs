@@ -55,6 +55,9 @@ namespace Shiakati.ViewModels
             DashBordViewModel dashBordViewModel)
         {
             _authService = authService;
+            UserName = _authService.CurrentSession?.UserName ?? "Utilisateur";
+            _authService.OnAuthenticationStateChanged += OnAuthStateChanged;
+
             _cacheService = cacheService;
 
             ReservationsVM = reservationsViewModel;
@@ -92,6 +95,8 @@ namespace Shiakati.ViewModels
             IsAlertActive = false;
             IsAlertPulsing = false;
             IsAlertStatic = false;
+
+            
         }
 
         private void LoadUserData()
@@ -192,13 +197,14 @@ namespace Shiakati.ViewModels
         private void Logout()
         {
             _authService.Logout();
-
+            UserName = null;
             var loginView = App.ServiceProvider?.GetRequiredService<LoginView>();
             if (loginView != null)
             {
                 loginView.LoginSucceeded += () =>
                 {
                     App.Current.MainWindow?.Show();
+                    
                 };
                 App.Current.MainWindow?.Hide();
                 loginView.Show();
@@ -226,6 +232,12 @@ namespace Shiakati.ViewModels
             CurrentViewTitle = null;
         }
 
-        [RelayCommand] private void NavigateToReservations() => CurrentView = ReservationsVM;
+        [RelayCommand] 
+        private void NavigateToReservations() => CurrentView = ReservationsVM;
+
+        private void OnAuthStateChanged()
+        {
+            UserName = _authService.CurrentSession?.UserName ?? "Utilisateur";
+        }
     }
 }

@@ -308,6 +308,7 @@ namespace Shiakati.ViewModels
             OnPropertyChanged(nameof(TotalDiscountAmount));
             OnPropertyChanged(nameof(CartTotal));
         }
+
         [RelayCommand] private void AddToCart(ProductVariantModel selectedVariant)
         {
             if (selectedVariant == null) return;
@@ -337,6 +338,8 @@ namespace Shiakati.ViewModels
             else CartItems.Remove(item);
         }
         [RelayCommand] private void CancelEdit() => ResetPOS();
+        //----------------------------------------------
+        //   Check Out Command                
         [RelayCommand] private async Task CheckoutAsync()
         {
             if (CartItems.Count == 0)
@@ -377,7 +380,21 @@ namespace Shiakati.ViewModels
                         }).ToList()
                     };
 
+                    if (SelectedClient != null)
+                    {
+                        updateRequest.ClientId = SelectedClient.ClientId;
+                        updateRequest.PaidAmount = CartTotal;
+                    }
+
+                    if (IsCreditSale && SelectedClient != null)
+                    {
+                        updateRequest.PaidAmount = CreditPaidAmount ?? 0;
+                        updateRequest.CreditExpiresAt = CreditExpiresAt;
+                    }
+
+
                     var success = await _saleService.UpdateSaleAsync(EditSaleId.Value, updateRequest);
+
                     if (success)
                     {
                         var receipt = new ReceipModel
@@ -483,6 +500,7 @@ namespace Shiakati.ViewModels
             }
             finally { IsLoading = false; }
         }
+        //----------------------------------------------
 
         private async Task ReloadProductsInBackground()
         {

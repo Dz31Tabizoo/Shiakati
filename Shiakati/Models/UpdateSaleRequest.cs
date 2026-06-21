@@ -8,6 +8,11 @@ namespace Shiakati.Models
 {
     public class UpdateSaleRequest
     {
+        public int? ClientId { get; set; }
+        public DateTime? CreditExpiresAt { get; set; }
+        public decimal? PaidAmount { get; set; }
+
+
         public int SaleId { get; set; }
         public decimal? GlobalDiscount { get; set; }
         public int? UserId { get; set; }  // optional, server will use token if null
