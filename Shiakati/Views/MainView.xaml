@@ -276,15 +276,17 @@
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Command="{Binding NavigateToDashBordCommand}"
+                                Click="CloseNavBar"
                                 Tag="Dashboard">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="ChartBar" Width="26" Height="26" Margin="0,0,8,0"/>
-                                <TextBlock Text="Tableau Bord" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="ChartBar" Width="26" Height="26" Margin="5,0,8,0"/>
+                                <TextBlock Text="Tableau Bord" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToPOSCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                                FontSize="17">
+                                FontSize="17"
+                                Click="CloseNavBar">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CashRegister" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Caisse" VerticalAlignment="Center"/>
@@ -292,7 +294,8 @@
                         </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToStockCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                                FontSize="17">
+                                FontSize="17"
+                                Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Warehouse" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Stock" VerticalAlignment="Center"/>
@@ -322,7 +325,7 @@
                                 </Border.Effect>
                                 <StackPanel Margin="6">
                                     <Button Command="{Binding NavigateToSalesHistoryCommand}"
-                                            Click="CloseHistoriquePopup"
+                                            Click="CloseNavBar"
                                             Width="180" Height="60"
                                             FontSize="17" FontFamily="{StaticResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
@@ -333,7 +336,7 @@
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding NavigateToStockMovementsCommand}"
-                                            Click="CloseHistoriquePopup"
+                                            Click="CloseNavBar"
                                             Width="180" Height="60"
                                             FontSize="17" FontFamily="{StaticResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
@@ -349,7 +352,8 @@
 
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                                FontSize="17">
+                                FontSize="17"
+                                Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="AccountGroup" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Clients" VerticalAlignment="Center"/>
@@ -358,7 +362,8 @@
                         
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                                FontSize="17">
+                                FontSize="17"
+                                Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CalendarClock" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Réservations" VerticalAlignment="Center"/>
@@ -366,7 +371,7 @@
                         </Button>
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
-                                FontSize="17">
+                                FontSize="17" Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Cogs" Width="26" Height="26" Margin="0,0,8,0"/>
                                 <TextBlock Text="Paramètres" VerticalAlignment="Center"/>

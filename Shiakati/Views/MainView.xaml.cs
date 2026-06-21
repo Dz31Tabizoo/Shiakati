@@ -37,7 +37,10 @@ namespace Shiakati.Views
         {
             btnHistorique.IsChecked = false;
         }
-
+        private void CloseNavBar(object sender, RoutedEventArgs e)
+        {
+            NavVisibilityToggle.IsChecked = false;
+        }
 
         private void btnMaximize_Click(object sender, RoutedEventArgs e)
         {

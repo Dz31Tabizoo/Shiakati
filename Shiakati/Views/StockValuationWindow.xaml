@@ -215,7 +215,7 @@
                         <ColumnDefinition Width="160"/>
                         <ColumnDefinition Width="180"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Nom" 
+                    <TextBlock Grid.Column="0" Text="Catégorie - Marques - Produits" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
                                Foreground="{StaticResource PrimaryBrush}"/>
