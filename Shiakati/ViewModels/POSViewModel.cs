@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using ZXing;
 
 namespace Shiakati.ViewModels
 {
@@ -404,13 +405,31 @@ namespace Shiakati.ViewModels
                             Date = DateTime.Now,
                             TotalAmount = CartTotal ?? 0,
                             TotalDiscount = TotalDiscountAmount ?? 0,
+                            ClientName = SelectedClient?.FullName,
                             Items = CartItems.Select(c => new ReceiptItem
                             {
                                 Designation = c.DisplayName,
                                 Quantity = c.Quantity ?? 0,
                                 UnitPrice = c.Variant?.SalePrice ?? 0
-                            }).ToList()
+                            })
+                            .ToList()
                         };
+
+                        if (IsCreditSale)
+                        {
+                            
+                            receipt.DocumentType = "CREDIT SALE";
+                            receipt.PaidAmount = CreditPaidAmount ?? 0;
+                            receipt.RemainingDebt = (CartTotal ?? 0) - (CreditPaidAmount ?? 0);
+                        }
+                        else
+                        {
+                            receipt.DocumentType = "SALE";
+                            receipt.PaidAmount = CartTotal ?? 0;
+                            receipt.RemainingDebt = 0;
+                        }
+                      
+
                         if (PrintTicket(receipt))
                             MessageBox.Show($"Vente modifiée – Ticket {EditTicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
@@ -459,16 +478,27 @@ namespace Shiakati.ViewModels
                             TotalAmount = CartTotal ?? 0,
                             TotalDiscount = TotalDiscountAmount ?? 0,
                             ClientName = SelectedClient?.FullName,
-                            PaidAmount = CreditPaidAmount ?? 0,
-                            RemainingDebt = (CartTotal ?? 0) - (CreditPaidAmount ?? 0),
-                            DocumentType = "CREDIT_SALE",
                             Items = CartItems.Select(c => new ReceiptItem
                             {
                                 Designation = c.DisplayName,
                                 Quantity = c.Quantity ?? 0,
                                 UnitPrice = c.Variant?.SalePrice ?? 0
-                            }).ToList()
+                            })
+                            .ToList()
                         };
+
+                        if (IsCreditSale)
+                        {
+                            receipt.DocumentType = "CREDIT SALE";
+                            receipt.PaidAmount = CreditPaidAmount ?? 0;
+                            receipt.RemainingDebt = (CartTotal ?? 0) - (CreditPaidAmount ?? 0);
+                        }
+                        else
+                        {
+                            receipt.DocumentType = "SALE";
+                            receipt.PaidAmount = CartTotal ?? 0;
+                            receipt.RemainingDebt = 0;
+                        }
 
 
                         PrintTicket(receipt);
@@ -664,12 +694,13 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                var result = await _reservationService.CreateReservationAsync(request);
-                if (result)
+                var reservationID = await _reservationService.CreateReservationAsync(request);
+
+                if (reservationID.HasValue && reservationID.Value > 0)
                 {
                     var receipt = new ReceipModel
                     {
-                        TicketNumber = "RES-" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+                        TicketNumber = "RES-" + reservationID.ToString(),
                         Date = DateTime.Now,
                         TotalAmount = CartTotal ?? 0,
                         DepositAmount = dialog.DepositAmount,

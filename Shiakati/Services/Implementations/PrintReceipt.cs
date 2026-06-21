@@ -90,6 +90,8 @@ namespace Shiakati.Services.Implementations
                 return;
             }
 
+
+            //logo 
             try
             {
                 // 1. Define the URI (Path) to the resource inside your app
@@ -121,7 +123,7 @@ namespace Shiakati.Services.Implementations
             }
 
 
-            // - 
+            
             // Titre
             g.DrawString($"شياكتي " + " Shiakati", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
             yPos += 25;
@@ -130,23 +132,39 @@ namespace Shiakati.Services.Implementations
             g.DrawString("Adresse: Rue 1er Novembre, La Cia, Chlef 02", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
             yPos += 25;
 
-            if (_currentReceip.IsEdited)
-            {
-                g.DrawString($"*Vente Modifiée* Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-                yPos += 15;
-            }
-            else
-            {
-                g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-                yPos += 15;
-            }                
-            g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-            yPos += 22;
-            // Reservation 
             if (_currentReceip.DocumentType == "RESERVATION")
             {
                 g.DrawString($"RÉSERVATION", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
                 yPos += 20;
+
+                g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 20;
+
+                foreach (var item in _currentReceip.Items)
+                {
+                    g.DrawString(item.Designation, BlodFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+
+                    // Line: Qty x UnitPrice ...... TotalPrice
+                    string leftText = $"{item.Quantity} x {item.UnitPrice:N2} DA";
+                    string rightText = $"{item.TotalPrice:N2} DA";
+
+                    // Draw left and right parts
+                    g.DrawString(leftText, regularFont, Brushes.Black, leftMargin + 10, yPos);
+                    g.DrawString(rightText, regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
+
+                    yPos += 25;
+                }
+
+                //separation  - - - -  - 
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 20;
+
+
+
+
                 if (!string.IsNullOrEmpty(_currentReceip.ClientName))
                 {
                     g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
@@ -163,7 +181,56 @@ namespace Shiakati.Services.Implementations
                 }
                 // extra space before the separator
                 yPos += 8;
+                //separation  -                                                       -  
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 10;
+
+
+                g.DrawString("شكرا لمروركم الطيب", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
+                yPos += 20;
+
+                // 6. CODE QR (Généré avec QRCoder)
+                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+                {
+                    QRCodeData qrCodeData = qrGenerator.CreateQrCode(_currentReceip.TicketNumber, QRCodeGenerator.ECCLevel.Q);
+                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    {
+                        // Le chiffre "3" définit la taille des pixels du QR
+                        Bitmap qrCodeImage = qrCode.GetGraphic(3);
+                        // On centre le QR Code
+                        g.DrawImage(qrCodeImage, (paperWidth - qrCodeImage.Width) / 2, yPos);
+                        yPos += qrCodeImage.Height + 5;
+                    }
+
+                    g.DrawString("Software: NumidixLab", miniFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+
+                    // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
+                    g.DrawString(" ", regularFont, Brushes.Black, leftMargin, yPos + 30);
+                }
+
+                return;
+
             }
+
+
+
+
+
+            if (_currentReceip.IsEdited)
+            {
+                g.DrawString($"*Vente Modifiée* Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+            }
+            else
+            {
+                g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+            }                
+            g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+            yPos += 22;
+            // Reservation 
+            
+
             // Honor Reservation 
             if (_currentReceip.DocumentType == "HONOR")
             {

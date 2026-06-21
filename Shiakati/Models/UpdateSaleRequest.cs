@@ -9,6 +9,7 @@ namespace Shiakati.Models
     public class UpdateSaleRequest
     {
         public int? ClientId { get; set; }
+        public string? ClientName { get; set; } = string.Empty;
         public DateTime? CreditExpiresAt { get; set; }
         public decimal? PaidAmount { get; set; }
 

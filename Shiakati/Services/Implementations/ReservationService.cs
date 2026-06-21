@@ -10,10 +10,23 @@ namespace Shiakati.Services.Implementations
     {
         private readonly HttpClient _http;
         public ReservationService(HttpClient http) => _http = http;
-        public async Task<bool> CreateReservationAsync(CreateReservationRequest request)
+        public async Task<int?> CreateReservationAsync(CreateReservationRequest request)
         {
             var response = await _http.PostAsJsonAsync("api/reservations", request);
-            return response.IsSuccessStatusCode;
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            try
+            {
+                var result = await response.Content.ReadFromJsonAsync<CreateReservationResponse>();
+                return result?.ReservationId;
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                return null;
+            }
         }
 
         public async Task<List<ReservationDto>> GetReservationsAsync(string? status = null)
