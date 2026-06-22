@@ -127,7 +127,7 @@ namespace Shiakati.ViewModels
                     // Print honor ticket
                     var receipt = new ReceipModel
                     {
-                        TicketNumber = "HONOR-" + reservation.ReservationId,
+                        TicketNumber = "RES-V-" + reservation.ReservationId,
                         Date = DateTime.Now,
                         TotalAmount = reservation.TotalAmount,
                         PaidAmount = dialog.AmountPaid,

@@ -138,6 +138,8 @@ namespace Shiakati.Services.Implementations
                 yPos += 20;
 
                 g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 22;
+                g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
                 yPos += 15;
                 g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
                 yPos += 20;
@@ -212,6 +214,77 @@ namespace Shiakati.Services.Implementations
 
             }
 
+            // Honor Reservation 
+            if (_currentReceip.DocumentType == "HONOR")
+            {
+                g.DrawString($"RÉSERVATION VALIDÉE", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 20;
+                g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 22;
+                g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", regularFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+                yPos += 15;
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 20;
+
+                foreach (var item in _currentReceip.Items)
+                {
+                    g.DrawString(item.Designation, BlodFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+
+                    // Line: Qty x UnitPrice ...... TotalPrice
+                    string leftText = $"{item.Quantity} x {item.UnitPrice:N2} DA";
+                    string rightText = $"{item.TotalPrice:N2} DA";
+
+                    // Draw left and right parts
+                    g.DrawString(leftText, regularFont, Brushes.Black, leftMargin + 10, yPos);
+                    g.DrawString(rightText, regularFont, Brushes.Black, rightMargin, yPos, rightFormat);
+
+                    yPos += 25;
+                }
+
+                //separation  - - - -  - 
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 20;
+                if (!string.IsNullOrEmpty(_currentReceip.ClientName))
+                {
+                    g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
+                    yPos += 15;
+                }
+                g.DrawString($"Montant total : {_currentReceip.TotalAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 15;
+                
+                g.DrawString("______________________________________", regularFont, Brushes.Black, leftMargin, yPos);
+                yPos += 10;
+
+
+                g.DrawString("شكرا لمروركم الطيب", arabicFont, Brushes.Black, paperWidth / 2, yPos, arabicFormat);
+                yPos += 20;
+
+                // 6. CODE QR (Généré avec QRCoder)
+                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+                {
+                    QRCodeData qrCodeData = qrGenerator.CreateQrCode(_currentReceip.TicketNumber, QRCodeGenerator.ECCLevel.Q);
+                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    {
+                        // Le chiffre "3" définit la taille des pixels du QR
+                        Bitmap qrCodeImage = qrCode.GetGraphic(3);
+                        // On centre le QR Code
+                        g.DrawImage(qrCodeImage, (paperWidth - qrCodeImage.Width) / 2, yPos);
+                        yPos += qrCodeImage.Height + 5;
+                    }
+
+                    g.DrawString("Software: NumidixLab", miniFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
+
+                    // Optionnel : Ajouter un espace blanc à la fin pour que l'imprimante coupe au bon endroit
+                    g.DrawString(" ", regularFont, Brushes.Black, leftMargin, yPos + 30);
+                }
+
+                return;
+            }
 
 
 
@@ -231,24 +304,7 @@ namespace Shiakati.Services.Implementations
             // Reservation 
             
 
-            // Honor Reservation 
-            if (_currentReceip.DocumentType == "HONOR")
-            {
-                g.DrawString($"RÉSERVATION HONORÉE", titleFont, Brushes.Black, paperWidth / 2, yPos, centerFormat);
-                yPos += 20;
-                if (!string.IsNullOrEmpty(_currentReceip.ClientName))
-                {
-                    g.DrawString($"Client : {_currentReceip.ClientName}", regularFont, Brushes.Black, leftMargin, yPos);
-                    yPos += 15;
-                }
-                g.DrawString($"Montant total : {_currentReceip.TotalAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
-                yPos += 15;
-                g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
-                yPos += 15;
-                g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", regularFont, Brushes.Black, leftMargin, yPos);
-                yPos += 15;
-                yPos += 8;
-            }
+            
 
 
             //separation  -                                                       -  
