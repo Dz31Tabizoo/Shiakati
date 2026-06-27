@@ -238,15 +238,40 @@ public class PrintService : IPrintService
             g.DrawString($"Client : {_currentReceip.ClientName}", _regularFont, Brushes.Black, _leftMargin, yPos);
             yPos += 15;
         }
-        g.DrawString($"Montant total : {_currentReceip.TotalAmount:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
-        yPos += 15;
-        g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
-        yPos += 15;
-        g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
-        yPos += 15;
 
-        yPos = DrawSeparator(g, yPos);
-        return yPos;
+        if (_currentReceip.TotalDiscount > 0)
+        {
+            g.DrawString("Sous-total :", _regularFont, Brushes.Black, _leftMargin, yPos);
+            g.DrawString($"{_currentReceip.TotalAmount + _currentReceip.TotalDiscount:N2} DA", _regularFont, Brushes.Black, _rightMargin, yPos, _rightFormat);
+            yPos += 15;
+
+            g.DrawString("Remise :", _regularFont, Brushes.Black, _leftMargin, yPos);
+            g.DrawString($"- {_currentReceip.TotalDiscount:N2} DA", _regularFont, Brushes.Black, _rightMargin, yPos, _rightFormat);
+            yPos += 15;
+
+            g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
+            yPos += 15;
+            g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
+            yPos += 110;
+
+            g.DrawString("________________________", _regularFont, Brushes.Black, _paperWidth / 2, yPos, _centerFormat);
+            yPos += 25;
+            return yPos;
+        }
+        else 
+        {
+            g.DrawString($"Montant total : {_currentReceip.TotalAmount:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
+            yPos += 15;
+            g.DrawString($"Payé maintenant : {_currentReceip.PaidAmount:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
+            yPos += 15;
+            g.DrawString($"Reste dû : {_currentReceip.RemainingDebt:N2} DA", _regularFont, Brushes.Black, _leftMargin, yPos);
+            yPos += 15;
+
+
+            yPos = DrawSeparator(g, yPos);
+            return yPos;
+        }
+        
     }
 
     private float PrintSale(Graphics g, float yPos)
@@ -257,7 +282,7 @@ public class PrintService : IPrintService
             g.DrawString($"Ticket N°: {_currentReceip.TicketNumber}", _regularFont, Brushes.Black, _paperWidth / 2, yPos, _centerFormat);
         yPos += 15;
         g.DrawString($"Date: {_currentReceip.Date:dd/MM/yyyy HH:mm}", _regularFont, Brushes.Black, _paperWidth / 2, yPos, _centerFormat);
-        yPos += 22;
+        yPos += 18;
 
         // Double separator
         g.DrawString("______________________________________", _regularFont, Brushes.Black, _leftMargin, yPos);
@@ -300,4 +325,5 @@ public class PrintService : IPrintService
         yPos += 20;
         return yPos;
     }
+
 }

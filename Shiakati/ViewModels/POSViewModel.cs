@@ -285,7 +285,6 @@ namespace Shiakati.ViewModels
         [RelayCommand] private void ToggleColor(string color) { SelectedColor = ToggleValue(SelectedColor, color); FilteredProductsView.Refresh(); }
         [RelayCommand] private void ToggleSize(string size) { SelectedSize = ToggleValue(SelectedSize, size); FilteredProductsView.Refresh(); }
         private string? ToggleValue(string? current, string value) => string.Equals(current, value, StringComparison.OrdinalIgnoreCase) ? null : value;
-
         partial void OnSelectedCategoryChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedBrandChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedColorChanged(string value) => FilteredProductsView.Refresh();
@@ -685,9 +684,11 @@ namespace Shiakati.ViewModels
                 ExpirationDate = dialog.ExpirationDate,
                 Items = CartItems.Select(c => new ReservationItemDto
                 {
+                    DisplayName = c.DisplayName,
                     VariantId = c.Variant!.VariantId,
                     Quantity = c.Quantity ?? 1,
-                    UnitPrice = c.Variant?.SalePrice ?? 0
+                    UnitPrice = c.Variant?.SalePrice ?? 0,
+                    TotalDiscount = c.TotalLineDiscount
                 }).ToList()
             };
 

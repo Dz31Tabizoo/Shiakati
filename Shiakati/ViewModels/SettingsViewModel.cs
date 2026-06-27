@@ -135,5 +135,21 @@ namespace Shiakati.ViewModels
 
 
         }
+
+         [RelayCommand]
+         private async Task Register()
+         {
+             var dialog = new RegisterDialog { Owner = Application.Current.MainWindow };
+             if (dialog.ShowDialog() == true)
+             {
+                 dynamic data = dialog.Tag;
+                 bool success = await _authService.RegisterAsync((string)data.Username, (string)data.Password, (string)data.Role);
+                 if (success)
+                     MessageBox.Show("Utilisateur enregistré avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                 else
+                     MessageBox.Show("Erreur lors de l'enregistrement de l'utilisateur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+             }
+
+         }
     }
 }

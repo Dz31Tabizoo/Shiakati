@@ -110,4 +110,15 @@ public class AuthService : IAuthenticationClientService
         }
     }
 
+    public async Task<bool> RegisterAsync(string username, string password, string role)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/auth/register", new
+        {
+            username,
+            password,
+            role
+        });
+        return response.IsSuccessStatusCode;
+    }
+
 }

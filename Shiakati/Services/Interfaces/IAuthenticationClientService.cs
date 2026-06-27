@@ -18,6 +18,7 @@ namespace Shiakati.Services.Interfaces
 
         Task<bool> ChangePasswordAsync(string oldPassword, string newPassword);
         Task<bool> ChangeUsernameAsync(string password, string newUsername);
+        Task<bool> RegisterAsync(string username, string password, string role);
 
     }
 }

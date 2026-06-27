@@ -134,11 +134,18 @@ namespace Shiakati.ViewModels
                         RemainingDebt = dialog.NewDebt,      // NewDebt is calculated by the dialog
                         ClientName = reservation.ClientFullName,
                         DocumentType = "HONOR",
-                        Items = new List<ReceiptItem>()       // can be empty; the reservation already lists items
+                        Items = reservation.Items.Select(c => new ReceiptItem
+                        {
+                            Designation = c.DisplayName,
+                            Quantity = c.Quantity,
+                            UnitPrice = c.UnitPrice,                           
+
+                        }).ToList(),
+                        TotalDiscount = reservation.Items.Sum(c=> c.TotalDiscount)?? 0 
                     };
                     PrintTicket(receipt);
 
-                    MessageBox.Show("Réservation honorée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Réservation Validée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadAllAsync();
                 }
                 else

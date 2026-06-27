@@ -8,7 +8,7 @@ namespace Shiakati.Models
 {
     public class ReceiptItem
     {
-        public string Designation { get; set; } = string.Empty;
+        public string Designation { get; set; } = string.Empty;//
         public int? Quantity { get; set; }
         public decimal? UnitPrice { get; set; }
         public decimal TotalPrice => (Quantity ?? 0) * (UnitPrice ?? 0);

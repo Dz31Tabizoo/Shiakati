@@ -229,7 +229,7 @@
             <!-- User MANAGEMENT PANEL -->
             <materialDesign:Card Visibility="{Binding IsChecked, ElementName=UserManagement, Converter={StaticResource BoolToVis}}"
                                  Style="{StaticResource ShiakatiCard}" Padding="20">
-                <StackPanel Orientation ="Vertical">
+                <StackPanel Orientation ="Horizontal">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                         <materialDesign:PackIcon Kind="UserSettings" Width="24" Height="24"
                                                  Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
@@ -237,7 +237,17 @@
                                    FontFamily="{StaticResource HeadingFont}"/>
                     </StackPanel>
 
+                    <Button Margin="12,12" Command="{Binding RegisterCommand}"
+                            Style="{StaticResource PrimaryGoldenButton}"
+                            HorizontalAlignment="Left" MaxHeight="40" MinWidth="200" FontSize="14">
 
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountAdd" Width="20" Height="20"
+                                  VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,25,0"/>
+                            <TextBlock Text="Créer un nouveau utilisateur" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Button>
 
                     <Button Margin="12,12" 
                             Command="{Binding ChangeUsernameCommand}"
@@ -247,7 +257,7 @@
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Rename" Width="20" Height="20"
                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Nom d'utilisateur" VerticalAlignment="Center"/>
+                            <TextBlock Text="Modifier le nom d'utilisateur" VerticalAlignment="Center"/>
                         </StackPanel>
 
                     </Button>
@@ -259,7 +269,7 @@
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="PasswordWarning" Width="20" Height="20"
                                                       VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,25,0"/>
-                            <TextBlock Text="Mot de passe" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Modifier le mot de passe" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </StackPanel>
 
                     </Button>
