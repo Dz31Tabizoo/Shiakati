@@ -137,6 +137,7 @@ namespace Shiakati.ViewModels
 
                 // ---- Replace the content of the stable collection ----
                 _posProducts.Clear();
+
                 foreach (var p in _allProducts)
                     _posProducts.Add(p);
 

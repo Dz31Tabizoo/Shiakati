@@ -39,7 +39,12 @@
     <None Remove="Resources\Icons\NumidixLogoSQR256.ico" />
     <None Remove="Resources\Icons\NumidixLogoSQR32.ico" />
     <None Remove="Resources\Icons\NumidixLogoSQR64.ico" />
+    <None Remove="Resources\Photos\Accessoires.png" />
+    <None Remove="Resources\Photos\box.png" />
+    <None Remove="Resources\Photos\Chaussures.png" />
     <None Remove="Resources\Photos\NumidixLogoSQR.png" />
+    <None Remove="Resources\Photos\Pantalon.png" />
+    <None Remove="Resources\Photos\Parfum.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo horiz.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo horizental.png" />
     <None Remove="Resources\Photos\Shiakati beige Logo.png" />
@@ -49,7 +54,13 @@
     <None Remove="Resources\Photos\Shiakati Dark Logo.jpg" />
     <None Remove="Resources\Photos\Shiakati Light Logo.jpg" />
     <None Remove="Resources\Photos\shiakati logo on secondary brush.png" />
+    <None Remove="Resources\Photos\Sous-Vetements.png" />
+    <None Remove="Resources\Photos\Thob-H.png" />
     <None Remove="ToDo.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Photos\Pantalon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,6 +74,10 @@
     </Resource>
     <Resource Include="Resources\Icons\NumidixLogoSQR32.ico" />
     <Resource Include="Resources\Icons\NumidixLogoSQR64.ico" />
+    <Resource Include="Resources\Photos\Accessoires.png" />
+    <Resource Include="Resources\Photos\box.png" />
+    <Resource Include="Resources\Photos\Chaussures.png" />
+    <Resource Include="Resources\Photos\Parfum.png" />
     <Resource Include="Resources\Photos\Shiakati Black and white - VERTICAL.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -70,6 +85,8 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Photos\shiakati logo on secondary brush.png" />
+    <Resource Include="Resources\Photos\Sous-Vetements.png" />
+    <Resource Include="Resources\Photos\Thob-H.png" />
     <Resource Include="ToDo.txt">
       <Generator>MSBuild:Compile</Generator>
     </Resource>

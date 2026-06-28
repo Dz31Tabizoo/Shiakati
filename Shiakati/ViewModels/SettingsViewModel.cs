@@ -36,6 +36,7 @@ namespace Shiakati.ViewModels
             SelectedBarcodePrinterName = Settings.Default.BarcodePrinterName;
             _ = LoadCategoriesAsync();
         }
+
         private async Task LoadCategoriesAsync()
         {
             try
@@ -119,8 +120,7 @@ namespace Shiakati.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task ChangeUsername()
+        [RelayCommand] private async Task ChangeUsername()
         {
             var dialog = new ChangeUsernameDialog { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
@@ -136,20 +136,36 @@ namespace Shiakati.ViewModels
 
         }
 
-         [RelayCommand]
-         private async Task Register()
-         {
-             var dialog = new RegisterDialog { Owner = Application.Current.MainWindow };
-             if (dialog.ShowDialog() == true)
-             {
-                 dynamic data = dialog.Tag;
-                 bool success = await _authService.RegisterAsync((string)data.Username, (string)data.Password, (string)data.Role);
-                 if (success)
-                     MessageBox.Show("Utilisateur enregistré avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                 else
-                     MessageBox.Show("Erreur lors de l'enregistrement de l'utilisateur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-             }
+        [RelayCommand] private async Task Register()
+        {
 
-         }
+            if (_authService.CurrentSession?.Role != "admin" && _authService.CurrentSession?.Role != "owner")
+            {
+                MessageBox.Show("Vous n'avez pas les permissions nécessaires pour enregistrer un utilisateur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var dialog = new RegisterDialog { Owner = Application.Current.MainWindow };
+            if (dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    // ✅ Access properties directly – no need for anonymous object
+                    bool success = await _authService.RegisterAsync(
+                        dialog.Username,
+                        dialog.Password,
+                        dialog.Role
+                    );
+
+                    if (success)
+                        MessageBox.Show("Utilisateur enregistré avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else
+                        MessageBox.Show("Erreur lors de l'enregistrement de l'utilisateur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 }

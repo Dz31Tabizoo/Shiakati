@@ -228,55 +228,71 @@
 
             <!-- User MANAGEMENT PANEL -->
             <materialDesign:Card Visibility="{Binding IsChecked, ElementName=UserManagement, Converter={StaticResource BoolToVis}}"
-                                 Style="{StaticResource ShiakatiCard}" Padding="20">
-                <StackPanel Orientation ="Horizontal">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                        <materialDesign:PackIcon Kind="UserSettings" Width="24" Height="24"
-                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
-                        <TextBlock Text="Gestion du compte" FontSize="18" FontWeight="Bold"
-                                   FontFamily="{StaticResource HeadingFont}"/>
-                    </StackPanel>
+                 Style="{StaticResource ShiakatiCard}" Padding="20" Margin="0,0,0,16">
 
-                    <Button Margin="12,12" Command="{Binding RegisterCommand}"
-                            Style="{StaticResource PrimaryGoldenButton}"
-                            HorizontalAlignment="Left" MaxHeight="40" MinWidth="200" FontSize="14">
+                <!-- Main container -->
+                <StackPanel>
 
+                    <!-- Header -->
+                    <Border BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AccountAdd" Width="20" Height="20"
-                                  VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,25,0"/>
-                            <TextBlock Text="Créer un nouveau utilisateur" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="UserSettings" Width="24" Height="24"
+                                         Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                            <TextBlock Text="Gestion du compte" FontSize="18" FontWeight="SemiBold"
+                           FontFamily="{StaticResource HeadingFont}"
+                           Foreground="{StaticResource PrimaryBrush}"/>
                         </StackPanel>
+                    </Border>
 
-                    </Button>
+                    <!-- Buttons grid -->
+                    <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.IsSharedSizeScope="True">
 
-                    <Button Margin="12,12" 
-                            Command="{Binding ChangeUsernameCommand}"
-                            Style="{StaticResource PrimaryGoldenButton}"
-                            HorizontalAlignment="Left" MaxHeight="48" MinWidth="200" FontSize="14">
+                        <!-- Créer un utilisateur -->
+                        <Button Command="{Binding RegisterCommand}"
+                    Style="{StaticResource PrimaryGoldenButton}"
+                    MinHeight="48" MinWidth="210" MaxWidth="280"
+                    Margin="4,4" Padding="12,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="AccountAdd" Width="20" Height="20"
+                                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Créer un utilisateur" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Rename" Width="20" Height="20"
-                                VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Modifier le nom d'utilisateur" VerticalAlignment="Center"/>
-                        </StackPanel>
+                        <!-- Modifier le nom d'utilisateur -->
+                        <Button Command="{Binding ChangeUsernameCommand}"
+                    Style="{StaticResource PrimaryGoldenButton}"
+                    MinHeight="48" MinWidth="210" MaxWidth="280"
+                    Margin="4,4" Padding="12,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Rename" Width="20" Height="20"
+                                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Changer le nom" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                    </Button>
+                        <!-- Modifier le mot de passe -->
+                        <Button Command="{Binding ChangePasswordCommand}"
+                    Style="{StaticResource PrimaryGoldenButton}"
+                    MinHeight="48" MinWidth="210" MaxWidth="280"
+                    Margin="4,4" Padding="12,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="PasswordWarning" Width="20" Height="20"
+                                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Changer le mot de passe" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                    <Button Margin="12,12" Command="{Binding ChangePasswordCommand}"
-                            Style="{StaticResource PrimaryGoldenButton}"
-                            HorizontalAlignment="Left" MaxHeight="40" MinWidth="200" FontSize="14">
+                        <!-- Optional: Add a fourth button here if needed -->
 
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="PasswordWarning" Width="20" Height="20"
-                                                      VerticalAlignment="Center" HorizontalAlignment="Left"  Margin="0,0,25,0"/>
-                            <TextBlock Text="Modifier le mot de passe" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </StackPanel>
+                    </WrapPanel>
 
-                    </Button>
-
+                    <!-- Subtle hint text -->
+                    <TextBlock Text="Gérez les accès et les identifiants de votre compte"
+                   FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                   Margin="0,12,0,0" HorizontalAlignment="Center"/>
                 </StackPanel>
             </materialDesign:Card>
-
         </Grid>
     </Grid>
 </UserControl>
