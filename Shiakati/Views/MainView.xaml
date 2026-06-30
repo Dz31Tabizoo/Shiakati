@@ -359,7 +359,17 @@
                                 <TextBlock Text="Clients" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        
+                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToSuppliersCommand}"
+                                MinWidth="140" MinHeight="60" Margin="0,0,18,0"
+                                FontSize="17"
+                                Click="CloseNavBar" >
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Truck" Width="26" Height="26" Margin="0,0,8,0"/>
+                                <TextBlock Text="Fournisseurs" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+
                         <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"

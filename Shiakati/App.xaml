@@ -35,10 +35,11 @@
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type viewModels:StockViewModel}">
-                        <views:StockView />
-                        
+                        <views:StockView />                      
                         
                     </DataTemplate>
+                    
+                    
                     <DataTemplate DataType="{x:Type viewModels:POSViewModel}">
                         <views:PosView />
                     </DataTemplate>
@@ -61,6 +62,10 @@
 
                     <DataTemplate DataType="{x:Type viewModels:DashBordViewModel}">
                         <views:DashBordView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type viewModels:SupplierViewModel}">
+                        <views:SupplierView />
                     </DataTemplate>
 
                 </ResourceDictionary>

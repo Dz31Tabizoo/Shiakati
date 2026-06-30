@@ -32,6 +32,8 @@ namespace Shiakati.ViewModels
 
         // ViewModels (injected)
         public SalesHistoryViewModel SalesHistory { get; }
+
+        public SupplierViewModel Suppliers { get; }
         public PosContainerViewModel PosContainer { get; }
         public ReservationsViewModel ReservationsVM { get; }
         public StockMovementsViewModel StockMovements { get; }
@@ -51,7 +53,7 @@ namespace Shiakati.ViewModels
             SettingsViewModel settingsViewModel,
             StockMovementsViewModel stockMovementsViewModel,
             ClientListViewModel clientList,
-            ReservationsViewModel reservationsViewModel,
+            ReservationsViewModel reservationsViewModel,SupplierViewModel suppliers,
             DashBordViewModel dashBordViewModel)
         {
             _authService = authService;
@@ -59,7 +61,7 @@ namespace Shiakati.ViewModels
             _authService.OnAuthenticationStateChanged += OnAuthStateChanged;
 
             _cacheService = cacheService;
-
+            Suppliers = suppliers;
             ReservationsVM = reservationsViewModel;
             StockMovements = stockMovementsViewModel;
             PosContainer = posContainer;
@@ -153,6 +155,17 @@ namespace Shiakati.ViewModels
             CurrentViewTitle = "Stock";
             await Stock.LoadInitialDataAsync(true);
         }
+
+        [RelayCommand]
+        private async Task NavigateToSuppliers()
+        {
+            if (_authService.CurrentSession?.Role != "admin" && _authService.CurrentSession?.Role != "owner")
+                return;
+
+            CurrentView = Suppliers;
+            CurrentViewTitle = "Fournisseurs";
+            await Suppliers.LoadSuppliers();
+                }
 
         [RelayCommand]
         private void NavigateToPOS()

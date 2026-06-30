@@ -116,6 +116,11 @@ namespace Shiakati
                 client.BaseAddress = new Uri(baseUrl);
             }).AddHttpMessageHandler<AuthenticationHandler>();
 
+            services.AddHttpClient<ISupplierService, SupplierService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            }).AddHttpMessageHandler<AuthenticationHandler>();
+
             // ---------------------------------------------------------
             // . Enregistrement des Views et ViewModels
             // ---------------------------------------------------------
@@ -141,6 +146,8 @@ namespace Shiakati
             services.AddTransient<ReservationsView>();
             services.AddTransient<DashBordViewModel>();
             services.AddTransient<DashBordView>();
+            services.AddTransient<SupplierViewModel>();
+            services.AddTransient<SupplierView>();
 
             // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();
