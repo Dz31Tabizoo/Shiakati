@@ -13,7 +13,13 @@ namespace Shiakati.Services.Interfaces
         Task<SupplierDto> CreateAsync(SupplierDto dto);
         Task UpdateAsync(SupplierDto dto);
         Task DeleteAsync(int id);
-        Task<InvoiceImageDto> UploadInvoiceAsync(int supplierId, string filePath);
+        Task<InvoiceImageDto> UploadInvoiceAsync(int supplierId,
+                                                string filePath,
+                                                DateTime? invoiceDate = null,
+                                                int? productsTotal = null,
+                                                decimal? totalAmount = null,
+                                                decimal? amountPaid = null
+                                                );
         Task DeleteInvoiceAsync(int invoiceId);
     }
 }

@@ -162,14 +162,15 @@
                         </Border>
 
                         <!-- Invoice List (scrollable, max height) -->
+                        <!-- Invoice List with financial details -->
                         <ListBox ItemsSource="{Binding SelectedSupplier.Invoices}"
-                                 Background="Transparent" BorderThickness="0"
-                                 MaxHeight="150" Margin="0,0,0,12"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+         Background="Transparent" BorderThickness="0"
+         MaxHeight="200" Margin="0,0,0,12"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="{StaticResource BgAltBrush}" 
-                                            CornerRadius="6" Padding="8" Margin="0,0,0,4">
+                    CornerRadius="6" Padding="8" Margin="0,0,0,4">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -177,39 +178,55 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
+                                            <!-- Thumbnail -->
                                             <Image Grid.Column="0" 
-                                                   Source="{Binding FilePath}" 
-                                                   Width="50" Height="40" 
-                                                   Stretch="Uniform"
-                                                   Margin="0,0,10,0"/>
+                           Source="{Binding FilePath}" 
+                           Width="50" Height="40" 
+                           Stretch="Uniform"
+                           Margin="0,0,10,0"/>
 
+                                            <!-- Invoice Info -->
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding FileName}" 
-                                                           FontFamily="{StaticResource BodyFont}"
-                                                           FontSize="13"
-                                                           Foreground="{StaticResource TextPrimaryBrush}"
-                                                           TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="{Binding UploadedAt, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
-                                                           FontFamily="{StaticResource BodyFont}"
-                                                           FontSize="11"
-                                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                   FontFamily="{StaticResource BodyFont}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis"/>
+
+                                                <WrapPanel>
+                                                    <TextBlock Text="📅 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    <TextBlock Text="{Binding InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}" 
+                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+
+                                                    <TextBlock Text=" | 💰 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
+                                                    <TextBlock Text="{Binding TotalAmount, StringFormat='{}{0:N2} DA'}" 
+                                       FontSize="11" Foreground="{StaticResource SecondaryBrush}"/>
+
+                                                    <TextBlock Text=" | 💳 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
+                                                    <TextBlock Text="{Binding AmountPaid, StringFormat='{}{0:N2} DA'}" 
+                                       FontSize="11" Foreground="{StaticResource AccentBrush}"/>
+
+                                                    <TextBlock Text=" | ⏳ " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
+                                                    <TextBlock Text="{Binding AmountRest, StringFormat='{}{0:N2} DA'}" 
+                                       FontSize="11" Foreground="{StaticResource DangerBrush}"/>
+                                                </WrapPanel>
                                             </StackPanel>
 
+                                            <!-- Delete button -->
                                             <Button Grid.Column="2" 
-                                                    Command="{Binding DataContext.DeleteInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding Id}"
-                                                    Style="{StaticResource IconButton}"
-                                                    Width="28" Height="28">
+                            Command="{Binding DataContext.DeleteInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding Id}"
+                            Style="{StaticResource IconButton}"
+                            Width="28" Height="28">
                                                 <materialDesign:PackIcon Kind="Close" 
-                                                                          Foreground="{StaticResource DangerBrush}"
-                                                                          Width="16" Height="16"/>
+                                                  Foreground="{StaticResource DangerBrush}"
+                                                  Width="16" Height="16"/>
                                             </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
                         <!-- Action Buttons -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,8,0,0">
                             <Button Command="{Binding DeleteSupplierCommand}"

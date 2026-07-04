@@ -53,24 +53,40 @@ namespace Shiakati.Services.Implementations
         }
 
         // ─── POST: api/suppliers/{id}/upload-invoice ─────────────────────
-        public async Task<InvoiceImageDto> UploadInvoiceAsync(int supplierId, string filePath)
+        public async Task<InvoiceImageDto> UploadInvoiceAsync(  int supplierId,
+                                                                string filePath,
+                                                                DateTime? invoiceDate = null,
+                                                                int? productsTotal = null,
+                                                                decimal? totalAmount = null,
+                                                                decimal? amountPaid = null)
         {
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not found: {filePath}");
 
             using var form = new MultipartFormDataContent();
+
+            // File content
             using var fileStream = File.OpenRead(filePath);
             var fileContent = new StreamContent(fileStream);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-            // The name "file" must match the parameter name in the API Controller (IFormFile file)
             form.Add(fileContent, "file", Path.GetFileName(filePath));
+
+            // Additional fields
+            if (invoiceDate.HasValue)
+                form.Add(new StringContent(invoiceDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")), "invoiceDate");
+            if (productsTotal.HasValue)
+                form.Add(new StringContent(productsTotal.Value.ToString()), "productsTotal");
+            if (totalAmount.HasValue)
+                form.Add(new StringContent(totalAmount.Value.ToString()), "totalAmount");
+            if (amountPaid.HasValue)
+                form.Add(new StringContent(amountPaid.Value.ToString()), "amountPaid");
 
             var response = await _httpClient.PostAsync($"api/suppliers/{supplierId}/upload-invoice", form);
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<InvoiceImageDto>(_jsonOptions);
         }
+
 
         // ─── DELETE: api/suppliers/invoices/{invoiceId} ──────────────────
         public async Task DeleteInvoiceAsync(int invoiceId)

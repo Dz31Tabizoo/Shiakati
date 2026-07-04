@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Views;
 
 namespace Shiakati.ViewModels
 {
@@ -25,6 +26,12 @@ namespace Shiakati.ViewModels
 
         [ObservableProperty]
         private string? _editName;
+
+        [ObservableProperty] private DateTime? _invoiceDate = DateTime.Today;
+        [ObservableProperty] private int? _productsTotal;
+        [ObservableProperty] private decimal? _totalAmount;
+        [ObservableProperty] private decimal? _amountPaid;
+        [ObservableProperty] private decimal? _amountRest;
 
         public SupplierViewModel(ISupplierService supplierService)
         {
@@ -76,17 +83,22 @@ namespace Shiakati.ViewModels
         {
             if (SelectedSupplier == null) return;
 
-            var dialog = new OpenFileDialog
+            // Create a dialog to collect invoice details
+            var dialog = new InvoiceUploadDialog
             {
-                Filter = "Image files (*.jpg;*.jpeg;*.png;*.bmp;*.pdf)|*.jpg;*.jpeg;*.png;*.bmp;*.pdf"
+                Owner = Application.Current.MainWindow
             };
             if (dialog.ShowDialog() == true)
             {
-                var file = new FileInfo(dialog.FileName);
-                var uploaded = await _supplierService.UploadInvoiceAsync(SelectedSupplier.SupplierId, file.FullName);
+                var uploaded = await _supplierService.UploadInvoiceAsync(
+                    SelectedSupplier.SupplierId,
+                    dialog.FilePath,
+                    dialog.InvoiceDate,
+                    dialog.ProductsTotal,
+                    dialog.TotalAmount,
+                    dialog.AmountPaid
+                );
                 SelectedSupplier.Invoices.Add(uploaded);
-
-                // Refresh the list to update the binding
                 var index = Suppliers.IndexOf(SelectedSupplier);
                 Suppliers[index] = SelectedSupplier;
             }
