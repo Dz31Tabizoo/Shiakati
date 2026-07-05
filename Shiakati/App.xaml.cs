@@ -18,6 +18,7 @@ namespace Shiakati
     public partial class App : Application
     {
         public static IServiceProvider? ServiceProvider { get; private set; }
+        public static string ApiBaseUrl { get; private set; } = "";
 
         public App()
         {
@@ -35,11 +36,11 @@ namespace Shiakati
             var configuration = builder.Build();
 
             // Read the base URL
-            var baseUrl = configuration["ApiBaseUrl"];
+            ApiBaseUrl = configuration["ApiBaseUrl"];
 
             //DI configuration
             var services = new ServiceCollection();
-            ConfigureServices(services, baseUrl);
+            ConfigureServices(services, ApiBaseUrl);
             ServiceProvider = services.BuildServiceProvider();
         }
 

@@ -103,6 +103,7 @@ namespace Shiakati.ViewModels
                     dialog.AmountPaid
                 );
                 SelectedSupplier.Invoices.Add(uploaded);
+
                 var index = Suppliers.IndexOf(SelectedSupplier);
                 Suppliers[index] = SelectedSupplier;
             }
@@ -125,7 +126,40 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private async Task EditInvoice(InvoiceImageDto invoice)
         {
-            // Open dialog with invoice data, update after save
+            if (SelectedSupplier == null || invoice == null) return;
+
+            var dialog = new InvoiceUploadDialog(invoice)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Build the update request
+                var request = new UpdateInvoiceRequest
+                {
+                    InvoiceId = invoice.Id,
+                    InvoiceDate = dialog.InvoiceDate,
+                    ProductsTotal = dialog.ProductsTotal,
+                    TotalAmount = dialog.TotalAmount,
+                    AmountPaid = dialog.AmountPaid
+                };
+
+                // Pass the new file only if replaced
+                string? newFilePath = dialog.FileReplaced ? dialog.FilePath : null;
+
+                var updated = await _supplierService.UpdateInvoiceAsync(request, newFilePath);
+
+                // Replace the old invoice in the ObservableCollection
+                var index = SelectedSupplier.Invoices.IndexOf(invoice);
+                if (index >= 0)
+                    SelectedSupplier.Invoices[index] = updated;
+
+                // Refresh the main supplier list (if needed)
+                var supplierIndex = Suppliers.IndexOf(SelectedSupplier);
+                if (supplierIndex >= 0)
+                    Suppliers[supplierIndex] = SelectedSupplier;
+            }
         }
     }
 }

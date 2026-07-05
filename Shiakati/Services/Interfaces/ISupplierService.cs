@@ -9,12 +9,14 @@ namespace Shiakati.Services.Interfaces
 {
     public interface ISupplierService
     {
+
+        Task<InvoiceImageDto> UpdateInvoiceAsync(UpdateInvoiceRequest request, string? newFilePath = null);
         Task<List<SupplierDto>> GetAllAsync();
         Task<SupplierDto> CreateAsync(SupplierDto dto);
         Task UpdateAsync(SupplierDto dto);
         Task DeleteAsync(int id);
         Task<InvoiceImageDto> UploadInvoiceAsync(int supplierId,
-                                                string filePath,
+                                                string? filePath,
                                                 DateTime? invoiceDate = null,
                                                 int? productsTotal = null,
                                                 decimal? totalAmount = null,

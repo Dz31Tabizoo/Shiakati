@@ -45,6 +45,36 @@ namespace Shiakati.Services.Implementations
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task<InvoiceImageDto> UpdateInvoiceAsync(UpdateInvoiceRequest request, string? newFilePath = null)
+        {
+            using var form = new MultipartFormDataContent();
+
+            // Add metadata fields
+            form.Add(new StringContent(request.InvoiceId.ToString()), "InvoiceId");
+            if (request.InvoiceDate.HasValue)
+                form.Add(new StringContent(request.InvoiceDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")), "InvoiceDate");
+            if (request.ProductsTotal.HasValue)
+                form.Add(new StringContent(request.ProductsTotal.Value.ToString()), "ProductsTotal");
+            if (request.TotalAmount.HasValue)
+                form.Add(new StringContent(request.TotalAmount.Value.ToString("N2")), "TotalAmount");
+            if (request.AmountPaid.HasValue)
+                form.Add(new StringContent(request.AmountPaid.Value.ToString("N2")), "AmountPaid");
+
+            // Add new file if provided
+            if (!string.IsNullOrEmpty(newFilePath) && File.Exists(newFilePath))
+            {
+                byte[] fileBytes = File.ReadAllBytes(newFilePath);
+                var fileStream = new MemoryStream(fileBytes);
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                form.Add(fileContent, "file", Path.GetFileName(newFilePath));
+            }
+
+            var response = await _httpClient.PutAsync($"api/suppliers/invoices/{request.InvoiceId}", form);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<InvoiceImageDto>(_jsonOptions);
+        }
+
         // ─── DELETE: api/suppliers/{id} ───────────────────────────────────
         public async Task DeleteAsync(int id)
         {
@@ -53,25 +83,26 @@ namespace Shiakati.Services.Implementations
         }
 
         // ─── POST: api/suppliers/{id}/upload-invoice ─────────────────────
-        public async Task<InvoiceImageDto> UploadInvoiceAsync(  int supplierId,
-                                                                string filePath,
-                                                                DateTime? invoiceDate = null,
-                                                                int? productsTotal = null,
-                                                                decimal? totalAmount = null,
-                                                                decimal? amountPaid = null)
+        public async Task<InvoiceImageDto> UploadInvoiceAsync(
+                                                int supplierId,
+                                                string? filePath,
+                                                DateTime? invoiceDate = null,
+                                                int? productsTotal = null,
+                                                decimal? totalAmount = null,
+                                                decimal? amountPaid = null)
         {
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException($"File not found: {filePath}");
-
             using var form = new MultipartFormDataContent();
 
-            // File content
-            using var fileStream = File.OpenRead(filePath);
-            var fileContent = new StreamContent(fileStream);
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            form.Add(fileContent, "file", Path.GetFileName(filePath));
+            // ─── Add file only if provided ───
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                var fileStream = File.OpenRead(filePath);   // No using!
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                form.Add(fileContent, "file", Path.GetFileName(filePath));
+            }
 
-            // Additional fields
+            // ─── Add other fields ───
             if (invoiceDate.HasValue)
                 form.Add(new StringContent(invoiceDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")), "invoiceDate");
             if (productsTotal.HasValue)
