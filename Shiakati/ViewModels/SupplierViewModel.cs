@@ -21,6 +21,8 @@ namespace Shiakati.ViewModels
         [ObservableProperty]
         private SupplierDto? _selectedSupplier;
 
+        
+
         [ObservableProperty]
         private bool _isEditing;
 
@@ -32,12 +34,14 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal? _totalAmount;
         [ObservableProperty] private decimal? _amountPaid;
         [ObservableProperty] private decimal? _amountRest;
+        public bool IsSupplierSelected => SelectedSupplier != null;
 
         public SupplierViewModel(ISupplierService supplierService)
         {
             _supplierService = supplierService;
             _ = LoadSuppliers();
         }
+
 
         public async Task LoadSuppliers()
         {
@@ -104,6 +108,11 @@ namespace Shiakati.ViewModels
             }
         }
 
+        partial void OnSelectedSupplierChanged(SupplierDto? value)
+        {
+            OnPropertyChanged(nameof(IsSupplierSelected));
+        }
+
         [RelayCommand]
         private async Task DeleteInvoice(int invoiceId)
         {
@@ -111,6 +120,12 @@ namespace Shiakati.ViewModels
             await _supplierService.DeleteInvoiceAsync(invoiceId);
             var inv = SelectedSupplier.Invoices.FirstOrDefault(i => i.Id == invoiceId);
             if (inv != null) SelectedSupplier.Invoices.Remove(inv);
+        }
+
+        [RelayCommand]
+        private async Task EditInvoice(InvoiceImageDto invoice)
+        {
+            // Open dialog with invoice data, update after save
         }
     }
 }

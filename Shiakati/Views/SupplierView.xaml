@@ -6,26 +6,61 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="1000"
+             d:DesignHeight="700" d:DesignWidth="1100"
              Background="{StaticResource BgAltBrush}">
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- header -->
             <RowDefinition Height="*"/>
-            <!-- content -->
         </Grid.RowDefinitions>
 
-        <!-- Header (optional – already in MainView) -->
-        <TextBlock Grid.Row="0" Text="Fournisseurs" FontSize="20" FontWeight="SemiBold"
-                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,12"/>
+        <!-- ═══════════ HEADER ═══════════ -->
+        <Border Grid.Row="0" Background="{StaticResource BgBrush}" CornerRadius="12"
+                Padding="16,12" Margin="0,0,0,16"
+                materialDesign:ElevationAssist.Elevation="Dp4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Main 2‑column layout -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <materialDesign:PackIcon Kind="Truck" 
+                                              Foreground="{StaticResource PrimaryBrush}"
+                                              Width="28" Height="28" Margin="0,0,12,0"/>
+                    <TextBlock Text="Gestion des Fournisseurs" 
+                               FontFamily="{StaticResource HeadingFont}"
+                               FontSize="22" FontWeight="SemiBold"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Suppliers.Count, StringFormat=' ({0})'}" 
+                               FontFamily="{StaticResource BodyFont}"
+                               FontSize="16"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="2">
+                    <Button Command="{Binding AddSupplierCommand}"
+                            Style="{StaticResource PrimaryGoldenButton}"
+                            Width="140" Height="40">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Margin="0,0,8,0"/>
+                            <TextBlock Text="Nouveau"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════ MAIN CONTENT ═══════════ -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2.5*"/>
             </Grid.ColumnDefinitions>
 
             <!-- ─── LEFT: Supplier List ─── -->
@@ -33,103 +68,191 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-                        <materialDesign:PackIcon Kind="Truck" Width="20" Height="20"
-                                                  Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Liste des fournisseurs" 
-                                   FontFamily="{StaticResource HeadingFont}"
-                                   FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"/>
-                        <Button Command="{Binding AddSupplierCommand}"
-                                Style="{StaticResource HelpChipButton}"
-                                Padding="8,2" Margin="12,0,0,0"
-                                HorizontalAlignment="Right">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Plus" Width="14" Height="14" Margin="0,0,4,0"/>
-                                <TextBlock Text="Ajouter" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+                    <!-- Search -->
+                    <TextBox Grid.Row="0" 
+                             Style="{StaticResource ShiakatiTextBox}"
+                             materialDesign:HintAssist.Hint="🔍 Rechercher..."
+                             FontSize="14" Height="40"
+                             Margin="0,0,0,12"/>
 
-                    <DataGrid Grid.Row="1" 
+                    <!-- List -->
+                    <DataGrid Grid.Row="2" 
                               Style="{StaticResource ShiakatiDataGrid}"
                               ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
                               CellStyle="{StaticResource ShiakatiDataGridCell}"
                               RowStyle="{StaticResource ShiakatiDataGridRow}"
                               ItemsSource="{Binding Suppliers}"
                               SelectedItem="{Binding SelectedSupplier}"
+                              VerticalAlignment="Top"
                               AutoGenerateColumns="False"
-                              MaxHeight="400">
+                              VerticalScrollBarVisibility="Auto"
+                              MaxHeight="450">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Tél" Binding="{Binding Phone}" Width="Auto"/>
-                            <DataGridTextColumn Header="Actif" Binding="{Binding IsActive}" Width="60"/>
+                            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="Auto" MinWidth="140">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Tél" Binding="{Binding Phone}" Width="Auto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn Header="Status" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon Kind="{Binding IsActive, Converter={StaticResource BoolToIcon}}"
+                                                                  Foreground="{Binding IsActive, Converter={StaticResource BoolToColor}}"
+                                                                  Width="18" Height="18"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </materialDesign:Card>
 
-            <!-- ─── RIGHT: Detail Panel (Scrollable) ─── -->
+            <!-- ─── RIGHT: Supplier Details ─── -->
             <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Disabled">
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
-                    <StackPanel>
+                    <Grid>
 
-                        <!-- Header -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="Account" 
-                                                      Foreground="{StaticResource PrimaryBrush}"
-                                                      Width="20" Height="20" Margin="0,0,8,0"/>
-                            <TextBlock Text="Détails du fournisseur" 
-                                       FontFamily="{StaticResource HeadingFont}"
-                                       FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource PrimaryBrush}"/>
+                        <!-- Empty state – show when SelectedSupplier is null -->
+                        <StackPanel Visibility="{Binding SelectedSupplier, 
+                               Converter={StaticResource NullToVisibility}, 
+                               ConverterParameter=invert}"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="Sélectionnez un fournisseur" 
+                                       FontSize="18"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Margin="0,50,0,0"/>
+                            <materialDesign:PackIcon Kind="HandPointingLeft" 
+                                                      Width="48" Height="48"
+                                                      Foreground="{StaticResource TextSecondaryBrush}"
+                                                      HorizontalAlignment="Center"
+                                                      Margin="0,20,0,0"/>
                         </StackPanel>
 
-                        <!-- Name -->
-                        <TextBox Text="{Binding SelectedSupplier.Name, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 materialDesign:HintAssist.Hint="Nom du fournisseur"
-                                 Margin="0,0,0,8"/>
-
-                        <!-- Contact -->
-                        <TextBox Text="{Binding SelectedSupplier.ContactPerson, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 materialDesign:HintAssist.Hint="Personne à contacter"
-                                 Margin="0,0,0,8"/>
-
-                        <!-- Phone -->
-                        <TextBox Text="{Binding SelectedSupplier.Phone, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource ShiakatiTextBox}"
-                                 materialDesign:HintAssist.Hint="Téléphone"
-                                 Margin="0,0,0,8"/>
-
-                        <!-- Email & Address -->
-                        <Grid Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" 
-                                     Text="{Binding SelectedSupplier.Email, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource ShiakatiTextBox}"
-                                     materialDesign:HintAssist.Hint="Email"
-                                     Margin="0,0,6,0"/>
-                            <TextBox Grid.Column="1" 
-                                     Text="{Binding SelectedSupplier.Address, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource ShiakatiTextBox}"
-                                     materialDesign:HintAssist.Hint="Adresse"
-                                     Margin="6,0,0,0"/>
-                        </Grid>
-
-                        <!-- Invoices Section (with fixed height + scroll) -->
-                        <Border BorderBrush="{StaticResource BgAltBrush}" 
-                                BorderThickness="0,1,0,0" Padding="0,12,0,0"
-                                Margin="0,8,0,12">
+                        <!-- ─── DETAILS PANEL ─── -->
+                        <StackPanel Visibility="{Binding SelectedSupplier, Converter={StaticResource NotNullToVisibility}}">
+                            <!-- Supplier Info -->
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="0,0,0,12">
+                                    <materialDesign:PackIcon Kind="Account" 
+                                                              Foreground="{StaticResource PrimaryBrush}"
+                                                              Width="20" Height="20" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Détails du fournisseur" 
+                                               FontFamily="{StaticResource HeadingFont}"
+                                               FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="0,0,0,12">
+                                    <Button Command="{Binding DeleteSupplierCommand}"
+                                            Style="{StaticResource DangerButton}"
+                                            MinHeight="32" MinWidth="80" FontSize="12"
+                                            Margin="0,0,8,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Delete" Width="14" Height="14" Margin="0,0,4,0"/>
+                                            <TextBlock Text="Supprimer"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding SaveSupplierCommand}"
+                                            Style="{StaticResource PrimaryButton}"
+                                            MinHeight="32" MinWidth="80" FontSize="12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="ContentSave" Width="14" Height="14" Margin="0,0,4,0"/>
+                                            <TextBlock Text="Enregistrer"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Fields -->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" 
+                                             Text="{Binding SelectedSupplier.Name, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ShiakatiTextBox}"
+                                             materialDesign:HintAssist.Hint="Nom du fournisseur"
+                                             Margin="0,0,4,0"/>
+                                    <TextBox Grid.Column="1" 
+                                             Text="{Binding SelectedSupplier.ContactPerson, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ShiakatiTextBox}"
+                                             materialDesign:HintAssist.Hint="Contact"
+                                             Margin="4,0,0,0"/>
+                                </Grid>
+
+                                <Grid Grid.Row="1" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" 
+                                             Text="{Binding SelectedSupplier.Phone, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ShiakatiTextBox}"
+                                             materialDesign:HintAssist.Hint="Téléphone"
+                                             Margin="0,0,4,0"/>
+                                    <TextBox Grid.Column="1" 
+                                             Text="{Binding SelectedSupplier.Email, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ShiakatiTextBox}"
+                                             materialDesign:HintAssist.Hint="Email"
+                                             Margin="4,0,0,0"/>
+                                </Grid>
+
+                                <Grid Grid.Row="2" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" 
+                                             Text="{Binding SelectedSupplier.Address, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ShiakatiTextBox}"
+                                             materialDesign:HintAssist.Hint="Adresse"
+                                             Margin="0,0,4,0"/>
+                                    <CheckBox Grid.Column="1" 
+                                              IsChecked="{Binding SelectedSupplier.IsActive}"
+                                              Content="Actif"
+                                              FontFamily="{StaticResource BodyFont}"
+                                              FontSize="14"
+                                              VerticalAlignment="Center"
+                                              Margin="4,0,0,0"/>
+                                </Grid>
+                            </Grid>
+
+                            <Border BorderBrush="{StaticResource BgAltBrush}" 
+                                    BorderThickness="0,1,0,0" 
+                                    Margin="0,16,0,12"/>
+
+                            <!-- Invoices Section -->
+                            <Grid Margin="0,0,0,12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -137,118 +260,100 @@
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                                     <materialDesign:PackIcon Kind="FileDocument" 
-                                                              Foreground="{StaticResource TextSecondaryBrush}"
-                                                              Width="18" Height="18" Margin="0,0,8,0"/>
+                                                              Foreground="{StaticResource SecondaryBrush}"
+                                                              Width="20" Height="20" Margin="0,0,8,0"/>
                                     <TextBlock Text="Factures" 
                                                FontFamily="{StaticResource HeadingFont}"
-                                               FontSize="14" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                               FontSize="15" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
                                     <TextBlock Text="{Binding SelectedSupplier.Invoices.Count, StringFormat=' ({0})'}" 
                                                FontFamily="{StaticResource BodyFont}"
                                                FontSize="14"
-                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="4,0,0,0"/>
                                 </StackPanel>
 
                                 <Button Grid.Column="1" 
                                         Command="{Binding UploadInvoiceCommand}"
-                                        Style="{StaticResource HelpChipButton}"
+                                        Style="{StaticResource PrimaryGoldenButton}"
+                                        MinHeight="32" MinWidth="120" FontSize="12"
                                         Padding="12,4">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Upload" Width="16" Height="16" Margin="0,0,6,0"/>
-                                        <TextBlock Text="Ajouter" FontSize="12"/>
+                                        <TextBlock Text="Ajouter une facture"/>
                                     </StackPanel>
                                 </Button>
                             </Grid>
-                        </Border>
 
-                        <!-- Invoice List (scrollable, max height) -->
-                        <!-- Invoice List with financial details -->
-                        <ListBox ItemsSource="{Binding SelectedSupplier.Invoices}"
-         Background="Transparent" BorderThickness="0"
-         MaxHeight="200" Margin="0,0,0,12"
-         ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="{StaticResource BgAltBrush}" 
-                    CornerRadius="6" Padding="8" Margin="0,0,0,4">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
+                            <!-- Invoices DataGrid -->
+                            <DataGrid ItemsSource="{Binding SelectedSupplier.Invoices}"
+                                      Style="{StaticResource ShiakatiDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                                      RowStyle="{StaticResource ShiakatiDataGridRow}"
+                                      AutoGenerateColumns="False"
+                                      MaxHeight="250"
+                                      Margin="0,0,0,8">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="90"/>
+                                    <DataGridTextColumn Header="Fichier" Binding="{Binding FileName}" Width="*"/>
+                                    <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat='{}{0:N2} DA'}" Width="100"/>
+                                    <DataGridTextColumn Header="Payé" Binding="{Binding AmountPaid, StringFormat='{}{0:N2} DA'}" Width="90"/>
+                                    <DataGridTextColumn Header="Reste" Binding="{Binding AmountRest, StringFormat='{}{0:N2} DA'}" Width="100"/>
 
-                                            <!-- Thumbnail -->
-                                            <Image Grid.Column="0" 
-                           Source="{Binding FilePath}" 
-                           Width="50" Height="40" 
-                           Stretch="Uniform"
-                           Margin="0,0,10,0"/>
+                                    <!-- Actions Column -->
+                                    <DataGridTemplateColumn Header="Actions" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <!-- Preview -->
+                                                    <Button Style="{StaticResource IconButton}"
+                                                            Width="28" Height="28"
+                                                            ToolTip="Aperçu"
+                                                            Click="PreviewInvoice_Click"
+                                                            Tag="{Binding}">
+                                                        <materialDesign:PackIcon Kind="Eye" 
+                                                                                  Foreground="{StaticResource AccentBrush}"
+                                                                                  Width="16" Height="16"/>
+                                                    </Button>
 
-                                            <!-- Invoice Info -->
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding FileName}" 
-                                   FontFamily="{StaticResource BodyFont}"
-                                   FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   TextTrimming="CharacterEllipsis"/>
+                                                    <!-- Edit -->
+                                                    <Button Command="{Binding DataContext.EditInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Style="{StaticResource IconButton}"
+                                                            Width="28" Height="28"
+                                                            ToolTip="Modifier">
+                                                        <materialDesign:PackIcon Kind="Pencil" 
+                                                                                  Foreground="{StaticResource PrimaryBrush}"
+                                                                                  Width="16" Height="16"/>
+                                                    </Button>
 
-                                                <WrapPanel>
-                                                    <TextBlock Text="📅 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
-                                                    <TextBlock Text="{Binding InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}" 
-                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    <!-- Delete -->
+                                                    <Button Command="{Binding DataContext.DeleteInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding Id}"
+                                                            Style="{StaticResource IconButton}"
+                                                            Width="28" Height="28"
+                                                            ToolTip="Supprimer">
+                                                        <materialDesign:PackIcon Kind="Close" 
+                                                                                  Foreground="{StaticResource DangerBrush}"
+                                                                                  Width="16" Height="16"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
 
-                                                    <TextBlock Text=" | 💰 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
-                                                    <TextBlock Text="{Binding TotalAmount, StringFormat='{}{0:N2} DA'}" 
-                                       FontSize="11" Foreground="{StaticResource SecondaryBrush}"/>
-
-                                                    <TextBlock Text=" | 💳 " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
-                                                    <TextBlock Text="{Binding AmountPaid, StringFormat='{}{0:N2} DA'}" 
-                                       FontSize="11" Foreground="{StaticResource AccentBrush}"/>
-
-                                                    <TextBlock Text=" | ⏳ " FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="8,0,0,0"/>
-                                                    <TextBlock Text="{Binding AmountRest, StringFormat='{}{0:N2} DA'}" 
-                                       FontSize="11" Foreground="{StaticResource DangerBrush}"/>
-                                                </WrapPanel>
-                                            </StackPanel>
-
-                                            <!-- Delete button -->
-                                            <Button Grid.Column="2" 
-                            Command="{Binding DataContext.DeleteInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding Id}"
-                            Style="{StaticResource IconButton}"
-                            Width="28" Height="28">
-                                                <materialDesign:PackIcon Kind="Close" 
-                                                  Foreground="{StaticResource DangerBrush}"
-                                                  Width="16" Height="16"/>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                        <!-- Action Buttons -->
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,8,0,0">
-                            <Button Command="{Binding DeleteSupplierCommand}"
-                                    Style="{StaticResource DangerButton}"
-                                    MinHeight="36" MinWidth="100" FontSize="13"
-                                    Margin="0,0,8,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" Margin="0,0,6,0"/>
-                                    <TextBlock Text="Supprimer"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SaveSupplierCommand}"
-                                    Style="{StaticResource PrimaryButton}"
-                                    MinHeight="36" MinWidth="100" FontSize="13">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ContentSave" Width="16" Height="16" Margin="0,0,6,0"/>
-                                    <TextBlock Text="Enregistrer"/>
-                                </StackPanel>
-                            </Button>
+                            <TextBlock Text="💡 Les boutons Modifier et Supprimer sont disponibles par ligne." 
+                                       FontSize="12"
+                                       Margin="5,5,5,5"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontStyle="Italic"/>
                         </StackPanel>
 
-                    </StackPanel>
+                    </Grid>
                 </materialDesign:Card>
             </ScrollViewer>
         </Grid>

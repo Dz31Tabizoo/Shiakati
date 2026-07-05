@@ -286,6 +286,7 @@ namespace Shiakati.ViewModels
         [RelayCommand] private void ToggleColor(string color) { SelectedColor = ToggleValue(SelectedColor, color); FilteredProductsView.Refresh(); }
         [RelayCommand] private void ToggleSize(string size) { SelectedSize = ToggleValue(SelectedSize, size); FilteredProductsView.Refresh(); }
         private string? ToggleValue(string? current, string value) => string.Equals(current, value, StringComparison.OrdinalIgnoreCase) ? null : value;
+
         partial void OnSelectedCategoryChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedBrandChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedColorChanged(string value) => FilteredProductsView.Refresh();

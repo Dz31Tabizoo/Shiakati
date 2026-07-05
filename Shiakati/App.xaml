@@ -78,7 +78,12 @@
 
                     <!-- Converter: int to Visibility -->
                     <converters:IntToVisibilityConverter x:Key="IntToVisibility"/>
+                    <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
 
+
+                    <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibility"/>
+                    <converters:BoolToColorConverter x:Key="BoolToColor"/>
+                    <converters:BoolToIconConverter x:Key="BoolToIcon"/>
 
                 </ResourceDictionary>
 
