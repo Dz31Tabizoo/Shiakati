@@ -20,5 +20,15 @@ namespace Shiakati.Models
         [ObservableProperty] private string? _productName;
         [ObservableProperty] private string? _brandName;
         [ObservableProperty] private string? _categoryName;
+
+        public string DisplayName
+        {
+            get => $"{ProductName} / {Color} / {FullSize}".TrimStart('/').TrimEnd('/');
+        }
+
+        // Since you use ObservableProperty, you can manually trigger updates:
+        partial void OnProductNameChanged(string value) => OnPropertyChanged(nameof(DisplayName));
+        partial void OnColorChanged(string value) => OnPropertyChanged(nameof(DisplayName));
+        partial void OnFullSizeChanged(string value) => OnPropertyChanged(nameof(DisplayName));
     }
 }

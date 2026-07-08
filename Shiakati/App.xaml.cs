@@ -149,6 +149,7 @@ namespace Shiakati
             services.AddTransient<DashBordView>();
             services.AddTransient<SupplierViewModel>();
             services.AddTransient<SupplierView>();
+            services.AddTransient<AddInvoiceItemDialog>();
 
             // . Autres services utilitaires
             services.AddSingleton<IPrintService, PrintService>();

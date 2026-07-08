@@ -60,7 +60,7 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
             <!-- ─── LEFT: Supplier List ─── -->
@@ -92,7 +92,7 @@
                               VerticalScrollBarVisibility="Auto"
                               MaxHeight="450">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="Auto" MinWidth="140">
+                            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="Auto" MinWidth="110">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -240,10 +240,11 @@
                                     <CheckBox Grid.Column="1" 
                                               IsChecked="{Binding SelectedSupplier.IsActive}"
                                               Content="Actif"
+                                              MinWidth="80"
                                               FontFamily="{StaticResource BodyFont}"
                                               FontSize="14"
                                               VerticalAlignment="Center"
-                                              Margin="4,0,0,0"/>
+                                              Margin="30,0,0,0"/>
                                 </Grid>
                             </Grid>
 
@@ -291,6 +292,7 @@
                                       ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
                                       CellStyle="{StaticResource ShiakatiDataGridCell}"
                                       RowStyle="{StaticResource ShiakatiDataGridRow}"
+                                      SelectedItem="{Binding SelectedInvoice}"
                                       AutoGenerateColumns="False"
                                       MaxHeight="250"
                                       Margin="0,0,0,8"
@@ -391,12 +393,83 @@
 
                                 </DataGrid.Columns>
                             </DataGrid>
+                            
+                            <!-- ─── INVOICE ITEMS SECTION ─── -->
+                            <Border BorderBrush="{StaticResource BgAltBrush}" 
+                                    BorderThickness="0,1,0,0" 
+                                    Margin="0,12,0,8"/>
 
-                            <TextBlock Text="💡 Les boutons Modifier et Supprimer sont disponibles par ligne." 
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                    <materialDesign:PackIcon Kind="FormatListBulleted" 
+                                  Foreground="{StaticResource SecondaryBrush}"
+                                  Width="20" Height="20" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Articles de la facture" 
+                                               FontFamily="{StaticResource HeadingFont}"
+                                               FontSize="15" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding InvoiceItems.Count, StringFormat=' ({0})'}" 
+                                               FontFamily="{StaticResource BodyFont}"
+                                               FontSize="14"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="4,0,0,0"/>
+                                </StackPanel>
+
+                                <Button Grid.Column="1" 
+                                        Command="{Binding AddInvoiceItemCommand}"
+                                        Style="{StaticResource HelpChipButton}"
+                                        Padding="12,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Plus" Width="16" Height="16" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Ajouter un article" FontSize="12"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+
+                            <!-- Items DataGrid -->
+                            <DataGrid ItemsSource="{Binding InvoiceItems}"                                      
+                                      Style="{StaticResource ShiakatiDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                                      RowStyle="{StaticResource ShiakatiDataGridRow}"
+                                      AutoGenerateColumns="False"
+                                      MaxHeight="180"
+                                      Margin="0,0,0,8"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Variant" Binding="{Binding VariantName}" Width="*"/>
+                                    <DataGridTextColumn Header="Qté" Binding="{Binding Quantity}" Width="60"/>
+                                    <DataGridTextColumn Header="Prix unitaire" Binding="{Binding UnitCost, StringFormat='{}{0:N2} DA'}" Width="100" />
+                                    <DataGridTextColumn Header="Total" Binding="{Binding TotalCost, StringFormat='{}{0:N2} DA'}" Width="100" />
+                                    <DataGridTemplateColumn Header="Actions" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding DataContext.DeleteInvoiceItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding SupplierInvoiceItemId}"
+                                                        Style="{StaticResource IconButton}"
+                                                        Width="28" Height="28"
+                                                        ToolTip="Supprimer">
+                                                    <materialDesign:PackIcon Kind="Close" 
+                                                  Foreground="{StaticResource DangerBrush}"
+                                                  Width="16" Height="16"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <!--<TextBlock Text="💡 Les boutons Modifier et Supprimer sont disponibles par ligne." 
                                        FontSize="12"
                                        Margin="5,5,5,5"
                                        Foreground="{StaticResource TextSecondaryBrush}"
-                                       FontStyle="Italic"/>
+                                       FontStyle="Italic"/>-->
                         </StackPanel>
 
                     </Grid>

@@ -23,5 +23,11 @@ namespace Shiakati.Services.Interfaces
                                                 decimal? amountPaid = null
                                                 );
         Task DeleteInvoiceAsync(int invoiceId);
+
+        Task<List<SupplierInvoiceItemDto>> GetInvoiceItemsAsync(int invoiceId);
+        Task<SupplierInvoiceItemDto> AddInvoiceItemAsync(int invoiceId, AddInvoiceItemRequest request);
+        Task DeleteInvoiceItemAsync(int itemId);
+
+
     }
 }

@@ -40,8 +40,10 @@
     <None Remove="Resources\Icons\NumidixLogoSQR32.ico" />
     <None Remove="Resources\Icons\NumidixLogoSQR64.ico" />
     <None Remove="Resources\Photos\Accessoires.png" />
+    <None Remove="Resources\Photos\bglog.png" />
     <None Remove="Resources\Photos\box.png" />
     <None Remove="Resources\Photos\Chaussures.png" />
+    <None Remove="Resources\Photos\logo send f.png" />
     <None Remove="Resources\Photos\NumidixLogoSQR.png" />
     <None Remove="Resources\Photos\Pantalon.png" />
     <None Remove="Resources\Photos\Parfum.png" />
@@ -54,9 +56,15 @@
     <None Remove="Resources\Photos\Shiakati Dark Logo.jpg" />
     <None Remove="Resources\Photos\Shiakati Light Logo.jpg" />
     <None Remove="Resources\Photos\shiakati logo on secondary brush.png" />
+    <None Remove="Resources\Photos\shiakati name.png" />
     <None Remove="Resources\Photos\Sous-Vetements.png" />
     <None Remove="Resources\Photos\Thob-H.png" />
+    <None Remove="Resources\Photos\Untitled.png" />
     <None Remove="ToDo.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Photos\logo send f.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,8 +93,10 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Photos\shiakati logo on secondary brush.png" />
+    <Resource Include="Resources\Photos\shiakati name.png" />
     <Resource Include="Resources\Photos\Sous-Vetements.png" />
     <Resource Include="Resources\Photos\Thob-H.png" />
+    <Resource Include="Resources\Photos\Untitled.png" />
     <Resource Include="ToDo.txt">
       <Generator>MSBuild:Compile</Generator>
     </Resource>

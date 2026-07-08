@@ -125,5 +125,27 @@ namespace Shiakati.Services.Implementations
             var response = await _httpClient.DeleteAsync($"api/suppliers/invoices/{invoiceId}");
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<List<SupplierInvoiceItemDto>> GetInvoiceItemsAsync(int invoiceId)
+        {
+            var response = await _httpClient.GetAsync($"api/suppliers/invoices/{invoiceId}/items");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<SupplierInvoiceItemDto>>(_jsonOptions) ?? new();
+        }
+
+        public async Task<SupplierInvoiceItemDto> AddInvoiceItemAsync(int invoiceId, AddInvoiceItemRequest request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"api/suppliers/invoices/{invoiceId}/items", request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<SupplierInvoiceItemDto>(_jsonOptions);
+        }
+
+        public async Task DeleteInvoiceItemAsync(int itemId)
+        {
+            var response = await _httpClient.DeleteAsync($"api/suppliers/invoices/items/{itemId}");
+            response.EnsureSuccessStatusCode();
+        }
+
+
     }
 }
