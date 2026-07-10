@@ -15,6 +15,7 @@ namespace Shiakati.ViewModels
 {
     public partial class SupplierViewModel : ObservableObject
     {
+        //APPdATA COMMING
         private readonly ISupplierService _supplierService;
         private readonly IProductVariantsService _prod;
 
