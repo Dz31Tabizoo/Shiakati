@@ -21,6 +21,7 @@ namespace Shiakati.ViewModels
 {
     public partial class StockViewModel : ObservableObject
     {
+        //before the constructor, declare the services and collections7
         // ─────────────────────────────────────────────────────────
         //   Services
         // ─────────────────────────────────────────────────────────
