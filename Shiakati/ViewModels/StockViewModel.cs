@@ -5,6 +5,7 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Shiakati.ViewModels
         //   Services
         // ─────────────────────────────────────────────────────────
         private readonly IBarCodePrintService _printerService;
-        private readonly ICatalogService _catalogDb;
+        private readonly ICatalogDataService _catalogDataService;
         private readonly IProductsService _productsService;
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
@@ -39,14 +40,14 @@ namespace Shiakati.ViewModels
         private List<ProductVariantModel> _allStockItems = new();
 
         public StockViewModel(IBarCodePrintService printerService,
-                              ICatalogService db,
+                              ICatalogDataService catalogDataService,
                               IProductVariantsService stockService,
                               ICacheService cacheService,
                               IProductsService productsService, IPrintService printServ)
         {
             _printerService = printerService;
             _printService = printServ;
-            _catalogDb = db;
+            _catalogDataService = catalogDataService;
             _productsService = productsService;
             _stockService = stockService;
             _cacheService = cacheService;
@@ -139,9 +140,9 @@ namespace Shiakati.ViewModels
             try
             {
                 IsLoading = true;
-                var catalog = await _cacheService.GetOrLoadAsync<(List<BrandsModel> Brands, List<CategoryModel> Categories)>(
-                                    CacheKeys.Catalog,
-                                    () => _catalogDb.GetInitialGatalogDataAsync());
+
+                await _catalogDataService.LoadCatalogAsync();
+
 
                 // Products may not be available on all endpoints – we catch the exception
                 List<ProductModel> prods = new();
@@ -176,10 +177,10 @@ namespace Shiakati.ViewModels
 
                     // Rebuild filter dropdowns
                     Categories.Clear();
-                    foreach (var c in catalog.Categories) Categories.Add(c);
+                    foreach (var c in _catalogDataService.Categories) Categories.Add(c);
 
                     Brands.Clear();
-                    foreach (var b in catalog.Brands) Brands.Add(b);
+                    foreach (var b in _catalogDataService.Brands) Brands.Add(b);
 
                     Products.Clear();
                     foreach (var p in prods) Products.Add(p);

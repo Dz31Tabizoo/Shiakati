@@ -9,6 +9,8 @@ using Microsoft.Extensions.Http;
 using Shiakati.Helpers;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
+using Shiakati.Services.Implementations.Shiakati.Services.Implementations;
+using Shiakati.Services.Interfaces.DataServices;
 
 namespace Shiakati
 {
@@ -155,7 +157,11 @@ namespace Shiakati
             services.AddSingleton<IPrintService, PrintService>();
             services.AddTransient<IBarCodePrintService, BarcodePrintService>();
             services.AddSingleton<ICacheService, AppCacheService>();
-            
+
+            // Data Services
+            services.AddSingleton<AppDataService>();
+            services.AddSingleton<ICatalogDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IClientDataService>(sp=> sp.GetRequiredService<AppDataService>());
         }
         protected override void OnStartup(StartupEventArgs e)
         {

@@ -167,10 +167,13 @@
                 </StackPanel>
                 <!-- Footer -->
                 <TextBlock Grid.Row="2"
-                           Text="Shiakati POS v1.1 © 2026"
                            Foreground="{StaticResource TextSecondaryBrush}"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,0"/>
+                           Margin="0,0,0,0">
+                    <Run Text="Shiakati POS v"/>
+                    <Run Text="{Binding Version,Mode=OneWay}"/>
+                    <Run Text=" © 2026"/>
+                </TextBlock>
             </Grid>
         </Grid>
     </Border>

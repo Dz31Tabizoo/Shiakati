@@ -99,9 +99,18 @@
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
                                Width="25" Height="36" VerticalAlignment="Center" Stretch="Uniform"/>
                         <TextBlock Text=" Shiakati  شياكتي" 
-                                   FontFamily="{StaticResource HeadingFont}" 
+                                   FontFamily="{StaticResource ArabicFont}" 
                                    FontSize="24" FontWeight="Bold" Margin="8,0"
                                    Foreground="White" VerticalAlignment="Center"/>
+                        <TextBlock 
+                                   Foreground="{StaticResource TextOnPrimaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Margin="2,10,0,0">
+                        <Run Text="POS v"/>
+                        <Run Text="{Binding Version,Mode=OneWay}"/>
+                        <Run Text=" © 2026"/>
+                            </TextBlock>
+
                     </StackPanel>
 
                     <!-- Right side controls: navigation toggle + window buttons -->

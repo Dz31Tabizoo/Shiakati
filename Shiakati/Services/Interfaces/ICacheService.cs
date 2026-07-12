@@ -13,6 +13,6 @@ namespace Shiakati.Services.Interfaces
         bool Contains(string key);
         void Remove(string key);
         void Clear();
-        Task<T> GetOrLoadAsync<T>(string key, Func<Task<T>> loadFromDbFunc);
+        Task<T> GetOrLoadAsync<T>(string key, Func<Task<T>> loadFromDbFunc, TimeSpan? expiration = null);
     }
 }

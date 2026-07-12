@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shiakati;
+using Shiakati.Helpers;
 using Shiakati.Services.Interfaces;
 using Shiakati.Views;
 using System.Windows;
@@ -14,6 +15,8 @@ public partial class LoginViewModel : ObservableObject
     private readonly ILogger<LoginViewModel> _logger;
 
     public event Action? LoginCompleted;
+
+    public string Version { get => AppVersion.GetVersion(); set { } }
 
     [ObservableProperty]
     private string _username = string.Empty;

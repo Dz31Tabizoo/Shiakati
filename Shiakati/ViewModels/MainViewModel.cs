@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Shiakati.Helpers;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
@@ -18,6 +19,9 @@ namespace Shiakati.ViewModels
     {
         private readonly IAuthenticationClientService _authService;
         private readonly ICacheService _cacheService;
+
+        public string Version { get => AppVersion.GetVersion(); set { } }
+
 
         [ObservableProperty] private object? _currentView;
         [ObservableProperty] private string? _currentViewTitle;

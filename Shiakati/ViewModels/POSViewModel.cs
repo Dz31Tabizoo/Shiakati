@@ -6,6 +6,7 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,7 +22,7 @@ namespace Shiakati.ViewModels
         private readonly IReservationService _reservationService;
         private readonly ILogger<POSViewModel> _logger;
         private readonly IPrintService _printService;
-        private readonly ICatalogService _catalogDb;
+        private readonly ICatalogDataService _catalogDataService;
         private readonly IProductsService _productsService;
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
@@ -33,13 +34,13 @@ namespace Shiakati.ViewModels
         private readonly ObservableCollection<ProductVariantModel> _posProducts = new();
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
-                            ICatalogService catalogDb, IProductsService productsService,
+                            ICatalogDataService catalogDataService, IProductsService productsService,
                             IProductVariantsService stockService, ICacheService cacheService,IReservationService reservation , ISaleService saleService, IClientService clientService)
         {
             TabName = name;
             _logger = logger;
             _printService = printService;
-            _catalogDb = catalogDb;
+            _catalogDataService = catalogDataService;
             _productsService = productsService;
             _stockService = stockService;
             _cacheService = cacheService;
@@ -57,7 +58,7 @@ namespace Shiakati.ViewModels
             {
                 LoadSaleForEditing(m.Sale, m.Items);
             });
-
+            _catalogDataService.DataChanged += OnCatalogChanged;
             _ = LoadProductsAsync();
 
             WeakReferenceMessenger.Default.Register<StockUpdatedMessage>(this, (r, m) =>
@@ -73,6 +74,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private string _searchText = string.Empty;
 
+        
 
         [ObservableProperty] private ObservableCollection<string> _categories = new();
         [ObservableProperty] private ObservableCollection<string> _brands = new();
@@ -118,13 +120,11 @@ namespace Shiakati.ViewModels
             {
                 IsLoading = true;
 
-                var catalog = await _cacheService.GetOrLoadAsync<(List<BrandsModel> Brands, List<CategoryModel> Categories)>(
-                    CacheKeys.Catalog,
-                    () => _catalogDb.GetInitialGatalogDataAsync());
+                await _catalogDataService.LoadCatalogAsync();
 
                 Categories.Clear();
                 Categories.Add("TOUT");
-                foreach (var cat in catalog.Categories)
+                foreach (var cat in _catalogDataService.Categories)
                     Categories.Add(cat.CategoryName);
 
                 var items = await _cacheService.GetOrLoadAsync("StockVariants", _stockService.GetProductVariantsAsync);
@@ -730,6 +730,19 @@ namespace Shiakati.ViewModels
                     MessageBox.Show("Erreur lors de l'enregistrement de la réservation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally { IsLoading = false; }
+        }
+
+
+        // ------------------- End of reservation ------------------
+        private void OnCatalogChanged()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Categories.Clear();
+                Categories.Add("TOUT");
+                foreach (var cat in _catalogDataService.Categories)
+                    Categories.Add(cat.CategoryName);
+            });
         }
     }
 }

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
@@ -13,55 +14,31 @@ namespace Shiakati.ViewModels
 {
     public partial class SettingsViewModel : ObservableObject
     {
-        private readonly ICacheService _cache;
-        private readonly ICatalogService _catalogDb;
+        
+        private readonly ICatalogDataService _catalogDataService;
         private readonly IAuthenticationClientService _authService;
 
         [ObservableProperty] private string? _selectedTicketPrinterName;
         [ObservableProperty] private string? _selectedBarcodePrinterName;
         [ObservableProperty] private string _newCategoryName = string.Empty;
 
-        public ObservableCollection<CategoryModel> GlobalCategories { get; } = new();
+        public ObservableCollection<CategoryModel> GlobalCategories => _catalogDataService.Categories;
+
         public ObservableCollection<string> InstalledPrinters { get; } = new();
 
         //constractor
-        public SettingsViewModel(ICacheService cacheService, ICatalogService catalogService, IAuthenticationClientService authenticationClientService)
+        public SettingsViewModel(ICatalogDataService catalogDataService, IAuthenticationClientService authenticationClientService)
         {
-            _cache = cacheService;
-            _catalogDb = catalogService;
+            
+            _catalogDataService = catalogDataService;
             _authService = authenticationClientService;
 
             LoadPrinters();
             SelectedTicketPrinterName = Settings.Default.TicketPrinterName;
             SelectedBarcodePrinterName = Settings.Default.BarcodePrinterName;
-            _ = LoadCategoriesAsync();
+            
         }
 
-        private async Task LoadCategoriesAsync()
-        {
-            try
-            {
-                _cache.Clear();
-                var catalog = await _cache.GetOrLoadAsync<(List<BrandsModel> Brands, List<CategoryModel> Categories)>(
-              CacheKeys.Catalog,
-              () => _catalogDb.GetInitialGatalogDataAsync());
-
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    GlobalCategories.Clear();
-                    if (catalog.Categories != null)
-                    {
-                        foreach (var cat in catalog.Categories ?? new())
-                            GlobalCategories.Add(cat);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erreur chargement paramètres: {ex.Message}");
-            }
-
-        }
         [RelayCommand]
         private async Task AddCategory()
         {
@@ -73,9 +50,7 @@ namespace Shiakati.ViewModels
             };
 
 
-            await _catalogDb.AddCategoryModelAsync(newCategory);
-
-            await LoadCategoriesAsync();
+            await _catalogDataService.AddCategoryAsync(newCategory);
             NewCategoryName = string.Empty;
         }
         private void LoadPrinters()
