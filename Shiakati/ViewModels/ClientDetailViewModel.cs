@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
+using Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace Shiakati.ViewModels
 {
     public partial class ClientDetailViewModel : ObservableObject
     {
-        private readonly IClientService _clientService;
+        private readonly IClientDataService _clientDataService;
         private int _clientId;
 
         [ObservableProperty] private ClientDetailDto? _client;
@@ -42,9 +44,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private DateTime? _creditExpiresAt;
         [ObservableProperty] private decimal _totalPurchases;
 
-        public ClientDetailViewModel(IClientService clientService)
+        public ClientDetailViewModel(IClientDataService clientDataService)
         {
-            _clientService = clientService;
+            _clientDataService = clientDataService;
         }
 
         public async Task LoadClientAsync(int clientId)
@@ -60,7 +62,7 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                var detail = await _clientService.GetClientDetailAsync(_clientId);
+                var detail = await _clientDataService.GetClientDetailAsync(_clientId);
                 if (detail != null)
                 {
                     Client = detail;
@@ -74,13 +76,14 @@ namespace Shiakati.ViewModels
                 
 
                 // Load sales
-                var salesList = await _clientService.GetClientSalesAsync(_clientId);
+                var salesList = await _clientDataService.GetClientSalesAsync(_clientId);
                 Sales.Clear();
                 foreach (var s in salesList) Sales.Add(s);
                 TotalPurchases = Sales.Sum(s => s.TotalAmount ?? 0);
             }
             finally { IsLoading = false; }
         }
+
         [RelayCommand] private async Task EditClient()
         {
             if (Client == null) return;
@@ -88,21 +91,23 @@ namespace Shiakati.ViewModels
             var dialog = new ClientEditDialog(Client.FullName, Client.PhoneNumber, Client.Address, Client.Email);
             if (dialog.ShowDialog() == true)
             {
-                var request = new CreateClientRequest
+                var updatedClient = new ClientSummaryDto
                 {
+                    ClientId = _clientId,
                     FullName = dialog.FullName,
                     PhoneNumber = dialog.PhoneNumber,
                     Address = dialog.Address,
                     Email = dialog.Email
                 };
-                var success = await _clientService.UpdateClientAsync(_clientId, request);
-                if (success)
+                try 
                 {
+                    await _clientDataService.UpdateClientAsync(updatedClient);
+
                     await LoadAsync(); // refresh detail
                 }
-                else
+                catch(Exception ex)
                 {
-                    MessageBox.Show("Erreur lors de la mise à jour.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -111,13 +116,13 @@ namespace Shiakati.ViewModels
         {
             if (CreditAmount <= 0) return;
             var request = new CreateCreditRequest { ClientId = _clientId, Amount = CreditAmount, Notes = CreditNotes, ExpiresAt = CreditExpiresAt };
-            var success = await _clientService.GrantCreditAsync(request);
+            var success = await _clientDataService.GrantCreditAsync(request);
             if (success)
             {
                 CreditAmount = 0; CreditNotes = null; CreditExpiresAt = null;
                 await LoadAsync(); // refresh
             }
-            else MessageBox.Show("Erreur lors de l'ajout du crédit.");
+            else MessageBox.Show("Erreur lors de l'ajout du crédit.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         [RelayCommand]
@@ -125,7 +130,7 @@ namespace Shiakati.ViewModels
         {
             if (VersementAmount <= 0) return;
             var request = new CreateVersementRequest { ClientId = _clientId, Amount = VersementAmount, Notes = VersementNotes };
-            var success = await _clientService.AddVersementAsync(request);
+            var success = await _clientDataService.AddVersementAsync(request);
             if (success)
             {
                 VersementAmount = 0; VersementNotes = null;

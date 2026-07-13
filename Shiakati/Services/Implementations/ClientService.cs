@@ -30,11 +30,11 @@ namespace Shiakati.Services.Implementations
             return null;
         }
 
-        public async Task<ClientDto?> CreateClientAsync(CreateClientRequest request)
+        public async Task<ClientSummaryDto?> CreateClientAsync(CreateClientRequest request)
         {
             var response = await _http.PostAsJsonAsync("api/clients", request);
             if (response.IsSuccessStatusCode)
-                return await response.Content.ReadFromJsonAsync<ClientDto>();
+                return await response.Content.ReadFromJsonAsync<ClientSummaryDto>();
             return null;
         }
 

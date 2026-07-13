@@ -27,7 +27,7 @@ namespace Shiakati.ViewModels
         private readonly IProductVariantsService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleService _saleService;
-        private readonly IClientService _clientService;
+        private readonly IClientDataService _clientDataService;
         private bool _skipGridRefresh;
 
         // ---- Stable collection for the ICollectionView ----
@@ -35,7 +35,7 @@ namespace Shiakati.ViewModels
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogDataService catalogDataService, IProductsService productsService,
-                            IProductVariantsService stockService, ICacheService cacheService,IReservationService reservation , ISaleService saleService, IClientService clientService)
+                            IProductVariantsService stockService, ICacheService cacheService,IReservationService reservation , ISaleService saleService, IClientDataService clientDataService)
         {
             TabName = name;
             _logger = logger;
@@ -45,7 +45,7 @@ namespace Shiakati.ViewModels
             _stockService = stockService;
             _cacheService = cacheService;
             _saleService = saleService;
-            _clientService = clientService;
+            _clientDataService = clientDataService;
             _reservationService = reservation;
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
@@ -246,7 +246,7 @@ namespace Shiakati.ViewModels
         //----------- Client Sales Management --------------
         [RelayCommand] private void OpenClientSelectionDialog()
         {
-            var dialog = new ClientSelectorDialog(_clientService) { Owner = Application.Current.MainWindow };
+            var dialog = new ClientSelectorDialog(_clientDataService) { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
             {
                 SelectedClient = dialog.SelectedClient;

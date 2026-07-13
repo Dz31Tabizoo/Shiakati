@@ -16,6 +16,7 @@ namespace Shiakati.Services.Implementations
     internal class AppDataService : ICatalogDataService,IClientDataService
     {
         private readonly ICatalogService _catalogService;
+        private readonly IClientService _clientService;
         private readonly ICacheService _cache;
         private readonly ILogger <AppDataService> _logger;
 
@@ -31,10 +32,12 @@ namespace Shiakati.Services.Implementations
         public AppDataService(
             ICatalogService catalogService,
             ICacheService cache,
+            IClientService clientService,
             ILogger<AppDataService> logger)
         {
             _catalogService = catalogService;
             _cache = cache;
+            _clientService = clientService;
             _logger = logger;
         }
 
@@ -100,18 +103,109 @@ namespace Shiakati.Services.Implementations
 
 
         // ───  IClientDataService ────────────────────────────────────────────
-        // to be continued with methods for loading clients, adding clients, updating clients, etc., similar to the catalog methods above.
+        public async Task LoadClientsAsync()
+        {
+            if (_clientsLoaded) return;
 
+            var data = await _cache.GetOrLoadAsync(CacheKeys.Clients, async () =>
+            {
+                _logger.LogInformation("Fetching clients from API");
+                return await _clientService.GetClientSummariesAsync(null) ?? new List<ClientSummaryDto>();
+            });
 
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Clients.Clear();
+                foreach (var client in data)
+                    Clients.Add(client);
+                _clientsLoaded = true;
+            });
+        }
 
+        public async Task<ClientSummaryDto> AddClientAsync(CreateClientRequest client)
+        {
+            var request = new CreateClientRequest
+            {
+                FullName = client.FullName,
+                PhoneNumber = client.PhoneNumber,
+                Address = client.Address,
+                Email = client.Email
+            };
 
+            var created = await _clientService.CreateClientAsync(request);
+            if (created == null)
+                throw new Exception("Failed to create client.");
 
+            _cache.Remove(CacheKeys.Clients);
 
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Clients.Add(created);
+            });
 
+            DataChanged?.Invoke();
+            return created;
+        }
 
+        public async Task UpdateClientAsync(ClientSummaryDto client)
+        {
+            var request = new CreateClientRequest
+            {
+                FullName = client.FullName,
+                PhoneNumber = client.PhoneNumber,
+                Address = client.Address,
+                Email = client.Email
+            };
 
+            var success = await _clientService.UpdateClientAsync(client.ClientId, request);
+            if (!success)
+                throw new Exception("Failed to update client.");
 
+            _cache.Remove(CacheKeys.Clients);
 
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                var existing = Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+                if (existing != null)
+                {
+                    int index = Clients.IndexOf(existing);
+                    Clients[index] = client;
+                }
+            });
+
+            await LoadClientsAsync(); // Refresh the entire list to ensure balances are updated
+            DataChanged?.Invoke();
+        }
+
+        public async Task<bool> AddVersementAsync(CreateVersementRequest request)
+        {
+            var success = await _clientService.AddVersementAsync(request);
+            if (success)
+            {
+                _cache.Remove(CacheKeys.Clients);
+                await LoadClientsAsync(); // Refresh the entire list to update balances
+                DataChanged?.Invoke();
+            }
+            return success;
+        }
+
+        public async Task<bool> GrantCreditAsync(CreateCreditRequest request)
+        {
+            var success = await _clientService.GrantCreditAsync(request);
+            if (success)
+            {
+                _cache.Remove(CacheKeys.Clients);
+                await LoadClientsAsync(); // Refresh the entire list
+                DataChanged?.Invoke();
+            }
+            return success;
+        }
+
+        public async Task<ClientDetailDto?> GetClientDetailAsync(int clientId)
+                     => await _clientService.GetClientDetailAsync(clientId);
+
+        public async Task<List<ClientSaleDto>> GetClientSalesAsync(int clientId)
+                     => await _clientService.GetClientSalesAsync(clientId);
 
 
 

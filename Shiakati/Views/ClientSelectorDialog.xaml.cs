@@ -5,31 +5,49 @@ using System.Windows;
 using System.Windows.Controls;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 
 namespace Shiakati.Views
 {
     public partial class ClientSelectorDialog : Window
     {
-        private readonly IClientService _clientService;
+        private readonly IClientDataService _clientDataService;
         private List<ClientSummaryDto> _allClients = new();
         public ClientSummaryDto? SelectedClient { get; private set; }
 
-        public ClientSelectorDialog(IClientService clientService)
+        public ClientSelectorDialog(IClientDataService clientDataService)
         {
             InitializeComponent();
-            _clientService = clientService;
+            _clientDataService = clientDataService;
             Loaded += async (s, e) => await LoadClientsAsync();
         }
 
         private async Task LoadClientsAsync(string? search = null)
         {
-            _allClients = await _clientService.GetClientSummariesAsync(search);
-            ClientsGrid.ItemsSource = _allClients;
+            await _clientDataService.LoadClientsAsync();
+            _allClients = _clientDataService.Clients.ToList();
+
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            string search = SearchTextBox?.Text ?? string.Empty;
+
+            var filtered = string.IsNullOrWhiteSpace(search)
+                ? _allClients
+                : _allClients
+                    .Where(c =>
+                        (c.FullName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (c.PhoneNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) == true))
+                    .ToList();
+
+            ClientsGrid.ItemsSource = filtered;
         }
 
         private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            await LoadClientsAsync(SearchTextBox.Text);
+            ApplyFilter();
         }
 
         private void ClientsGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -52,7 +70,8 @@ namespace Shiakati.Views
             }
             else
             {
-                MessageBox.Show("Veuillez sélectionner un client dans la liste.", "Aucun client sélectionné", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Veuillez sélectionner un client dans la liste.",
+                "Aucun client sélectionné", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }

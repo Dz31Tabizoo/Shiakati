@@ -12,5 +12,6 @@ namespace Shiakati.Models
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Address { get; set; }
         public string? Email { get; set; }
+
     }
 }

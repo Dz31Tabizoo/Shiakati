@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.Generic;
@@ -19,18 +20,19 @@ namespace Shiakati.ViewModels
     {
         private CancellationTokenSource? _loadCts;
 
-        private readonly IClientService _clientService;
+        private readonly IClientDataService _clientDataService;
         private readonly IServiceProvider _serviceProvider; // ← added
 
         [ObservableProperty] private string _searchText = string.Empty;
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private ClientSummaryDto? _selectedClient;
         public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
+        private List<ClientSummaryDto> _allClients = new();
 
         // Constructor with IServiceProvider
-        public ClientListViewModel(IClientService clientService, IServiceProvider serviceProvider)
+        public ClientListViewModel(IClientDataService clientDataService, IServiceProvider serviceProvider)
         {
-            _clientService = clientService;
+            _clientDataService = clientDataService;
             _serviceProvider = serviceProvider;
             _ = LoadClientsAsync();
         }
@@ -43,23 +45,37 @@ namespace Shiakati.ViewModels
             try
             {
                 token.ThrowIfCancellationRequested();
-                var list = await _clientService.GetClientSummariesAsync(SearchText);
-                if (!token.IsCancellationRequested)
-                {
-                    Clients.Clear();
-                    foreach (var c in list) Clients.Add(c);
-                }
+
+                await _clientDataService.LoadClientsAsync();
+                _allClients = _clientDataService.Clients.ToList();
+
+                ApplyFilter();
+
             }
             catch (OperationCanceledException) { }
             finally { IsLoading = false; }
+        }
+
+        private void ApplyFilter()
+        {
+            var filteredClients = string.IsNullOrWhiteSpace(SearchText)
+                ? _allClients
+                : _allClients.Where(c =>
+                    (c.FullName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
+                    (c.PhoneNumber?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true))
+                    .ToList();
+
+            Clients.Clear();
+            foreach (var client in filteredClients)
+                Clients.Add(client);
         }
 
         partial void OnSearchTextChanged(string value)
         {
             _loadCts?.Cancel();
             _loadCts = new CancellationTokenSource();
-            var token = _loadCts.Token;
-            _ = LoadClientsAsync(token);
+
+            ApplyFilter();
         }
 
         [RelayCommand]
@@ -78,7 +94,7 @@ namespace Shiakati.ViewModels
                 };
                 try
                 {
-                    var newClient = await _clientService.CreateClientAsync(request);
+                    var newClient = await _clientDataService.AddClientAsync(request);
                     if (newClient != null)
                     {
                         await LoadClientsAsync(); // refresh

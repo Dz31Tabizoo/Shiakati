@@ -13,9 +13,9 @@ namespace Shiakati.Services.Interfaces.DataServices
         ObservableCollection<ClientSummaryDto> Clients { get; }
 
         Task LoadClientsAsync();
-        Task<ClientSummaryDto> AddClientAsync(ClientSummaryDto client);
+        Task<ClientSummaryDto> AddClientAsync(CreateClientRequest client);
         Task UpdateClientAsync(ClientSummaryDto client);
-        Task DeleteClientAsync(int clientId);
+        //Task DeleteClientAsync(int clientId);
 
         // These may affect the list, so we include them here:
         Task<bool> AddVersementAsync(CreateVersementRequest request);

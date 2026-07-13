@@ -5,7 +5,7 @@ namespace Shiakati.Services.Interfaces
     public interface IClientService
     {
         Task<bool> AddVersementAsync(CreateVersementRequest request);
-        Task<ClientDto?> CreateClientAsync(CreateClientRequest request);
+        Task<ClientSummaryDto?> CreateClientAsync(CreateClientRequest request);
         Task<ClientDetailDto?> GetClientDetailAsync(int clientId);
         Task<List<ClientSummaryDto>> GetClientSummariesAsync(string? search);
         Task<bool> GrantCreditAsync(CreateCreditRequest request);
