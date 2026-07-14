@@ -1,0 +1,85 @@
+﻿<Window x:Class="Shiakati.Views.SplashLoadingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shiakati.Views"
+        mc:Ignorable="d"
+        WindowStyle="None" 
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        Title="SplashLoadingWindow" Height="620" Width="1020"
+        Background="Transparent">
+
+    <Border CornerRadius="22" Margin="25" >
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" ShadowDepth="3" Opacity="0.25"/>
+        </Border.Effect>
+
+        <Border.Background>
+            <ImageBrush ImageSource="/Resources/Photos/SplashBackGround.png" Stretch="UniformToFill" />
+        </Border.Background>
+
+        <Border CornerRadius="22">
+            <Border.Background>
+                <RadialGradientBrush Center="0.5,0.5" RadiusX="0.8" RadiusY="0.8">
+                    <GradientStop Color="#8013314B" Offset="0.0" />
+
+                    <GradientStop Color="#4D13314B" Offset="0.6" />
+
+                    <GradientStop Color="#00000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </Border.Background>
+            <Grid Margin="35,5">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
+
+                <Grid Width="220" Height="220" Margin="0,33,0,0">
+                    <Ellipse Stroke="#BCDFFB" StrokeThickness="12" Margin="10" />
+
+                    <Grid RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <RotateTransform x:Name="Spinner" />
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            Storyboard.TargetProperty="(RenderTransform).(RotateTransform.Angle)"
+                                            From="0" To="360" Duration="0:0:1.5" 
+                                            RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+
+                        <Path Data="M 110,10 A 100,100 0 0 1 210,110" 
+                              Stroke="#2196F3" StrokeThickness="12" 
+                              StrokeEndLineCap="Round" StrokeStartLineCap="Round" Margin="-4,4,4,-4" />
+                    </Grid>
+                </Grid>
+
+                <TextBlock Text="Synchronisation des données..."
+                           FontSize="24" FontWeight="Medium" 
+                           Foreground="#FFFFFF" 
+                           FontFamily="{StaticResource BodyFont}"
+                           HorizontalAlignment="Center"
+                           Margin="0,-5"/>
+                
+                
+            </StackPanel>
+                <TextBlock VerticalAlignment="Top" 
+               HorizontalAlignment="Left" 
+               Foreground="{StaticResource SecondaryBrush }"
+               FontSize="15">
+        <Run Text="Shiakati POS v"/>
+        <Run Text="{Binding Version, Mode=OneWay}"/>
+        <Run Text=" © 2026"/>
+                </TextBlock>
+            </Grid>
+            
+        </Border>
+
+    </Border>
+</Window>

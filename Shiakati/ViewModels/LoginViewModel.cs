@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Shiakati;
 using Shiakati.Helpers;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,8 +14,10 @@ public partial class LoginViewModel : ObservableObject
 {
     private readonly IAuthenticationClientService _authService;
     private readonly ILogger<LoginViewModel> _logger;
+    private readonly IDataLoader _dataLoader;
 
     public event Action? LoginCompleted;
+    public event Action<bool>? LoadingStateChanged;
 
     public string Version { get => AppVersion.GetVersion(); set { } }
 
@@ -34,10 +37,11 @@ public partial class LoginViewModel : ObservableObject
     public event Action? RequestClose;
 
     // Injection cohérente du ILogger
-    public LoginViewModel(IAuthenticationClientService authService, ILogger<LoginViewModel> logger)
+    public LoginViewModel(IAuthenticationClientService authService,IDataLoader dataLoader, ILogger<LoginViewModel> logger)
     {
         _authService = authService;
         _logger = logger;
+        _dataLoader = dataLoader;
     }
 
     [RelayCommand]
@@ -56,30 +60,53 @@ public partial class LoginViewModel : ObservableObject
         IsLoading = true;
         HasError = false;
 
-        var result = await _authService.LoginAsync(Username, password);
-
-        // Plus de risque de NullReferenceException ici
-        if (result.Success)
+        try
         {
-            // Navigation vers la vue principale
-            var mainView = App.ServiceProvider.GetRequiredService<MainView>();
-            Application.Current.MainWindow = mainView;
-            mainView.Show();
 
-            // On demande la fermeture de la fenêtre de login proprement
-            OnLoginSuccess();
+            var result = await _authService.LoginAsync(Username, password);
+
+            // Plus de risque de NullReferenceException ici
+            if (result.Success)
+            {
+
+
+                await _dataLoader.LoadAllEssentialDataAsync();
+
+
+
+                // Navigation vers la vue principale
+                var mainView = App.ServiceProvider.GetRequiredService<MainView>();
+                Application.Current.MainWindow = mainView;
+                mainView.Show();
+
+                // On demande la fermeture de la fenêtre de login proprement
+                OnLoginSuccess();
+            }
+            else
+            {
+                _logger.LogWarning(result.Message ?? "Login failed for user {Username}", Username);
+                ErrorMessage = result.Message ?? "Échec de la connexion.";
+                HasError = true;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _logger.LogWarning(result.Message ?? "Login failed for user {Username}", Username);
-            ErrorMessage = result.Message ?? "Échec de la connexion.";
+            _logger.LogError(ex, "Une erreur système est survenue lors de la connexion.");
+            ErrorMessage = "Une erreur critique est survenue. Veuillez réessayer.";
             HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
         }
 
         IsLoading = false;
     }
 
-
+    partial void OnIsLoadingChanged(bool value)
+    {
+        LoadingStateChanged?.Invoke(value);
+    }
 
     private void OnLoginSuccess()
     {

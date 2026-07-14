@@ -59,6 +59,7 @@
     <None Remove="Resources\Photos\shiakati logo on secondary brush.png" />
     <None Remove="Resources\Photos\shiakati name.png" />
     <None Remove="Resources\Photos\Sous-Vetements.png" />
+    <None Remove="Resources\Photos\SplashBackGround.png" />
     <None Remove="Resources\Photos\Thob-H.png" />
     <None Remove="Resources\Photos\Untitled.png" />
     <None Remove="ToDo.txt" />
@@ -96,6 +97,7 @@
     <Resource Include="Resources\Photos\shiakati logo on secondary brush.png" />
     <Resource Include="Resources\Photos\shiakati name.png" />
     <Resource Include="Resources\Photos\Sous-Vetements.png" />
+    <Resource Include="Resources\Photos\SplashBackGround.png" />
     <Resource Include="Resources\Photos\Thob-H.png" />
     <Resource Include="Resources\Photos\Untitled.png" />
     <Resource Include="ToDo.txt">

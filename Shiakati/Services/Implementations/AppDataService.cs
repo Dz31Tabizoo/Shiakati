@@ -13,16 +13,20 @@ using System.Windows;
 
 namespace Shiakati.Services.Implementations
 {
-    internal class AppDataService : ICatalogDataService,IClientDataService
+    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader
     {
         private readonly ICatalogService _catalogService;
         private readonly IClientService _clientService;
+        private readonly IDashBordService _dashBordService;
+
         private readonly ICacheService _cache;
         private readonly ILogger <AppDataService> _logger;
 
         public ObservableCollection<BrandsModel> Brands { get; } = new(); 
         public ObservableCollection<CategoryModel> Categories { get; } = new();
         public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
+        public ObservableCollection<StockMovementModel> StockMovements { get; }
+        public ObservableCollection<StockAlertDto> StockAlerts { get; }
 
         private bool _catalogLoaded;
         private bool _clientsLoaded;
@@ -33,15 +37,17 @@ namespace Shiakati.Services.Implementations
             ICatalogService catalogService,
             ICacheService cache,
             IClientService clientService,
+            IDashBordService dashBordService,
             ILogger<AppDataService> logger)
         {
             _catalogService = catalogService;
             _cache = cache;
+            _dashBordService = dashBordService;
             _clientService = clientService;
             _logger = logger;
         }
 
-        // ───  ICatalogDataService ────────────────────────────────────────────
+        // ───  CatalogService ────────────────────────────────────────────
         public async Task LoadCatalogAsync()
         {
             if (_catalogLoaded) return;
@@ -102,7 +108,7 @@ namespace Shiakati.Services.Implementations
         }
 
 
-        // ───  IClientDataService ────────────────────────────────────────────
+        // ───  ClientService ────────────────────────────────────────────
         public async Task LoadClientsAsync()
         {
             if (_clientsLoaded) return;
@@ -207,7 +213,35 @@ namespace Shiakati.Services.Implementations
         public async Task<List<ClientSaleDto>> GetClientSalesAsync(int clientId)
                      => await _clientService.GetClientSalesAsync(clientId);
 
+        // ───  DashBordService ────────────────────────────────────────────
 
+        public async Task<DashboardStatsResponse> GetDashboardDataAsync(DashboardFilterRequest filter)
+        {
+            // Build cache key based on filter parameters
+            string key = $"DashboardStats_{filter.StartDate}_{filter.EndDate}_{filter.UserId}";
+
+            // Try to get from cache; if not, call the domain service
+            return await _cache.GetOrLoadAsync(key, async () =>
+            {
+                _logger.LogInformation("Fetching dashboard stats from API");
+                return await _dashBordService.GetDashBordDataAsync(filter) ?? new DashboardStatsResponse();
+            });
+        }
+
+        public async Task<bool> AcknowledgeAlertAsync(int variantId)
+        {
+            // Call the domain service to acknowledge the alert
+            var result = await _dashBordService.AcknowledgeAlertAsync(variantId);
+            if (result)
+            {
+                // Invalidate dashboard cache because alerts affect the dashboard stats
+                _cache.Remove(CacheKeys.DashboardStats);
+
+                // Notify subscribers that data changed (optional)
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
 
         // ─── Load All Essential Data (for login) ──────────────────────
         public async Task LoadAllEssentialDataAsync()
@@ -215,7 +249,8 @@ namespace Shiakati.Services.Implementations
             try
             {
                 await LoadCatalogAsync(); // For now, just catalog
-                // Later we'll add Clients, Suppliers, etc.
+                await LoadClientsAsync();
+                await GetDashboardDataAsync(new DashboardFilterRequest { StartDate = DateTime.Now.AddDays(-7), EndDate = DateTime.Now }); // Load recent dashboard stats
                 _logger.LogInformation("All essential data loaded.");
                 DataChanged?.Invoke();
             }

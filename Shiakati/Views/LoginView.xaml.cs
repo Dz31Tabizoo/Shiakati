@@ -21,6 +21,7 @@ namespace Shiakati.Views
     public partial class LoginView : Window
     {
         public event Action? LoginSucceeded;
+        private SplashLoadingWindow? _splashWindow;
 
         public LoginView(LoginViewModel viewModel)
         {
@@ -40,6 +41,8 @@ namespace Shiakati.Views
             {
                 LoginSucceeded?.Invoke();
             };
+
+            viewModel.LoadingStateChanged += OnLoadingStateChanged;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -48,7 +51,26 @@ namespace Shiakati.Views
                 this.DragMove();
         }
 
-
+        private void OnLoadingStateChanged(bool isLoading)
+        {
+            // Use Dispatcher to ensure UI changes happen on the UI Thread
+            Dispatcher.Invoke(() =>
+            {
+                if (isLoading)
+                {
+                    // Show Splash
+                    _splashWindow = new SplashLoadingWindow((LoginViewModel)this.DataContext);
+                    _splashWindow.Owner = this; // Optional: keeps it on top of login
+                    _splashWindow.Show();
+                }
+                else
+                {
+                    // Close Splash
+                    _splashWindow?.Close();
+                    _splashWindow = null;
+                }
+            });
+        }
 
 
     }

@@ -1,16 +1,17 @@
-﻿using Serilog;
-using System.Windows;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shiakati.ViewModels;
-using Shiakati.Services.Interfaces;
-using Shiakati.Services.Implementations;
-using Shiakati.Views;
 using Microsoft.Extensions.Http;
+using Serilog;
 using Shiakati.Helpers;
-using System.Net.Http;
-using Microsoft.Extensions.Configuration;
+using Shiakati.Services.Implementations;
 using Shiakati.Services.Implementations.Shiakati.Services.Implementations;
+using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
+using Shiakati.ViewModels;
+using Shiakati.Views;
+using System.Data;
+using System.Net.Http;
+using System.Windows;
 
 namespace Shiakati
 {
@@ -54,7 +55,7 @@ namespace Shiakati
             services.AddSingleton<AuthService>();
             // . Lie l'interface
             services.AddSingleton<IAuthenticationClientService>(sp => sp.GetRequiredService<AuthService>());
-            
+
 
             // . Service d'Auth (SANS intercepteur car il crée le token)
             services.AddHttpClient<AuthService>(client =>
@@ -62,7 +63,7 @@ namespace Shiakati
                 client.BaseAddress = new Uri(baseUrl);
             });
 
-            
+
             // . Le Handler pour le Token
             services.AddTransient<AuthenticationHandler>();
 
@@ -75,7 +76,7 @@ namespace Shiakati
             services.AddHttpClient<ICatalogService, CatalogService>(client =>
             {
                 client.BaseAddress = new Uri(baseUrl);
-                
+
             })
             .AddHttpMessageHandler<AuthenticationHandler>(); // Sécurité activée ! // Injection automatique du token !
 
@@ -161,7 +162,10 @@ namespace Shiakati
             // Data Services
             services.AddSingleton<AppDataService>();
             services.AddSingleton<ICatalogDataService>(sp => sp.GetRequiredService<AppDataService>());
-            services.AddSingleton<IClientDataService>(sp=> sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IClientDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IDashBordDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IDataLoader>(sp => sp.GetRequiredService<AppDataService>());
+
         }
         protected override void OnStartup(StartupEventArgs e)
         {

@@ -7,6 +7,7 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.ObjectModel;
@@ -18,7 +19,7 @@ namespace Shiakati.ViewModels
 {
     public partial class DashBordViewModel : ObservableObject
     {
-        private readonly IDashBordService _dashboardService;
+        private readonly IDashBordDataService _dashboardDataService;
         private CancellationTokenSource? _loadCts;
         private readonly IAuthenticationClientService authservice;
         private readonly IProductVariantsService _stockService;
@@ -50,9 +51,9 @@ namespace Shiakati.ViewModels
         // UI state
         [ObservableProperty] private bool _isLoading;
 
-        public DashBordViewModel(IDashBordService dashboardService,IProductVariantsService stockService , IAuthenticationClientService authservice)
+        public DashBordViewModel(IDashBordDataService dashboardDataService,IProductVariantsService stockService , IAuthenticationClientService authservice)
         {
-            _dashboardService = dashboardService;
+            _dashboardDataService = dashboardDataService;
             this.authservice = authservice; // ✅ Fix order
             _stockService = stockService;
 
@@ -100,7 +101,7 @@ namespace Shiakati.ViewModels
             try
             {
                 IsLoading = true;
-                var success = await _dashboardService.AcknowledgeAlertAsync(variantId);
+                var success = await _dashboardDataService.AcknowledgeAlertAsync(variantId);
                 if (success)
                 {
                     StockAlerts.Remove(alert);
@@ -156,7 +157,7 @@ namespace Shiakati.ViewModels
                     //UserId = authservice.CurrentSession?.UserId 
                 };
 
-                var data = await _dashboardService.GetDashBordDataAsync(filter); // 👈 CORRECT method name
+                var data = await _dashboardDataService.GetDashboardDataAsync(filter); // 👈 CORRECT method name
 
                 if (token.IsCancellationRequested) return;
 
