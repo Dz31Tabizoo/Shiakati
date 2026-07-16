@@ -4,7 +4,6 @@ using Microsoft.Extensions.Http;
 using Serilog;
 using Shiakati.Helpers;
 using Shiakati.Services.Implementations;
-using Shiakati.Services.Implementations.Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.ViewModels;
@@ -81,11 +80,7 @@ namespace Shiakati
             .AddHttpMessageHandler<AuthenticationHandler>(); // Sécurité activée ! // Injection automatique du token !
 
 
-            services.AddHttpClient<IProductsService, ProductsService>(client =>
-            {
-                client.BaseAddress = new Uri(baseUrl);
-            })
-            .AddHttpMessageHandler<AuthenticationHandler>();
+            
 
             services.AddHttpClient<IProductVariantsService, ProductVariantsService>(client =>
             {
@@ -165,6 +160,8 @@ namespace Shiakati
             services.AddSingleton<IClientDataService>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<IDashBordDataService>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<IDataLoader>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IStockDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<IReservationDataService>(sp => sp.GetRequiredService<AppDataService>());
 
         }
         protected override void OnStartup(StartupEventArgs e)

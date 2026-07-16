@@ -7,8 +7,7 @@ namespace Shiakati.Services.Implementations
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
 
-    namespace Shiakati.Services.Implementations
-    {
+    
         public class AppCacheService : ICacheService
         {
             // ─── Internal wrapper to store value + expiry ──────────────────
@@ -123,19 +122,24 @@ namespace Shiakati.Services.Implementations
             // ─── Clear ───────────────────────────────────────────────────────
             public void Clear() => _cache.Clear();
         }
-    }
+    
 
     public static class CacheKeys
     {
         // ─── Reference Data (Static, rarely changes) ─────────────────────
         public const string Catalog = "CatalogData";
-        public const string Products = "ProductsList";
-        
+        public const string Products = "Products";
+        public const string Variants = "Variants";       
+
+
         // ─── Transactional Data (Changes frequently) ─────────────────────
         public const string StockVariants = "StockVariantsList";
         public const string Clients = "ClientsList";
         public const string Suppliers = "SuppliersList";
         public const string Reservations = "ReservationsList";
+        public const string StockValuation = "StockValuation";
+
+        
 
         // ─── Stock & Dashboard ────────────────────────────────────────────
         public const string StockAlerts = "StockAlertsList";

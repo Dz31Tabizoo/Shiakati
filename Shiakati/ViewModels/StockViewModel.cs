@@ -5,6 +5,7 @@ using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Implementations; 
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
@@ -28,8 +29,8 @@ namespace Shiakati.ViewModels
         // ─────────────────────────────────────────────────────────
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogDataService _catalogDataService;
-        private readonly IProductsService _productsService;
-        private readonly IProductVariantsService _stockService;
+        
+        private readonly IStockDataService _stockService;
         private readonly ICacheService _cacheService;
         private readonly IPrintService _printService;
 
@@ -41,14 +42,14 @@ namespace Shiakati.ViewModels
 
         public StockViewModel(IBarCodePrintService printerService,
                               ICatalogDataService catalogDataService,
-                              IProductVariantsService stockService,
+                              IStockDataService stockService,
                               ICacheService cacheService,
-                              IProductsService productsService, IPrintService printServ)
+                              IPrintService printServ)
         {
             _printerService = printerService;
             _printService = printServ;
             _catalogDataService = catalogDataService;
-            _productsService = productsService;
+            
             _stockService = stockService;
             _cacheService = cacheService;
 
@@ -70,6 +71,7 @@ namespace Shiakati.ViewModels
         // ─────────────────────────────────────────────────────────
         //   Exposed collections
         // ─────────────────────────────────────────────────────────
+
         public ObservableCollection<CategoryModel> Categories { get; }
         public ObservableCollection<BrandsModel> Brands { get; }
         public ICollectionView FilteredBrands { get; private set; }
@@ -148,12 +150,15 @@ namespace Shiakati.ViewModels
                 List<ProductModel> prods = new();
                 try
                 {
-                    prods = await _cacheService.GetOrLoadAsync(CacheKeys.Products, _productsService.GetProductsAsync);
+                     await _stockService.LoadProductsAsync();
+                    prods = _stockService.Products.ToList();
+
                 }
                 catch { /* ignore – the grid works without this list */ }
 
-                var items = await _cacheService.GetOrLoadAsync(CacheKeys.StockVariants, _stockService.GetProductVariantsAsync);
-                _allStockItems = items.ToList();
+                await _stockService.LoadVariantsAsync();
+
+                _allStockItems = _stockService.Variants.ToList();
 
                 var distinctColors = _allStockItems
                     .Select(i => i.Color)
@@ -420,10 +425,7 @@ namespace Shiakati.ViewModels
 
                     if (UpdatedVariant != null)
                     {
-                        _cacheService.Remove(CacheKeys.StockVariants);
-                        if (!string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
-                            _cacheService.Remove(CacheKeys.Catalog);
-
+                        
                         await ForceReloadAllDataAsync();
                         MessageBox.Show("Article modifié avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                         await PrintBarCodeOnReciveStock(UpdatedVariant, LabelsToPrint);
@@ -473,10 +475,7 @@ namespace Shiakati.ViewModels
 
                         if (newVariant != null)
                         {
-                            _cacheService.Remove(CacheKeys.StockVariants);
-                            if (request.BrandId == null && !string.IsNullOrWhiteSpace(request.BrandName))
-                                _cacheService.Remove(CacheKeys.Catalog);
-                            await Task.Delay(300);
+                            
                             IsLoading = false;
                             await LoadInitialDataAsync(forceRefresh: true);
                             MessageBox.Show("Stock enregistré avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -526,10 +525,7 @@ namespace Shiakati.ViewModels
 
                         if (result != null && result.Any())
                         {
-                            _cacheService.Remove(CacheKeys.StockVariants);
-                            if (bulkRequest.BrandId == null && !string.IsNullOrWhiteSpace(bulkRequest.BrandName))
-                                _cacheService.Remove(CacheKeys.Catalog);
-                            await Task.Delay(300);
+                            
                             IsLoading = false;
                             await LoadInitialDataAsync(forceRefresh: true);
                             MessageBox.Show($"{result.Count} variantes enregistrées avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -592,8 +588,7 @@ namespace Shiakati.ViewModels
 
                 if (UpdatedVariant != null && !string.IsNullOrWhiteSpace(UpdatedVariant.BrandName))
                 {
-                    if (updateRequest.BrandId == null && !string.IsNullOrWhiteSpace(updateRequest.BrandName))
-                        _cacheService.Remove(CacheKeys.Catalog);
+                   
                     await ForceReloadAllDataAsync();
                     WeakReferenceMessenger.Default.Send(new StockUpdatedMessage());
                     MessageBox.Show("Article supprimé du stock avec succès !", "Suppression réussie", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -656,10 +651,7 @@ namespace Shiakati.ViewModels
 
         private async Task ForceReloadAllDataAsync()
         {
-            _cacheService.Remove(CacheKeys.StockVariants);
-            _cacheService.Remove(CacheKeys.Catalog);
-            _cacheService.Remove(CacheKeys.Products);
-            await Task.Delay(300);
+            
             await LoadInitialDataAsync(forceRefresh: true);
         }
 

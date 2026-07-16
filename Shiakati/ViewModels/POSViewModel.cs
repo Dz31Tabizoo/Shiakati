@@ -7,6 +7,7 @@ using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
+using Shiakati.Services.Implementations; // ✅ Add this
 using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,12 +20,12 @@ namespace Shiakati.ViewModels
 {
     public partial class POSViewModel : ObservableObject
     {
-        private readonly IReservationService _reservationService;
+        private readonly IReservationDataService _reservationDataService;
         private readonly ILogger<POSViewModel> _logger;
         private readonly IPrintService _printService;
         private readonly ICatalogDataService _catalogDataService;
-        private readonly IProductsService _productsService;
-        private readonly IProductVariantsService _stockService;
+        
+        private readonly IStockDataService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleService _saleService;
         private readonly IClientDataService _clientDataService;
@@ -34,19 +35,20 @@ namespace Shiakati.ViewModels
         private readonly ObservableCollection<ProductVariantModel> _posProducts = new();
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
-                            ICatalogDataService catalogDataService, IProductsService productsService,
-                            IProductVariantsService stockService, ICacheService cacheService,IReservationService reservation , ISaleService saleService, IClientDataService clientDataService)
+                            ICatalogDataService catalogDataService, IStockDataService stockService, 
+                            ICacheService cacheService,IReservationDataService reservation , ISaleService saleService,
+                            IClientDataService clientDataService)
         {
             TabName = name;
             _logger = logger;
             _printService = printService;
             _catalogDataService = catalogDataService;
-            _productsService = productsService;
+           
             _stockService = stockService;
             _cacheService = cacheService;
             _saleService = saleService;
             _clientDataService = clientDataService;
-            _reservationService = reservation;
+            _reservationDataService = reservation;
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
@@ -127,8 +129,8 @@ namespace Shiakati.ViewModels
                 foreach (var cat in _catalogDataService.Categories)
                     Categories.Add(cat.CategoryName);
 
-                var items = await _cacheService.GetOrLoadAsync("StockVariants", _stockService.GetProductVariantsAsync);
-                _allProducts = items.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
+                 await  _stockService.LoadVariantsAsync();
+                _allProducts = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
 
                 _skuLookup = _allProducts
                     .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
@@ -434,7 +436,7 @@ namespace Shiakati.ViewModels
                         if (PrintTicket(receipt))
                             MessageBox.Show($"Vente modifiée – Ticket {EditTicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
-                        _cacheService.Remove(CacheKeys.StockVariants);
+                        
                         _ = LoadProductsAsync();
                         ResetPOS();
                     }
@@ -507,8 +509,7 @@ namespace Shiakati.ViewModels
                             MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        _cacheService.Remove(CacheKeys.StockVariants);
-                       
+                                               
                         ResetPOS();
 
 
@@ -537,8 +538,9 @@ namespace Shiakati.ViewModels
         {
             try
             {
-                var items = await _cacheService.GetOrLoadAsync("StockVariants", _stockService.GetProductVariantsAsync);
-                var filteredItems = items.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
+                 await _stockService.LoadVariantsAsync();
+
+                var filteredItems = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
 
                 // Build filter lists from the loaded items
                 var distinctBrands = filteredItems
@@ -697,7 +699,7 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                var reservationID = await _reservationService.CreateReservationAsync(request);
+                var reservationID = await _reservationDataService.CreateReservationAsync(request);
 
                 if (reservationID.HasValue && reservationID.Value > 0)
                 {
@@ -722,7 +724,7 @@ namespace Shiakati.ViewModels
 
                     MessageBox.Show("Réservation enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
                     
-                    _cacheService.Remove(CacheKeys.StockVariants);
+                    
                     ResetPOS();
                     _ = LoadProductsAsync();
                 }

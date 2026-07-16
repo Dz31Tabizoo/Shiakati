@@ -13,11 +13,13 @@ using System.Windows;
 
 namespace Shiakati.Services.Implementations
 {
-    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader
+    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader,IStockDataService,IReservationDataService
     {
         private readonly ICatalogService _catalogService;
         private readonly IClientService _clientService;
         private readonly IDashBordService _dashBordService;
+        private readonly IProductVariantsService _stockService;
+        private readonly IReservationService _reservationService;
 
         private readonly ICacheService _cache;
         private readonly ILogger <AppDataService> _logger;
@@ -27,9 +29,16 @@ namespace Shiakati.Services.Implementations
         public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
         public ObservableCollection<StockMovementModel> StockMovements { get; }
         public ObservableCollection<StockAlertDto> StockAlerts { get; }
+        public ObservableCollection<ProductModel> Products { get; } = new();
+        public ObservableCollection<ProductVariantModel> Variants { get; } = new();
+        public ObservableCollection<ReservationDto> Reservations { get; } = new();
+
 
         private bool _catalogLoaded;
         private bool _clientsLoaded;
+        private bool _productsLoaded;
+        private bool _variantsLoaded;
+        private bool _reservationsLoaded;
 
         public event Action? DataChanged;
 
@@ -38,19 +47,25 @@ namespace Shiakati.Services.Implementations
             ICacheService cache,
             IClientService clientService,
             IDashBordService dashBordService,
+            IProductVariantsService stockService,IReservationService reservationService,
             ILogger<AppDataService> logger)
         {
             _catalogService = catalogService;
             _cache = cache;
             _dashBordService = dashBordService;
             _clientService = clientService;
+            _stockService = stockService;
+            _reservationService = reservationService;
             _logger = logger;
         }
 
         // ───  CatalogService ────────────────────────────────────────────
-        public async Task LoadCatalogAsync()
+        public async Task LoadCatalogAsync(bool forceRefresh = false)
         {
-            if (_catalogLoaded) return;
+            if (!forceRefresh && _catalogLoaded) return;
+
+            // If forcing refresh, reset the flag
+            if (forceRefresh) _catalogLoaded = false;
 
             try
             {
@@ -109,9 +124,12 @@ namespace Shiakati.Services.Implementations
 
 
         // ───  ClientService ────────────────────────────────────────────
-        public async Task LoadClientsAsync()
+        public async Task LoadClientsAsync(bool forceRefresh = false)
         {
-            if (_clientsLoaded) return;
+            if (!forceRefresh && _catalogLoaded) return;
+
+            // If forcing refresh, reset the flag
+            if (forceRefresh) _catalogLoaded = false;
 
             var data = await _cache.GetOrLoadAsync(CacheKeys.Clients, async () =>
             {
@@ -189,7 +207,7 @@ namespace Shiakati.Services.Implementations
             if (success)
             {
                 _cache.Remove(CacheKeys.Clients);
-                await LoadClientsAsync(); // Refresh the entire list to update balances
+                await LoadClientsAsync(forceRefresh:true); // Refresh the entire list to update balances
                 DataChanged?.Invoke();
             }
             return success;
@@ -201,7 +219,7 @@ namespace Shiakati.Services.Implementations
             if (success)
             {
                 _cache.Remove(CacheKeys.Clients);
-                await LoadClientsAsync(); // Refresh the entire list
+                await LoadClientsAsync(forceRefresh: true); // Refresh the entire list
                 DataChanged?.Invoke();
             }
             return success;
@@ -243,6 +261,174 @@ namespace Shiakati.Services.Implementations
             return result;
         }
 
+        // ───  StockService ────────────────────────────────────────────
+
+        public async Task LoadProductsAsync(bool forceRefresh = false)
+        {
+            if (!forceRefresh && _catalogLoaded) return;
+
+            // If forcing refresh, reset the flag
+            if (forceRefresh) _catalogLoaded = false;
+
+            var data = await _cache.GetOrLoadAsync(CacheKeys.Products, async () =>
+            {
+                _logger.LogInformation("Fetching products from API");
+                return await _stockService.GetProductsAsync() ?? new List<ProductModel>();
+            });
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Products.Clear();
+                foreach (var product in data)
+                    Products.Add(product);
+                _productsLoaded = true;
+            });
+        }
+
+        public async Task LoadVariantsAsync(bool forceRefresh = false)
+        {
+            if (!forceRefresh && _catalogLoaded) return;
+
+            // If forcing refresh, reset the flag
+            if (forceRefresh) _catalogLoaded = false;
+
+            var data = await _cache.GetOrLoadAsync(CacheKeys.Variants, async () =>
+            {
+                _logger.LogInformation("Fetching product variants from API");
+                return await _stockService.GetProductVariantsAsync() ?? new List<ProductVariantModel>();
+            });
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Variants.Clear();
+                foreach (var variant in data)
+                    Variants.Add(variant);
+                _variantsLoaded = true;
+            });
+        }
+
+        public async Task<ProductVariantResponse?> AddProductVariantAsync(AddVariantRequest request)
+        {
+            var result = await _stockService.AddProductVariantAsync(request);
+            if (result != null)
+            {
+                // Invalidate cache because variant list has changed
+                _cache.Remove(CacheKeys.Variants);
+                // Reload variants to update the shared collection
+                await LoadVariantsAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<ProductVariantResponse?> UpdateProductVariantAsync(UpdateVariantRequest request)
+        {
+            var result = await _stockService.UpdateProductVariantAsync(request);
+            if (result != null)
+            {
+                _cache.Remove(CacheKeys.Variants);
+                await LoadVariantsAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<List<ProductVariantResponse>?> BulkAddVariantsAsync(BulkAddVariantsRequest request)
+        {
+            var result = await _stockService.BulkAddVariantsAsync(request);
+            if (result != null && result.Any())
+            {
+                _cache.Remove(CacheKeys.Variants);
+                await LoadVariantsAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        // ─── Stock Valuation ──────────────────────────────────────────
+
+        public async Task<StockValuationResponse> GetStockValuationAsync()
+        {
+            return await _cache.GetOrLoadAsync(CacheKeys.StockValuation, async () =>
+            {
+                _logger.LogInformation("Fetching stock valuation from API");
+                return await _stockService.GetStockValuationAsync() ?? new StockValuationResponse();
+            });
+        }
+
+        // ─── ReservationService ──────────────────────────────────────────
+        public async Task LoadReservationsAsync(string? status = null, bool forceRefresh = false)
+        {
+            if (string.IsNullOrEmpty(status) || status == "all")
+            {
+                if (!forceRefresh && _reservationsLoaded) return;
+                if (forceRefresh) _reservationsLoaded = false;
+
+                var data = await _cache.GetOrLoadAsync(CacheKeys.Reservations, async () =>
+                {
+                    _logger.LogInformation("Fetching reservations from API");
+                    return await _reservationService.GetReservationsAsync(status) ?? new List<ReservationDto>();
+                });
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Reservations.Clear();
+                    foreach (var reservation in data)
+                        Reservations.Add(reservation);
+                    _reservationsLoaded = true;
+                });
+
+            }
+            else
+            {
+                // For filtered status, always fetch fresh (no cache)
+                var data = await _reservationService.GetReservationsAsync(status) ?? new List<ReservationDto>();
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Reservations.Clear();
+
+                    foreach (var item in data) 
+                        Reservations.Add(item);
+                });
+            }
+        }
+
+        public async Task<int?> CreateReservationAsync(CreateReservationRequest request)
+        {
+            var result = await _reservationService.CreateReservationAsync(request);
+            if (result.HasValue && result.Value > 0)
+            {
+                _cache.Remove(CacheKeys.Reservations);
+                await LoadReservationsAsync(forceRefresh: true); // Refresh the list
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<bool> CancelReservationAsync(int id)
+        {
+            var result = await _reservationService.CancelReservationAsync(id);
+            if (result)
+            {
+                _cache.Remove(CacheKeys.Reservations);
+                await LoadReservationsAsync(forceRefresh: true); // Refresh the list
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<bool> FulfillReservationAsync(int id, decimal amountPaid)
+        {
+            var result = await _reservationService.FulfillReservationAsync(id, amountPaid);
+            if (result)
+            {
+                _cache.Remove(CacheKeys.Reservations);
+                await LoadReservationsAsync(forceRefresh: true); // Refresh the list
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+
+
+
         // ─── Load All Essential Data (for login) ──────────────────────
         public async Task LoadAllEssentialDataAsync()
         {
@@ -250,6 +436,9 @@ namespace Shiakati.Services.Implementations
             {
                 await LoadCatalogAsync(); // For now, just catalog
                 await LoadClientsAsync();
+                await LoadProductsAsync();
+                await LoadVariantsAsync();
+                await LoadReservationsAsync();
                 await GetDashboardDataAsync(new DashboardFilterRequest { StartDate = DateTime.Now.AddDays(-7), EndDate = DateTime.Now }); // Load recent dashboard stats
                 _logger.LogInformation("All essential data loaded.");
                 DataChanged?.Invoke();

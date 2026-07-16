@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 using Shiakati.Properties;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Shiakati.ViewModels
 {
     public partial class ReservationsViewModel : ObservableObject
     {
-        private readonly IReservationService _reservationService;
+        private readonly IReservationDataService _reservationDataService;
         private readonly IPrintService _printService;
 
         private List<ReservationDto> _allReservations = new();
@@ -26,10 +27,10 @@ namespace Shiakati.ViewModels
 
         public ObservableCollection<ReservationDto> Reservations { get; } = new();
 
-        public ReservationsViewModel(IReservationService reservationService,IPrintService print)
+        public ReservationsViewModel(IReservationDataService reservationDataService,IPrintService print)
         {
             _printService = print;
-            _reservationService = reservationService;
+            _reservationDataService = reservationDataService;
             _ = LoadAllAsync();   // fetch everything once at startup
         }
 
@@ -54,7 +55,8 @@ namespace Shiakati.ViewModels
             IsLoading = true;
             try
             {
-                _allReservations = await _reservationService.GetReservationsAsync(null);  // null = no filter
+                 await _reservationDataService.LoadReservationsAsync(null);  // null = no filter
+                _allReservations = _reservationDataService.Reservations.ToList();
             }
             finally
             {
@@ -104,7 +106,7 @@ namespace Shiakati.ViewModels
                 "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
                 return;
 
-            var success = await _reservationService.CancelReservationAsync(reservation.ReservationId);
+            var success = await _reservationDataService.CancelReservationAsync(reservation.ReservationId);
             if (success)
             {
                 MessageBox.Show("Réservation annulée.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -121,7 +123,7 @@ namespace Shiakati.ViewModels
             var dialog = new HonorReservationDialog(reservation.DepositAmount, remaining);
             if (dialog.ShowDialog() == true)
             {
-                var success = await _reservationService.FulfillReservationAsync(reservation.ReservationId, dialog.AmountPaid);
+                var success = await _reservationDataService.FulfillReservationAsync(reservation.ReservationId, dialog.AmountPaid);
                 if (success)
                 {
                     // Print honor ticket

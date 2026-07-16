@@ -12,7 +12,7 @@ namespace Shiakati.Services.Interfaces.DataServices
     {
         ObservableCollection<ClientSummaryDto> Clients { get; }
 
-        Task LoadClientsAsync();
+        Task LoadClientsAsync(bool forceRefresh = false);
         Task<ClientSummaryDto> AddClientAsync(CreateClientRequest client);
         Task UpdateClientAsync(ClientSummaryDto client);
         //Task DeleteClientAsync(int clientId);

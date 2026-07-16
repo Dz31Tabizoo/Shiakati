@@ -12,6 +12,8 @@ namespace Shiakati.Services.Implementations
 
         public SaleService(HttpClient http) => _http = http;
 
+
+
         public async Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request)
         {
             try

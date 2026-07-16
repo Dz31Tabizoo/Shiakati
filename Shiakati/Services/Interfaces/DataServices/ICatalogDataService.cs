@@ -14,7 +14,7 @@ namespace Shiakati.Services.Interfaces.DataServices
         ObservableCollection<BrandsModel> Brands { get; }
         ObservableCollection<CategoryModel> Categories { get; }
 
-        Task LoadCatalogAsync();
+        Task LoadCatalogAsync(bool forceRefresh = false);
         Task<CategoryModel> AddCategoryAsync(CategoryModel category);
         // I can Add AddBrandAsync later 
 

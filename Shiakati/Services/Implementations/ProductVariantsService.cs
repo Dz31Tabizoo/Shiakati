@@ -23,6 +23,27 @@ namespace Shiakati.Services.Implementations
         }
 
         // Remplacement du nom de la méthode pour éviter le conflit avec le nom de la classe
+
+        public async Task<List<ProductModel>> GetProductsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/products");
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadFromJsonAsync<List<ProductModel>>() ?? new();
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex}");
+                return new();
+            }
+
+
+        }
+
         public async Task<List<ProductVariantModel>> GetProductVariantsAsync()
         {
             try

@@ -22,7 +22,7 @@ namespace Shiakati.ViewModels
         private readonly IDashBordDataService _dashboardDataService;
         private CancellationTokenSource? _loadCts;
         private readonly IAuthenticationClientService authservice;
-        private readonly IProductVariantsService _stockService;
+        private readonly IStockDataService _stockService;
 
         // Chart properties
         [ObservableProperty] private SeriesCollection _dailySalesSeries;
@@ -51,7 +51,7 @@ namespace Shiakati.ViewModels
         // UI state
         [ObservableProperty] private bool _isLoading;
 
-        public DashBordViewModel(IDashBordDataService dashboardDataService,IProductVariantsService stockService , IAuthenticationClientService authservice)
+        public DashBordViewModel(IDashBordDataService dashboardDataService,IStockDataService stockService , IAuthenticationClientService authservice)
         {
             _dashboardDataService = dashboardDataService;
             this.authservice = authservice; // ✅ Fix order

@@ -1,5 +1,6 @@
 ﻿using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -9,7 +10,7 @@ namespace Shiakati.Views
 {
     public partial class AddInvoiceItemDialog : Window
     {
-        private readonly IProductVariantsService _productVariantsService;
+        private readonly IStockDataService _productVariantsService;
         private List<ProductVariantModel> _allVariants = new();
 
         public int SelectedVariantId => (int)VariantComboBox.SelectedValue;
@@ -18,7 +19,7 @@ namespace Shiakati.Views
 
         public string? Notes => NotesBox.Text; 
 
-        public AddInvoiceItemDialog(IProductVariantsService productVariantsService)
+        public AddInvoiceItemDialog(IStockDataService productVariantsService)
         {
             InitializeComponent();
             _productVariantsService = productVariantsService;
@@ -27,7 +28,8 @@ namespace Shiakati.Views
 
         private async void LoadVariants()
         {
-            var allVariants = await _productVariantsService.GetProductVariantsAsync();
+            await _productVariantsService.LoadVariantsAsync();
+            var allVariants = _productVariantsService.Variants.ToList();
 
             // Get distinct variants by VariantId
             _allVariants = allVariants

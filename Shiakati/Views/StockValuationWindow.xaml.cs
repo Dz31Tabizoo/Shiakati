@@ -9,12 +9,13 @@ using System.Windows.Controls;
 
 using Shiakati.Services;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 
 namespace Shiakati.Views
 {
     public partial class StockValuationWindow : Window, INotifyPropertyChanged
     {
-        private readonly IProductVariantsService _stockService;
+        private readonly IStockDataService _stockService;
 
         private ObservableCollection<CategoryStockDto> _categories = new();
         public ObservableCollection<CategoryStockDto> Categories
@@ -23,7 +24,7 @@ namespace Shiakati.Views
             set { _categories = value; OnPropertyChanged(); }
         }
 
-        public StockValuationWindow(IProductVariantsService stockService)
+        public StockValuationWindow(IStockDataService stockService)
         {
             InitializeComponent();
             _stockService = stockService;

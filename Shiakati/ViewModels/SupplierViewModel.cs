@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Shiakati.Models;
 using Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -17,7 +18,7 @@ namespace Shiakati.ViewModels
     {
         //APPdATA COMMING
         private readonly ISupplierService _supplierService;
-        private readonly IProductVariantsService _prod;
+        private readonly IStockDataService _prod;
 
 
         public ObservableCollection<SupplierDto> Suppliers { get; } = new();
@@ -45,7 +46,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal? _amountRest;
         public bool IsSupplierSelected => SelectedSupplier != null;
 
-        public SupplierViewModel(ISupplierService supplierService, IProductVariantsService prod)
+        public SupplierViewModel(ISupplierService supplierService, IStockDataService prod)
         {
             _supplierService = supplierService;
             _prod = prod;

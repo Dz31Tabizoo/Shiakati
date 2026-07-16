@@ -10,9 +10,8 @@ namespace Shiakati.Services.Interfaces
     public interface IReservationService
 
     {
-        Task<int?> CreateReservationAsync(CreateReservationRequest request);
-
         Task<List<ReservationDto>> GetReservationsAsync(string? status = null);
+        Task<int?> CreateReservationAsync(CreateReservationRequest request);
         Task<bool> CancelReservationAsync(int id);
         Task<bool> FulfillReservationAsync(int id, decimal amountPaid);
     }
