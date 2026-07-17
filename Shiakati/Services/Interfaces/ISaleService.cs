@@ -9,12 +9,17 @@ namespace Shiakati.Services.Interfaces
 {
     public interface ISaleService
     {
-        Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request);
-        Task<bool> UpdateSaleAsync(int saleId, UpdateSaleRequest request);
-        Task<SaleResponse?> GetSaleAsync(int saleId);
+        
+        
         Task<List<SaleSummary>> GetSalesAsync();
         Task<List<SaleModel>> GetSalesAsync(string? search, DateTime? from, DateTime? to);
+
+
+        Task<SaleResponse?> GetSaleAsync(int saleId);
+        Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request);
+        Task<bool> UpdateSaleAsync(int saleId, UpdateSaleRequest request);
         Task<bool> VoidSaleAsync(int saleId);
+
         
     }
 }

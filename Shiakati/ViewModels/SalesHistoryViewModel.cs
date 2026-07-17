@@ -6,6 +6,7 @@ using Shiakati.Helpers;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +19,7 @@ namespace Shiakati.ViewModels
 {
     public partial class SalesHistoryViewModel : ObservableObject
     {
-        private readonly ISaleService _saleService;
+        private readonly ISaleDataService _saleDataService;
         private readonly ILogger<SalesHistoryViewModel> _logger;
 
         [ObservableProperty] private string _searchTicketNumber = string.Empty;
@@ -26,11 +27,13 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private DateTime? _endDate = DateTime.Today;
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private ObservableCollection<DailyBonusModel> _dailyBonuses = new();
-        public ObservableCollection<SaleModel> Sales { get; } = new();
 
-        public SalesHistoryViewModel(ISaleService saleService, ILogger<SalesHistoryViewModel> logger)
+        // ✅ Bind directly to the DataService's collection
+        public ObservableCollection<SaleModel> Sales => _saleDataService.Sales;
+
+        public SalesHistoryViewModel(ISaleDataService saleDataService, ILogger<SalesHistoryViewModel> logger)
         {
-            _saleService = saleService;
+            _saleDataService = saleDataService;
             _logger = logger;
             _ = LoadSalesAsync();
         }
@@ -39,12 +42,11 @@ namespace Shiakati.ViewModels
         private async Task LoadSalesAsync()
         {
             if (IsLoading) return;
+            IsLoading = true;
+
             try
             {
-                IsLoading = true;
-                Sales.Clear();
-                var results = await _saleService.GetSalesAsync(SearchTicketNumber, StartDate, EndDate);
-                foreach (var s in results) Sales.Add(s);
+                await _saleDataService.LoadSalesAsync(_searchTicketNumber, _startDate, _endDate);
             }
             catch (Exception ex)
             {
@@ -103,7 +105,7 @@ namespace Shiakati.ViewModels
         {
             if (selectedSale?.SaleID == null) return;
 
-            var sale = await _saleService.GetSaleAsync(selectedSale.SaleID.Value);
+            var sale = await _saleDataService.GetSaleAsync(selectedSale.SaleID.Value);
             if (sale == null)
             {
                 MessageBox.Show("Vente introuvable.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -112,16 +114,13 @@ namespace Shiakati.ViewModels
 
             var items = sale.Items.Select(i => new SaleItemModel
             {
-                SaleItemID = i.SaleItemId,   // important for updating existing items
+                SaleItemID = i.SaleItemId,
                 VariantID = i.VariantId,
                 Quantity = i.Quantity,
                 DiscountAmount = i.DiscountAmount
             }).ToList();
 
-            // 1. Navigate to the POS container (makes it visible)
             WeakReferenceMessenger.Default.Send(new NavigateToPosMessage());
-
-            // 2. Send the edit data – it will be received by the active POS tab
             WeakReferenceMessenger.Default.Send(new EditSaleMessage(
                 new SaleModel { SaleID = sale.SaleId, TicketNumber = sale.TicketNumber },
                 items));
@@ -131,16 +130,22 @@ namespace Shiakati.ViewModels
         private async Task VoidSaleAsync(SaleModel selectedSale)
         {
             if (selectedSale?.SaleID == null) return;
+
             var result = MessageBox.Show($"Annuler définitivement le ticket {selectedSale.TicketNumber} ?\nLes articles seront remis en stock.",
                                           "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes) return;
+
             try
             {
-                bool success = await _saleService.VoidSaleAsync(selectedSale.SaleID.Value);
+                bool success = await _saleDataService.VoidSaleAsync(selectedSale.SaleID.Value);
                 if (success)
                 {
-                    Sales.Remove(selectedSale);
+                    // ✅ DataService updates the collection automatically
                     MessageBox.Show("Vente annulée. Stock mis à jour.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de l'annulation.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
@@ -153,7 +158,6 @@ namespace Shiakati.ViewModels
         [RelayCommand]
         private void CalculateDailyBonuses()
         {
-            // 1. Only consider non‑voided sales
             var nonVoided = Sales.Where(s => !s.IsVoided).ToList();
 
             if (nonVoided.Count == 0)
@@ -162,7 +166,6 @@ namespace Shiakati.ViewModels
                 return;
             }
 
-            // 2. Group by date (ignoring time)
             var dailyGroups = nonVoided
                 .Where(s => s.SaleDate.HasValue)
                 .GroupBy(s => s.SaleDate!.Value.Date)
@@ -173,7 +176,6 @@ namespace Shiakati.ViewModels
                 })
                 .OrderBy(g => g.Date);
 
-            // 3. Apply bonus tiers
             var bonusList = new List<DailyBonusModel>();
             foreach (var day in dailyGroups)
             {

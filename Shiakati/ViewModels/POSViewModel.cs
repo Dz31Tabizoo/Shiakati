@@ -27,7 +27,7 @@ namespace Shiakati.ViewModels
         
         private readonly IStockDataService _stockService;
         private readonly ICacheService _cacheService;
-        private readonly ISaleService _saleService;
+        private readonly ISaleDataService _saleDataService;
         private readonly IClientDataService _clientDataService;
         private bool _skipGridRefresh;
 
@@ -36,7 +36,7 @@ namespace Shiakati.ViewModels
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogDataService catalogDataService, IStockDataService stockService, 
-                            ICacheService cacheService,IReservationDataService reservation , ISaleService saleService,
+                            ICacheService cacheService,IReservationDataService reservation , ISaleDataService saleDataService,
                             IClientDataService clientDataService)
         {
             TabName = name;
@@ -46,7 +46,7 @@ namespace Shiakati.ViewModels
            
             _stockService = stockService;
             _cacheService = cacheService;
-            _saleService = saleService;
+            _saleDataService = saleDataService;
             _clientDataService = clientDataService;
             _reservationDataService = reservation;
 
@@ -397,7 +397,7 @@ namespace Shiakati.ViewModels
                     }
 
 
-                    var success = await _saleService.UpdateSaleAsync(EditSaleId.Value, updateRequest);
+                    var success = await _saleDataService.UpdateSaleAsync(EditSaleId.Value, updateRequest);
 
                     if (success)
                     {
@@ -470,7 +470,7 @@ namespace Shiakati.ViewModels
                         saleRequest.CreditExpiresAt = CreditExpiresAt;
                     }
 
-                    var result = await _saleService.CreateSaleAsync(saleRequest);
+                    var result = await _saleDataService.CreateSaleAsync(saleRequest);
 
                     if (result != null)
                     {

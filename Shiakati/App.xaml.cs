@@ -162,6 +162,7 @@ namespace Shiakati
             services.AddSingleton<IDataLoader>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<IStockDataService>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<IReservationDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<ISaleDataService>(sp => sp.GetRequiredService<AppDataService>());
 
         }
         protected override void OnStartup(StartupEventArgs e)

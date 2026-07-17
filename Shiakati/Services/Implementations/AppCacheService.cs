@@ -138,8 +138,9 @@ namespace Shiakati.Services.Implementations
         public const string Suppliers = "SuppliersList";
         public const string Reservations = "ReservationsList";
         public const string StockValuation = "StockValuation";
+        public const string Sales = "SalesList";
 
-        
+
 
         // ─── Stock & Dashboard ────────────────────────────────────────────
         public const string StockAlerts = "StockAlertsList";

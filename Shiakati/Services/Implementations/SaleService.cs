@@ -13,6 +13,21 @@ namespace Shiakati.Services.Implementations
         public SaleService(HttpClient http) => _http = http;
 
 
+        public async Task<List<SaleModel>> GetSalesAsync(string? search, DateTime? from, DateTime? to)
+        {
+            var queryParams = new List<string>();
+            if (!string.IsNullOrWhiteSpace(search)) queryParams.Add($"search={Uri.EscapeDataString(search)}");
+            if (from.HasValue) queryParams.Add($"from={from.Value:yyyy-MM-dd}");
+            if (to.HasValue) queryParams.Add($"to={to.Value:yyyy-MM-dd}");
+
+            var url = "api/sales";
+            if (queryParams.Any()) url += "?" + string.Join("&", queryParams);
+
+            var response = await _http.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<List<SaleModel>>() ?? new();
+            return new();
+        }
 
         public async Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request)
         {
@@ -43,6 +58,14 @@ namespace Shiakati.Services.Implementations
             return null;
         }
 
+        public async Task<bool> VoidSaleAsync(int saleId)
+        {
+            var response = await _http.PutAsync($"api/sales/{saleId}/void", null);
+            return response.IsSuccessStatusCode;
+        }
+
+
+
         public async Task<List<SaleSummary>> GetSalesAsync()
         {
             var response = await _http.GetAsync("api/sales");
@@ -50,29 +73,5 @@ namespace Shiakati.Services.Implementations
                 return await response.Content.ReadFromJsonAsync<List<SaleSummary>>() ?? new();
             return new();
         }
-
-        public async Task<List<SaleModel>> GetSalesAsync(string? search, DateTime? from, DateTime? to)
-        {
-            var queryParams = new List<string>();
-            if (!string.IsNullOrWhiteSpace(search)) queryParams.Add($"search={Uri.EscapeDataString(search)}");
-            if (from.HasValue) queryParams.Add($"from={from.Value:yyyy-MM-dd}");
-            if (to.HasValue) queryParams.Add($"to={to.Value:yyyy-MM-dd}");
-
-            var url = "api/sales";
-            if (queryParams.Any()) url += "?" + string.Join("&", queryParams);
-
-            var response = await _http.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-                return await response.Content.ReadFromJsonAsync<List<SaleModel>>() ?? new();
-            return new();
-        }
-
-        public async Task<bool> VoidSaleAsync(int saleId)
-        {
-            var response = await _http.PutAsync($"api/sales/{saleId}/void", null);
-            return response.IsSuccessStatusCode;
-        }
-
-        
     }
 }

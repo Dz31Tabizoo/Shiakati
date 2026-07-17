@@ -13,13 +13,14 @@ using System.Windows;
 
 namespace Shiakati.Services.Implementations
 {
-    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader,IStockDataService,IReservationDataService
+    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader,IStockDataService,IReservationDataService,ISaleDataService
     {
         private readonly ICatalogService _catalogService;
         private readonly IClientService _clientService;
         private readonly IDashBordService _dashBordService;
         private readonly IProductVariantsService _stockService;
         private readonly IReservationService _reservationService;
+        private readonly ISaleService _saleService;
 
         private readonly ICacheService _cache;
         private readonly ILogger <AppDataService> _logger;
@@ -32,12 +33,15 @@ namespace Shiakati.Services.Implementations
         public ObservableCollection<ProductModel> Products { get; } = new();
         public ObservableCollection<ProductVariantModel> Variants { get; } = new();
         public ObservableCollection<ReservationDto> Reservations { get; } = new();
+        public ObservableCollection<SaleModel> Sales { get; } = new();
+
 
 
         private bool _catalogLoaded;
         private bool _clientsLoaded;
         private bool _productsLoaded;
         private bool _variantsLoaded;
+        private bool _salesLoaded;
         private bool _reservationsLoaded;
 
         public event Action? DataChanged;
@@ -45,6 +49,7 @@ namespace Shiakati.Services.Implementations
         public AppDataService(
             ICatalogService catalogService,
             ICacheService cache,
+            ISaleService saleService,
             IClientService clientService,
             IDashBordService dashBordService,
             IProductVariantsService stockService,IReservationService reservationService,
@@ -56,6 +61,7 @@ namespace Shiakati.Services.Implementations
             _clientService = clientService;
             _stockService = stockService;
             _reservationService = reservationService;
+            _saleService = saleService;
             _logger = logger;
         }
 
@@ -427,6 +433,83 @@ namespace Shiakati.Services.Implementations
         }
 
 
+        // ─── SalesService ──────────────────────────────────────────
+
+        public async Task LoadSalesAsync(string? search = null, DateTime? from = null, DateTime? to = null, bool forceRefresh = false)
+        {
+            // For specific searches/filters, always fetch fresh (no cache)
+            if (!string.IsNullOrEmpty(search) || from.HasValue || to.HasValue)
+            {
+                var data = await _saleService.GetSalesAsync(search, from, to) ?? new List<SaleModel>();
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Sales.Clear();
+                    foreach (var sale in data)
+                        Sales.Add(sale);
+                });
+                return;
+            }
+
+            // For "all sales", use cache
+            if (!forceRefresh && _salesLoaded) return;
+            if (forceRefresh) _salesLoaded = false;
+
+            var cachedData = await _cache.GetOrLoadAsync(CacheKeys.Sales, async () =>
+            {
+                _logger.LogInformation("Fetching sales from API");
+                return await _saleService.GetSalesAsync(null, null, null) ?? new List<SaleModel>();
+            });
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Sales.Clear();
+                foreach (var sale in cachedData)
+                    Sales.Add(sale);
+                _salesLoaded = true;
+            });
+        }
+
+        public async Task<SaleResponse?> GetSaleAsync(int saleId)
+        {
+            // Always fetch fresh for detail – no cache
+            return await _saleService.GetSaleAsync(saleId);
+        }
+
+        public async Task<SaleCreationResult?> CreateSaleAsync(SaleRequest request)
+        {
+            var result = await _saleService.CreateSaleAsync(request);
+            if (result != null)
+            {
+                _cache.Remove(CacheKeys.Sales);
+                await LoadSalesAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<bool> UpdateSaleAsync(int saleId, UpdateSaleRequest request)
+        {
+            var result = await _saleService.UpdateSaleAsync(saleId, request);
+            if (result)
+            {
+                _cache.Remove(CacheKeys.Sales);
+                await LoadSalesAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<bool> VoidSaleAsync(int saleId)
+        {
+            var result = await _saleService.VoidSaleAsync(saleId);
+            if (result)
+            {
+                _cache.Remove(CacheKeys.Sales);
+                await LoadSalesAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
 
 
         // ─── Load All Essential Data (for login) ──────────────────────
@@ -439,6 +522,8 @@ namespace Shiakati.Services.Implementations
                 await LoadProductsAsync();
                 await LoadVariantsAsync();
                 await LoadReservationsAsync();
+                await LoadSalesAsync();
+
                 await GetDashboardDataAsync(new DashboardFilterRequest { StartDate = DateTime.Now.AddDays(-7), EndDate = DateTime.Now }); // Load recent dashboard stats
                 _logger.LogInformation("All essential data loaded.");
                 DataChanged?.Invoke();
@@ -448,8 +533,6 @@ namespace Shiakati.Services.Implementations
                 _logger.LogError(ex, "Failed to load essential data");
                 throw;
             }
-        }
-
-        
+        }        
     }
 }
