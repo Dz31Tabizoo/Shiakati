@@ -4,8 +4,10 @@ using Microsoft.Extensions.Http;
 using Serilog;
 using Shiakati.Helpers;
 using Shiakati.Services.Implementations;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.APIServices;
+using Shiakati.Services.Interfaces.CacheService;
 using Shiakati.Services.Interfaces.DataServices;
+using Shiakati.Services.Interfaces.PrintServices;
 using Shiakati.ViewModels;
 using Shiakati.Views;
 using System.Data;
@@ -163,7 +165,8 @@ namespace Shiakati
             services.AddSingleton<IStockDataService>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<IReservationDataService>(sp => sp.GetRequiredService<AppDataService>());
             services.AddSingleton<ISaleDataService>(sp => sp.GetRequiredService<AppDataService>());
-
+            services.AddSingleton<IStockMovementDataService>(sp => sp.GetRequiredService<AppDataService>());
+            services.AddSingleton<ISupplierDataService>(sp => sp.GetRequiredService<AppDataService>());
         }
         protected override void OnStartup(StartupEventArgs e)
         {

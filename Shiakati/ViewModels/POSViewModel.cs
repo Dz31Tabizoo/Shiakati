@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
-using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Services.Implementations; // ✅ Add this
 using Shiakati.Views;
@@ -15,6 +14,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using ZXing;
+using Shiakati.Services.Interfaces.PrintServices;
+using Shiakati.Services.Interfaces.CacheService;
 
 namespace Shiakati.ViewModels
 {

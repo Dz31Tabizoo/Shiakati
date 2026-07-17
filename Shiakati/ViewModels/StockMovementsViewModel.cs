@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -10,7 +11,7 @@ namespace Shiakati.ViewModels
 {
     public partial class StockMovementsViewModel : ObservableObject
     {
-        private readonly IStockMovementService _movementService;
+        private readonly IStockMovementDataService _movementDataService;
         private readonly ILogger<StockMovementsViewModel> _logger;
 
         [ObservableProperty] private bool _isLoading;
@@ -19,9 +20,9 @@ namespace Shiakati.ViewModels
 
         public ObservableCollection<StockMovementModel> Movements { get; } = new();
 
-        public StockMovementsViewModel(IStockMovementService movementService, ILogger<StockMovementsViewModel> logger)
+        public StockMovementsViewModel(IStockMovementDataService movementDataService, ILogger<StockMovementsViewModel> logger)
         {
-            _movementService = movementService;
+            _movementDataService = movementDataService;
             _logger = logger;
             _ = LoadMovementsAsync();
         }
@@ -34,8 +35,11 @@ namespace Shiakati.ViewModels
             {
                 IsLoading = true;
                 Movements.Clear();
-                var results = await _movementService.GetMovementsAsync(StartDate, EndDate);
-                foreach (var m in results) Movements.Add(m);
+                await _movementDataService.LoadMovementsAsync(StartDate, EndDate);
+
+
+                foreach (var m in _movementDataService.Movements) 
+                    Movements.Add(m);
             }
             catch (Exception ex)
             {

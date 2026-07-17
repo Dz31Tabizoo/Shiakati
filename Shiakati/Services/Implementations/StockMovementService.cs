@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Shiakati.Models;
-using Shiakati.Services.Interfaces;
 using System.Net.Http;
+using Shiakati.Services.Interfaces.APIServices;
 
 namespace Shiakati.Services.Implementations
 {

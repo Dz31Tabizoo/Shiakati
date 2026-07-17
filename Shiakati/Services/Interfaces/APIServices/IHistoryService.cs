@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.APIServices
 {
     public interface IHistoryService
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shiakati.Models;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.APIServices;
 using System.Net.Http;
 using System.Net.Http.Json;
 

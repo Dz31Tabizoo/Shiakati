@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.APIServices;
 
 namespace Shiakati.Services.Implementations
 {

@@ -6,7 +6,7 @@ using LiveCharts.Wpf;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Services;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.APIServices;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;

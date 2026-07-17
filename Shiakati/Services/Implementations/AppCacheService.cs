@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using Shiakati.Services.Interfaces;
 
 namespace Shiakati.Services.Implementations
 {
+    using Shiakati.Services.Interfaces.CacheService;
     using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
@@ -139,6 +139,7 @@ namespace Shiakati.Services.Implementations
         public const string Reservations = "ReservationsList";
         public const string StockValuation = "StockValuation";
         public const string Sales = "SalesList";
+        public const string StockMovements = "StockMovementsList";
 
 
 

@@ -7,7 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Shiakati.Models;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.PrintServices
 {
     public interface IBarCodePrintService
     {

@@ -5,13 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Shiakati.Models;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.APIServices
 {
     public interface ISupplierService
     {
-
-        Task<InvoiceImageDto> UpdateInvoiceAsync(UpdateInvoiceRequest request, string? newFilePath = null);
         Task<List<SupplierDto>> GetAllAsync();
+
+
+
+        Task<InvoiceImageDto> UpdateInvoiceAsync(UpdateInvoiceRequest request, string? newFilePath = null);        
         Task<SupplierDto> CreateAsync(SupplierDto dto);
         Task UpdateAsync(SupplierDto dto);
         Task DeleteAsync(int id);

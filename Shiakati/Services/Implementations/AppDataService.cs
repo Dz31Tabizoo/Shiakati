@@ -1,6 +1,4 @@
-﻿
-using Shiakati.Services.Interfaces;
-using Shiakati.Services.Interfaces.DataServices;
+﻿using Shiakati.Services.Interfaces.DataServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +8,12 @@ using Shiakati.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Windows;
+using Shiakati.Services.Interfaces.APIServices;
+using Shiakati.Services.Interfaces.CacheService;
 
 namespace Shiakati.Services.Implementations
 {
-    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader,IStockDataService,IReservationDataService,ISaleDataService
+    internal class AppDataService : ICatalogDataService,IClientDataService,IDashBordDataService,IDataLoader,IStockDataService,IReservationDataService,ISaleDataService,IStockMovementDataService,ISupplierDataService
     {
         private readonly ICatalogService _catalogService;
         private readonly IClientService _clientService;
@@ -21,6 +21,8 @@ namespace Shiakati.Services.Implementations
         private readonly IProductVariantsService _stockService;
         private readonly IReservationService _reservationService;
         private readonly ISaleService _saleService;
+        private readonly IStockMovementService _stockMovementService;
+        private readonly ISupplierService _supplierService;
 
         private readonly ICacheService _cache;
         private readonly ILogger <AppDataService> _logger;
@@ -34,6 +36,8 @@ namespace Shiakati.Services.Implementations
         public ObservableCollection<ProductVariantModel> Variants { get; } = new();
         public ObservableCollection<ReservationDto> Reservations { get; } = new();
         public ObservableCollection<SaleModel> Sales { get; } = new();
+        public ObservableCollection<StockMovementModel> Movements { get; } = new();
+        public ObservableCollection<SupplierDto> Suppliers { get; } = new();
 
 
 
@@ -43,6 +47,8 @@ namespace Shiakati.Services.Implementations
         private bool _variantsLoaded;
         private bool _salesLoaded;
         private bool _reservationsLoaded;
+        private bool _movementsLoaded;
+        private bool _suppliersLoaded;
 
         public event Action? DataChanged;
 
@@ -52,6 +58,8 @@ namespace Shiakati.Services.Implementations
             ISaleService saleService,
             IClientService clientService,
             IDashBordService dashBordService,
+            IStockMovementService stockMovementService,
+            ISupplierService supplierService,
             IProductVariantsService stockService,IReservationService reservationService,
             ILogger<AppDataService> logger)
         {
@@ -61,6 +69,8 @@ namespace Shiakati.Services.Implementations
             _clientService = clientService;
             _stockService = stockService;
             _reservationService = reservationService;
+            _stockMovementService = stockMovementService;
+            _supplierService = supplierService;
             _saleService = saleService;
             _logger = logger;
         }
@@ -512,6 +522,159 @@ namespace Shiakati.Services.Implementations
         }
 
 
+        // ─── Stock Movements ──────────────────────────────────────────
+
+        public async Task LoadMovementsAsync(DateTime? from = null, DateTime? to = null, bool forceRefresh = false)
+        {
+            // If filters are applied, always fetch fresh (no cache)
+            if (from.HasValue || to.HasValue)
+            {
+                var data = await _stockMovementService.GetMovementsAsync(from, to) ?? new List<StockMovementModel>();
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Movements.Clear();
+                    foreach (var movement in data)
+                        Movements.Add(movement);
+                });
+                return;
+            }
+
+            // For "all movements", use cache
+            if (!forceRefresh && _movementsLoaded) return;
+            if (forceRefresh) _movementsLoaded = false;
+
+            var cachedData = await _cache.GetOrLoadAsync(CacheKeys.StockMovements, async () =>
+            {
+                _logger.LogInformation("Fetching stock movements from API");
+                return await _stockMovementService.GetMovementsAsync(null, null) ?? new List<StockMovementModel>();
+            });
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Movements.Clear();
+                foreach (var movement in cachedData)
+                    Movements.Add(movement);
+                _movementsLoaded = true;
+            });
+        }
+
+        // ───  SupplierService ────────────────────────────────────────────
+
+
+        public async Task LoadSuppliersAsync(bool forceRefresh = false)
+        {
+            if (!forceRefresh && _suppliersLoaded) return;
+            if (forceRefresh) _suppliersLoaded = false;
+
+            var data = await _cache.GetOrLoadAsync(CacheKeys.Suppliers, async () =>
+            {
+                _logger.LogInformation("Fetching suppliers from API");
+                return await _supplierService.GetAllAsync() ?? new List<SupplierDto>();
+            });
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Suppliers.Clear();
+                foreach (var supplier in data)
+                    Suppliers.Add(supplier);
+                _suppliersLoaded = true;
+            });
+        }
+
+        public async Task<SupplierDto> CreateSupplierAsync(SupplierDto dto)
+        {
+            var result = await _supplierService.CreateAsync(dto);
+            if (result != null)
+            {
+                _cache.Remove(CacheKeys.Suppliers);
+                await LoadSuppliersAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task UpdateSupplierAsync(SupplierDto dto)
+        {
+            await _supplierService.UpdateAsync(dto);
+            _cache.Remove(CacheKeys.Suppliers);
+            await LoadSuppliersAsync(forceRefresh: true);
+            DataChanged?.Invoke();
+        }
+
+        public async Task DeleteSupplierAsync(int id)
+        {
+            await _supplierService.DeleteAsync(id);
+            _cache.Remove(CacheKeys.Suppliers);
+            await LoadSuppliersAsync(forceRefresh: true);
+            DataChanged?.Invoke();
+        }
+
+        // ─── Invoice Operations ────────────────────────────────────────────
+
+        public async Task<InvoiceImageDto> UploadInvoiceAsync(int supplierId, string? filePath, DateTime? invoiceDate = null, int? productsTotal = null, decimal? totalAmount = null, decimal? amountPaid = null)
+        {
+            var result = await _supplierService.UploadInvoiceAsync(supplierId, filePath, invoiceDate, productsTotal, totalAmount, amountPaid);
+            if (result != null)
+            {
+                _cache.Remove(CacheKeys.Suppliers);
+                await LoadSuppliersAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task<InvoiceImageDto> UpdateInvoiceAsync(UpdateInvoiceRequest request, string? newFilePath = null)
+        {
+            var result = await _supplierService.UpdateInvoiceAsync(request, newFilePath);
+            if (result != null)
+            {
+                _cache.Remove(CacheKeys.Suppliers);
+                await LoadSuppliersAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task DeleteInvoiceAsync(int invoiceId)
+        {
+            await _supplierService.DeleteInvoiceAsync(invoiceId);
+            _cache.Remove(CacheKeys.Suppliers);
+            await LoadSuppliersAsync(forceRefresh: true);
+            DataChanged?.Invoke();
+        }
+
+        // ─── Invoice Item Operations ──────────────────────────────────────
+
+        public async Task<List<SupplierInvoiceItemDto>> GetInvoiceItemsAsync(int invoiceId)
+        {
+            // Always fetch fresh – no cache
+            return await _supplierService.GetInvoiceItemsAsync(invoiceId) ?? new List<SupplierInvoiceItemDto>();
+        }
+
+        public async Task<SupplierInvoiceItemDto> AddInvoiceItemAsync(int invoiceId, AddInvoiceItemRequest request)
+        {
+            var result = await _supplierService.AddInvoiceItemAsync(invoiceId, request);
+            if (result != null)
+            {
+                // Invalidate supplier cache because invoice items affect the supplier's data
+                _cache.Remove(CacheKeys.Suppliers);
+                await LoadSuppliersAsync(forceRefresh: true);
+                DataChanged?.Invoke();
+            }
+            return result;
+        }
+
+        public async Task DeleteInvoiceItemAsync(int itemId)
+        {
+            await _supplierService.DeleteInvoiceItemAsync(itemId);
+            _cache.Remove(CacheKeys.Suppliers);
+            await LoadSuppliersAsync(forceRefresh: true);
+            DataChanged?.Invoke();
+        }
+
+
+
+
         // ─── Load All Essential Data (for login) ──────────────────────
         public async Task LoadAllEssentialDataAsync()
         {
@@ -523,6 +686,8 @@ namespace Shiakati.Services.Implementations
                 await LoadVariantsAsync();
                 await LoadReservationsAsync();
                 await LoadSalesAsync();
+                await LoadMovementsAsync();
+                await LoadSuppliersAsync();
 
                 await GetDashboardDataAsync(new DashboardFilterRequest { StartDate = DateTime.Now.AddDays(-7), EndDate = DateTime.Now }); // Load recent dashboard stats
                 _logger.LogInformation("All essential data loaded.");

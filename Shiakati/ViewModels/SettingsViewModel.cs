@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Shiakati.Models;
 using Shiakati.Properties;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.APIServices;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System.Collections.ObjectModel;

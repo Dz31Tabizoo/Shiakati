@@ -17,7 +17,7 @@ namespace Shiakati.ViewModels
     public partial class SupplierViewModel : ObservableObject
     {
         //APPdATA COMMING
-        private readonly ISupplierService _supplierService;
+        private readonly ISupplierDataService _supplierDataService;
         private readonly IStockDataService _prod;
 
 
@@ -46,9 +46,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal? _amountRest;
         public bool IsSupplierSelected => SelectedSupplier != null;
 
-        public SupplierViewModel(ISupplierService supplierService, IStockDataService prod)
+        public SupplierViewModel(ISupplierDataService supplierDataService, IStockDataService prod)
         {
-            _supplierService = supplierService;
+            _supplierDataService = supplierDataService;
             _prod = prod;
             _ = LoadSuppliers();
             
@@ -57,7 +57,8 @@ namespace Shiakati.ViewModels
 
         public async Task LoadSuppliers()
         {
-            var list = await _supplierService.GetAllAsync();
+            await _supplierDataService.LoadSuppliersAsync();
+            var list = _supplierDataService.Suppliers.ToList();
             Suppliers.Clear();
             foreach (var s in list)
                 Suppliers.Add(s);
@@ -67,7 +68,7 @@ namespace Shiakati.ViewModels
         private async Task AddSupplier()
         {
             var newSupplier = new SupplierDto { Name = "Nouveau fournisseur" };
-            var created = await _supplierService.CreateAsync(newSupplier);
+            var created = await _supplierDataService.CreateSupplierAsync(newSupplier);
             Suppliers.Add(created);
             SelectedSupplier = created;
         }
@@ -76,7 +77,8 @@ namespace Shiakati.ViewModels
         private async Task SaveSupplier()
         {
             if (SelectedSupplier == null) return;
-            await _supplierService.UpdateAsync(SelectedSupplier);
+            await _supplierDataService.UpdateSupplierAsync(SelectedSupplier);
+
             var index = Suppliers.IndexOf(SelectedSupplier);
             Suppliers[index] = SelectedSupplier;
             IsEditing = false;
@@ -88,7 +90,7 @@ namespace Shiakati.ViewModels
             if (SelectedSupplier == null) return;
             if (MessageBox.Show("Supprimer ce fournisseur ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                await _supplierService.DeleteAsync(SelectedSupplier.SupplierId);
+                await _supplierDataService.DeleteSupplierAsync(SelectedSupplier.SupplierId);
                 Suppliers.Remove(SelectedSupplier);
                 SelectedSupplier = null;
             }
@@ -106,7 +108,7 @@ namespace Shiakati.ViewModels
             };
             if (dialog.ShowDialog() == true)
             {
-                var uploaded = await _supplierService.UploadInvoiceAsync(
+                var uploaded = await _supplierDataService.UploadInvoiceAsync(
                     SelectedSupplier.SupplierId,
                     dialog.FilePath,
                     dialog.InvoiceDate,
@@ -133,7 +135,7 @@ namespace Shiakati.ViewModels
             var result = MessageBox.Show("Supprimer cette facture ?", "Confirmation", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                await _supplierService.DeleteInvoiceAsync(invoiceId);
+                await _supplierDataService.DeleteInvoiceAsync(invoiceId);
                 var inv = SelectedSupplier.Invoices.FirstOrDefault(i => i.Id == invoiceId);
                 if (inv != null) SelectedSupplier.Invoices.Remove(inv);
             }
@@ -169,7 +171,7 @@ namespace Shiakati.ViewModels
                 // Pass the new file only if replaced
                 string? newFilePath = dialog.FileReplaced ? dialog.FilePath : null;
 
-                var updated = await _supplierService.UpdateInvoiceAsync(request, newFilePath);
+                var updated = await _supplierDataService.UpdateInvoiceAsync(request, newFilePath);
 
                 // Replace the old invoice in the ObservableCollection
                 var index = SelectedSupplier.Invoices.IndexOf(invoice);
@@ -190,7 +192,7 @@ namespace Shiakati.ViewModels
         {
             if (invoice == null) return;
             // Do NOT set SelectedInvoice here
-            var items = await _supplierService.GetInvoiceItemsAsync(invoice.Id);
+            var items = await _supplierDataService.GetInvoiceItemsAsync(invoice.Id);
             InvoiceItems.Clear();
             foreach (var item in items)
                 InvoiceItems.Add(item);
@@ -216,7 +218,7 @@ namespace Shiakati.ViewModels
                     UnitCost = dialog.UnitCost,
                     Notes = dialog.Notes
                 };
-                var newItem = await _supplierService.AddInvoiceItemAsync(SelectedInvoice.Id, request);
+                var newItem = await _supplierDataService.AddInvoiceItemAsync(SelectedInvoice.Id, request);
                 InvoiceItems.Add(newItem);
             }
         }
@@ -226,7 +228,7 @@ namespace Shiakati.ViewModels
         {
             if (MessageBox.Show("Supprimer cet article ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                await _supplierService.DeleteInvoiceItemAsync(itemId);
+                await _supplierDataService.DeleteInvoiceItemAsync(itemId);
                 var item = InvoiceItems.FirstOrDefault(i => i.SupplierInvoiceItemId == itemId);
                 if (item != null) InvoiceItems.Remove(item);
             }

@@ -1,5 +1,5 @@
 ﻿using Shiakati.Models;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.PrintServices;
 using System.Printing;
 using System.Windows;
 using System.Windows.Controls;

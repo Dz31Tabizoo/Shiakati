@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.APIServices
 {
     public interface IProductVariantsService
     {

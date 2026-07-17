@@ -1,6 +1,6 @@
 ﻿using Shiakati.Models;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.PrintServices
 {
     public interface IPrintService
     {

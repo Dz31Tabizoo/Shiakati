@@ -1,6 +1,6 @@
 ﻿using QRCoder;
 using Shiakati.Models;
-using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.PrintServices;
 using System;
 using System.Drawing;
 using System.Drawing.Printing;

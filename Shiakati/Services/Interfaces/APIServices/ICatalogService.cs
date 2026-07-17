@@ -1,6 +1,6 @@
 ﻿using Shiakati.Models;
 
-namespace Shiakati.Services.Interfaces
+namespace Shiakati.Services.Interfaces.APIServices
 {
     public interface ICatalogService
     {
