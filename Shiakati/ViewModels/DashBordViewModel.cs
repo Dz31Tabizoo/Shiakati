@@ -11,6 +11,7 @@ using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -51,7 +52,7 @@ namespace Shiakati.ViewModels
         // UI state
         [ObservableProperty] private bool _isLoading;
 
-        public DashBordViewModel(IDashBordDataService dashboardDataService,IStockDataService stockService , IAuthenticationClientService authservice)
+        public DashBordViewModel(IDashBordDataService dashboardDataService, IStockDataService stockService, IAuthenticationClientService authservice)
         {
             _dashboardDataService = dashboardDataService;
             this.authservice = authservice; // ✅ Fix order
@@ -62,6 +63,8 @@ namespace Shiakati.ViewModels
 
             DateLabelFormatter = date => ((DateTime)date).ToString("dd/MM");
             CurrencyFormatter = value => value.ToString("N2") + " DA";
+
+            _dashboardDataService.DashBordDataChanged += OnDashBordDataChanged;
 
             _ = LoadDashboardAsync();
         }
@@ -218,6 +221,11 @@ namespace Shiakati.ViewModels
         {
             int count = StockAlerts.Count;
             WeakReferenceMessenger.Default.Send(new StockAlertCountMessage(count));
+        }
+
+        private async void OnDashBordDataChanged()
+        {
+            await LoadDashboardAsync();
         }
     }
 }

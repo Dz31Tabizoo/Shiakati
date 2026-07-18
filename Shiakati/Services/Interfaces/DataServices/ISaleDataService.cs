@@ -18,6 +18,6 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<bool> VoidSaleAsync(int saleId);
         Task<SaleResponse?> GetSaleAsync(int saleId);
         
-        event Action? DataChanged;
+        event Action? SalesDataChanged;
     }
 }

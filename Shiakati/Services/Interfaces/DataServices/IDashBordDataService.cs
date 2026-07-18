@@ -14,6 +14,6 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<DashboardStatsResponse> GetDashboardDataAsync(DashboardFilterRequest filter);
         Task<bool> AcknowledgeAlertAsync(int variantId);
 
-        event Action? DataChanged;
+        event Action? DashBordDataChanged;
     }
 }

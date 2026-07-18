@@ -34,6 +34,7 @@ namespace Shiakati.ViewModels
         {
             _clientDataService = clientDataService;
             _serviceProvider = serviceProvider;
+            _clientDataService.ClientsDataChanged += OnClientsDataChanged;
             _ = LoadClientsAsync();
         }
 
@@ -131,6 +132,11 @@ namespace Shiakati.ViewModels
             };
             window.ShowDialog();
             _ = LoadClientsAsync();
+        }
+
+        private async void OnClientsDataChanged()
+        {
+            await LoadClientsAsync();
         }
     }
 }

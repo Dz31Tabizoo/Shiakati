@@ -23,6 +23,6 @@ namespace Shiakati.Services.Interfaces.DataServices
 
         Task<StockValuationResponse> GetStockValuationAsync();
 
-        event Action? DataChanged;
+        event Action? StockDataChanged;
     }
 }

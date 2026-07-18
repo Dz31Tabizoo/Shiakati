@@ -29,6 +29,6 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<SupplierInvoiceItemDto> AddInvoiceItemAsync(int invoiceId, AddInvoiceItemRequest request);
         Task DeleteInvoiceItemAsync(int itemId);
 
-        event Action? DataChanged;
+        event Action? SupplierDataChanged;
     }
 }

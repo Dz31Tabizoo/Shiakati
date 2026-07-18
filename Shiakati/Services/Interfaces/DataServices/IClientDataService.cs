@@ -25,7 +25,7 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<ClientDetailDto?> GetClientDetailAsync(int clientId);
         Task<List<ClientSaleDto>> GetClientSalesAsync(int clientId);
 
-        event Action? DataChanged;
+        event Action? ClientsDataChanged;
 
     }
 

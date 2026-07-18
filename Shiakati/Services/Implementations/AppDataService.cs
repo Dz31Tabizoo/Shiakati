@@ -50,7 +50,18 @@ namespace Shiakati.Services.Implementations
         private bool _movementsLoaded;
         private bool _suppliersLoaded;
 
-        public event Action? DataChanged;
+        public event Action? CatalogDataChanged;
+        public event Action? ClientsDataChanged;
+        public event Action? DashBordDataChanged;
+        public event Action? StockDataChanged;
+        public event Action? ReservationDataChanged;
+        public event Action? SalesDataChanged;
+        public event Action? MovementDataChanged;
+        public event Action? SupplierDataChanged;
+
+        public event Action? AllDataLoaded;
+
+
 
         public AppDataService(
             ICatalogService catalogService,
@@ -127,7 +138,7 @@ namespace Shiakati.Services.Implementations
                 });
 
                 // 4. Notify subscribers
-                DataChanged?.Invoke();
+                CatalogDataChanged?.Invoke();
 
                 return created;
             }
@@ -183,7 +194,7 @@ namespace Shiakati.Services.Implementations
                 Clients.Add(created);
             });
 
-            DataChanged?.Invoke();
+            ClientsDataChanged?.Invoke();
             return created;
         }
 
@@ -214,7 +225,7 @@ namespace Shiakati.Services.Implementations
             });
 
             await LoadClientsAsync(); // Refresh the entire list to ensure balances are updated
-            DataChanged?.Invoke();
+            ClientsDataChanged?.Invoke();
         }
 
         public async Task<bool> AddVersementAsync(CreateVersementRequest request)
@@ -224,7 +235,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Clients);
                 await LoadClientsAsync(forceRefresh:true); // Refresh the entire list to update balances
-                DataChanged?.Invoke();
+                ClientsDataChanged?.Invoke();
             }
             return success;
         }
@@ -236,7 +247,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Clients);
                 await LoadClientsAsync(forceRefresh: true); // Refresh the entire list
-                DataChanged?.Invoke();
+                ClientsDataChanged?.Invoke();
             }
             return success;
         }
@@ -272,7 +283,7 @@ namespace Shiakati.Services.Implementations
                 _cache.Remove(CacheKeys.DashboardStats);
 
                 // Notify subscribers that data changed (optional)
-                DataChanged?.Invoke();
+                DashBordDataChanged?.Invoke();
             }
             return result;
         }
@@ -330,7 +341,7 @@ namespace Shiakati.Services.Implementations
                 _cache.Remove(CacheKeys.Variants);
                 // Reload variants to update the shared collection
                 await LoadVariantsAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                StockDataChanged?.Invoke();
             }
             return result;
         }
@@ -342,7 +353,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Variants);
                 await LoadVariantsAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                StockDataChanged?.Invoke();
             }
             return result;
         }
@@ -354,7 +365,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Variants);
                 await LoadVariantsAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                StockDataChanged?.Invoke();
             }
             return result;
         }
@@ -413,7 +424,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Reservations);
                 await LoadReservationsAsync(forceRefresh: true); // Refresh the list
-                DataChanged?.Invoke();
+                ReservationDataChanged?.Invoke();
             }
             return result;
         }
@@ -425,7 +436,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Reservations);
                 await LoadReservationsAsync(forceRefresh: true); // Refresh the list
-                DataChanged?.Invoke();
+                ReservationDataChanged?.Invoke();
             }
             return result;
         }
@@ -437,7 +448,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Reservations);
                 await LoadReservationsAsync(forceRefresh: true); // Refresh the list
-                DataChanged?.Invoke();
+                ReservationDataChanged?.Invoke();
             }
             return result;
         }
@@ -492,7 +503,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Sales);
                 await LoadSalesAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SalesDataChanged?.Invoke();
             }
             return result;
         }
@@ -504,7 +515,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Sales);
                 await LoadSalesAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SalesDataChanged?.Invoke();
             }
             return result;
         }
@@ -516,7 +527,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Sales);
                 await LoadSalesAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SalesDataChanged?.Invoke();
             }
             return result;
         }
@@ -588,7 +599,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Suppliers);
                 await LoadSuppliersAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SupplierDataChanged?.Invoke();
             }
             return result;
         }
@@ -598,7 +609,7 @@ namespace Shiakati.Services.Implementations
             await _supplierService.UpdateAsync(dto);
             _cache.Remove(CacheKeys.Suppliers);
             await LoadSuppliersAsync(forceRefresh: true);
-            DataChanged?.Invoke();
+            SupplierDataChanged?.Invoke();
         }
 
         public async Task DeleteSupplierAsync(int id)
@@ -606,7 +617,7 @@ namespace Shiakati.Services.Implementations
             await _supplierService.DeleteAsync(id);
             _cache.Remove(CacheKeys.Suppliers);
             await LoadSuppliersAsync(forceRefresh: true);
-            DataChanged?.Invoke();
+            SupplierDataChanged?.Invoke();
         }
 
         // ─── Invoice Operations ────────────────────────────────────────────
@@ -618,7 +629,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Suppliers);
                 await LoadSuppliersAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SupplierDataChanged?.Invoke();
             }
             return result;
         }
@@ -630,7 +641,7 @@ namespace Shiakati.Services.Implementations
             {
                 _cache.Remove(CacheKeys.Suppliers);
                 await LoadSuppliersAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SupplierDataChanged?.Invoke();
             }
             return result;
         }
@@ -640,7 +651,7 @@ namespace Shiakati.Services.Implementations
             await _supplierService.DeleteInvoiceAsync(invoiceId);
             _cache.Remove(CacheKeys.Suppliers);
             await LoadSuppliersAsync(forceRefresh: true);
-            DataChanged?.Invoke();
+            SupplierDataChanged?.Invoke();
         }
 
         // ─── Invoice Item Operations ──────────────────────────────────────
@@ -659,7 +670,7 @@ namespace Shiakati.Services.Implementations
                 // Invalidate supplier cache because invoice items affect the supplier's data
                 _cache.Remove(CacheKeys.Suppliers);
                 await LoadSuppliersAsync(forceRefresh: true);
-                DataChanged?.Invoke();
+                SupplierDataChanged?.Invoke();
             }
             return result;
         }
@@ -669,7 +680,7 @@ namespace Shiakati.Services.Implementations
             await _supplierService.DeleteInvoiceItemAsync(itemId);
             _cache.Remove(CacheKeys.Suppliers);
             await LoadSuppliersAsync(forceRefresh: true);
-            DataChanged?.Invoke();
+            SupplierDataChanged?.Invoke();
         }
 
 
@@ -691,7 +702,8 @@ namespace Shiakati.Services.Implementations
 
                 await GetDashboardDataAsync(new DashboardFilterRequest { StartDate = DateTime.Now.AddDays(-7), EndDate = DateTime.Now }); // Load recent dashboard stats
                 _logger.LogInformation("All essential data loaded.");
-                DataChanged?.Invoke();
+
+                AllDataLoaded?.Invoke();
             }
             catch (Exception ex)
             {

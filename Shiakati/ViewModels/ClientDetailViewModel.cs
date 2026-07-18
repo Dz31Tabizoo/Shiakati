@@ -47,12 +47,16 @@ namespace Shiakati.ViewModels
         public ClientDetailViewModel(IClientDataService clientDataService)
         {
             _clientDataService = clientDataService;
+            _clientDataService.ClientsDataChanged += OnClientChanged;
+
         }
 
         public async Task LoadClientAsync(int clientId)
         {
             _clientId = clientId;
             await LoadAsync();
+
+
         }
 
 
@@ -73,7 +77,7 @@ namespace Shiakati.ViewModels
                 }
                 TotalCreditsAvailable = Credits.Where(c => !c.IsRedeemed).Sum(c => c.Amount);
                 TotalPayments = Versements.Sum(v => v.Amount);
-                
+
 
                 // Load sales
                 var salesList = await _clientDataService.GetClientSalesAsync(_clientId);
@@ -84,7 +88,8 @@ namespace Shiakati.ViewModels
             finally { IsLoading = false; }
         }
 
-        [RelayCommand] private async Task EditClient()
+        [RelayCommand]
+        private async Task EditClient()
         {
             if (Client == null) return;
             // Open edit dialog (similar to create)
@@ -99,20 +104,21 @@ namespace Shiakati.ViewModels
                     Address = dialog.Address,
                     Email = dialog.Email
                 };
-                try 
+                try
                 {
                     await _clientDataService.UpdateClientAsync(updatedClient);
 
                     await LoadAsync(); // refresh detail
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        [RelayCommand] private async Task GrantCreditAsync()
+        [RelayCommand]
+        private async Task GrantCreditAsync()
         {
             if (CreditAmount <= 0) return;
             var request = new CreateCreditRequest { ClientId = _clientId, Amount = CreditAmount, Notes = CreditNotes, ExpiresAt = CreditExpiresAt };
@@ -137,6 +143,12 @@ namespace Shiakati.ViewModels
                 await LoadAsync();
             }
             else MessageBox.Show("Erreur lors de l'enregistrement du versement.");
+        }
+
+
+        private async void OnClientChanged()
+        {
+            await LoadAsync();
         }
     }
 }

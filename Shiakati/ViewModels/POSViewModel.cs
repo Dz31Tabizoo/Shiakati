@@ -61,7 +61,8 @@ namespace Shiakati.ViewModels
             {
                 LoadSaleForEditing(m.Sale, m.Items);
             });
-            _catalogDataService.DataChanged += OnCatalogChanged;
+            _catalogDataService.CatalogDataChanged += OnCatalogChanged;
+            _stockService.StockDataChanged += OnCatalogChanged();
             _ = LoadProductsAsync();
 
             WeakReferenceMessenger.Default.Register<StockUpdatedMessage>(this, (r, m) =>

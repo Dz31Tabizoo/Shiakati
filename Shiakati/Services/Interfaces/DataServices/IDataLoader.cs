@@ -8,6 +8,7 @@ namespace Shiakati.Services.Interfaces.DataServices
 {
     public interface IDataLoader
     {
+        event Action? AllDataLoaded;
         Task LoadAllEssentialDataAsync();
     }
 }

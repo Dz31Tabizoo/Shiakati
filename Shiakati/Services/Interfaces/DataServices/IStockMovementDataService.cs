@@ -14,6 +14,6 @@ namespace Shiakati.Services.Interfaces.DataServices
 
         Task LoadMovementsAsync(DateTime? from = null, DateTime? to = null, bool forceRefresh = false);
 
-        event Action? DataChanged;
+        event Action? MovementDataChanged;
     }
 }

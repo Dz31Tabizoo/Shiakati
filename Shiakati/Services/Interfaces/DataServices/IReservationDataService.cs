@@ -18,6 +18,6 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<bool> CancelReservationAsync(int id);
         Task<bool> FulfillReservationAsync(int id, decimal amountPaid);
 
-        event Action? DataChanged;
+        event Action? ReservationDataChanged;
     }
 }

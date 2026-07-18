@@ -18,7 +18,7 @@ namespace Shiakati.Services.Interfaces.DataServices
         Task<CategoryModel> AddCategoryAsync(CategoryModel category);
         // I can Add AddBrandAsync later 
 
-        event Action? DataChanged;
+        event Action? CatalogDataChanged;
     }
 }
     
