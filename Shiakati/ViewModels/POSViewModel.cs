@@ -16,16 +16,17 @@ using System.Windows.Data;
 using ZXing;
 using Shiakati.Services.Interfaces.PrintServices;
 using Shiakati.Services.Interfaces.CacheService;
+using System.Linq.Expressions;
 
 namespace Shiakati.ViewModels
 {
-    public partial class POSViewModel : ObservableObject
+    public partial class POSViewModel : ObservableObject, IDisposable
     {
         private readonly IReservationDataService _reservationDataService;
         private readonly ILogger<POSViewModel> _logger;
         private readonly IPrintService _printService;
         private readonly ICatalogDataService _catalogDataService;
-        
+
         private readonly IStockDataService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleDataService _saleDataService;
@@ -36,15 +37,15 @@ namespace Shiakati.ViewModels
         private readonly ObservableCollection<ProductVariantModel> _posProducts = new();
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
-                            ICatalogDataService catalogDataService, IStockDataService stockService, 
-                            ICacheService cacheService,IReservationDataService reservation , ISaleDataService saleDataService,
+                            ICatalogDataService catalogDataService, IStockDataService stockService,
+                            ICacheService cacheService, IReservationDataService reservation, ISaleDataService saleDataService,
                             IClientDataService clientDataService)
         {
             TabName = name;
             _logger = logger;
             _printService = printService;
             _catalogDataService = catalogDataService;
-           
+
             _stockService = stockService;
             _cacheService = cacheService;
             _saleDataService = saleDataService;
@@ -62,7 +63,8 @@ namespace Shiakati.ViewModels
                 LoadSaleForEditing(m.Sale, m.Items);
             });
             _catalogDataService.CatalogDataChanged += OnCatalogChanged;
-            _stockService.StockDataChanged += OnCatalogChanged();
+            _stockService.StockDataChanged += OnStockChanged;
+
             _ = LoadProductsAsync();
 
             WeakReferenceMessenger.Default.Register<StockUpdatedMessage>(this, (r, m) =>
@@ -78,7 +80,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private string _searchText = string.Empty;
 
-        
+
 
         [ObservableProperty] private ObservableCollection<string> _categories = new();
         [ObservableProperty] private ObservableCollection<string> _brands = new();
@@ -131,7 +133,9 @@ namespace Shiakati.ViewModels
                 foreach (var cat in _catalogDataService.Categories)
                     Categories.Add(cat.CategoryName);
 
-                 await  _stockService.LoadVariantsAsync();
+                
+
+                await _stockService.LoadVariantsAsync();
                 _allProducts = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
 
                 _skuLookup = _allProducts
@@ -182,7 +186,7 @@ namespace Shiakati.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erreur lors du chargement des produits pour le POS.");
-                MessageBox.Show("Impossible de charger le catalogue. "+ ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Impossible de charger le catalogue. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -248,7 +252,8 @@ namespace Shiakati.ViewModels
         }
 
         //----------- Client Sales Management --------------
-        [RelayCommand] private void OpenClientSelectionDialog()
+        [RelayCommand]
+        private void OpenClientSelectionDialog()
         {
             var dialog = new ClientSelectorDialog(_clientDataService) { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
@@ -260,7 +265,8 @@ namespace Shiakati.ViewModels
             }
         }
 
-        [RelayCommand] private async Task OpenCreditSaleDialogAsync()
+        [RelayCommand]
+        private async Task OpenCreditSaleDialogAsync()
         {
             if (CartItems.Count == 0)
             {
@@ -315,7 +321,8 @@ namespace Shiakati.ViewModels
             OnPropertyChanged(nameof(CartTotal));
         }
 
-        [RelayCommand] private void AddToCart(ProductVariantModel selectedVariant)
+        [RelayCommand]
+        private void AddToCart(ProductVariantModel selectedVariant)
         {
             if (selectedVariant == null) return;
             var existingItem = CartItems.FirstOrDefault(c => c.Variant?.VariantId == selectedVariant.VariantId);
@@ -326,7 +333,8 @@ namespace Shiakati.ViewModels
             SearchText = string.Empty;
         }
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
-        [RelayCommand] private void IncrementQty(CartItem item)
+        [RelayCommand]
+        private void IncrementQty(CartItem item)
         {
             if (item == null || item.Variant == null) return;
             int maxStock = item.Variant.StockQuantity ?? 0;
@@ -337,7 +345,8 @@ namespace Shiakati.ViewModels
             }
             item.Quantity = (item.Quantity ?? 0) + 1;
         }
-        [RelayCommand] private void DecrementQty(CartItem item)
+        [RelayCommand]
+        private void DecrementQty(CartItem item)
         {
             if (item == null) return;
             if ((item.Quantity ?? 0) > 1) item.Quantity--;
@@ -346,7 +355,8 @@ namespace Shiakati.ViewModels
         [RelayCommand] private void CancelEdit() => ResetPOS();
         //----------------------------------------------
         //   Check Out Command                
-        [RelayCommand] private async Task CheckoutAsync()
+        [RelayCommand]
+        private async Task CheckoutAsync()
         {
             if (CartItems.Count == 0)
             {
@@ -422,7 +432,7 @@ namespace Shiakati.ViewModels
 
                         if (IsCreditSale)
                         {
-                            
+
                             receipt.DocumentType = "CREDIT SALE";
                             receipt.PaidAmount = CreditPaidAmount ?? 0;
                             receipt.RemainingDebt = (CartTotal ?? 0) - (CreditPaidAmount ?? 0);
@@ -433,12 +443,12 @@ namespace Shiakati.ViewModels
                             receipt.PaidAmount = CartTotal ?? 0;
                             receipt.RemainingDebt = 0;
                         }
-                      
+
 
                         if (PrintTicket(receipt))
                             MessageBox.Show($"Vente modifiée – Ticket {EditTicketNumber}", "Succès",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
-                        
+
                         _ = LoadProductsAsync();
                         ResetPOS();
                     }
@@ -508,10 +518,10 @@ namespace Shiakati.ViewModels
 
                         PrintTicket(receipt);
 
-                            MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}", "Succès",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Vente validée – Ticket {result.TicketNumber}", "Succès",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
 
-                                               
+
                         ResetPOS();
 
 
@@ -529,7 +539,7 @@ namespace Shiakati.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur lors de l'enregistrement de la vente : "+ ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Erreur lors de l'enregistrement de la vente : " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
 
             }
             finally { IsLoading = false; }
@@ -540,7 +550,7 @@ namespace Shiakati.ViewModels
         {
             try
             {
-                 await _stockService.LoadVariantsAsync();
+                await _stockService.LoadVariantsAsync();
 
                 var filteredItems = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
 
@@ -563,7 +573,7 @@ namespace Shiakati.ViewModels
 
                 // ---- Update the UI on the dispatcher thread ----
                 Application.Current.Dispatcher.Invoke(() =>
-                {                    
+                {
                     // Replace the product collection safely
                     _allProducts = filteredItems;
                     _skuLookup = _allProducts
@@ -725,8 +735,8 @@ namespace Shiakati.ViewModels
                     PrintTicket(receipt);
 
                     MessageBox.Show("Réservation enregistrée avec succès.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
-                    
-                    
+
+
                     ResetPOS();
                     _ = LoadProductsAsync();
                 }
@@ -738,15 +748,51 @@ namespace Shiakati.ViewModels
 
 
         // ------------------- End of reservation ------------------
-        private void OnCatalogChanged()
+        private async void OnCatalogChanged()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                Categories.Clear();
-                Categories.Add("TOUT");
-                foreach (var cat in _catalogDataService.Categories)
-                    Categories.Add(cat.CategoryName);
-            });
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Categories.Clear();
+                    Categories.Add("TOUT");
+                    foreach (var cat in _catalogDataService.Categories)
+                        Categories.Add(cat.CategoryName);
+
+                    Brands.Clear();
+                    Brands.Add("TOUT");
+                    foreach (var brand in _catalogDataService.Brands)
+                        Brands.Add(brand.BrandName);
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la mise à jour du catalogue.");
+                MessageBox.Show("Impossible de mettre à jour le catalogue. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
+
+        private async void OnStockChanged()
+        {
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la mise à jour du stock.");
+                MessageBox.Show("Impossible de mettre à jour le stock. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _catalogDataService.CatalogDataChanged -= OnCatalogChanged;
+            _stockService.StockDataChanged -= OnStockChanged;
+        }
+
     }
 }

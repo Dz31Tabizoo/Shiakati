@@ -40,7 +40,7 @@
             </Grid>
 
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Clients}"
+        <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredClientsView}"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   SelectionMode="Single" SelectedItem="{Binding SelectedClient}"
                   Style="{StaticResource ShiakatiDataGrid}"

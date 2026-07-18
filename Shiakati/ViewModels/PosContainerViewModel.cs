@@ -47,6 +47,7 @@ namespace Shiakati.ViewModels
         {
             if (tabToClose != null && PosTabs.Contains(tabToClose))
             {
+                (tabToClose as IDisposable)?.Dispose();
                 PosTabs.Remove(tabToClose);
                 SelectedTab = PosTabs.Count > 0 ? PosTabs[0] : null!;
             }

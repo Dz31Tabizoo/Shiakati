@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Shiakati.Models;
 using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
@@ -9,81 +11,77 @@ using Shiakati.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 
 namespace Shiakati.ViewModels
 {
-    public partial class ClientListViewModel : ObservableObject
+    public partial class ClientListViewModel : ObservableObject, IDisposable
     {
-        private CancellationTokenSource? _loadCts;
-
         private readonly IClientDataService _clientDataService;
-        private readonly IServiceProvider _serviceProvider; // ← added
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<ClientListViewModel> _logger;
+
+        // ✅ Bind to Data Service's collection
+        public ICollectionView FilteredClientsView { get; }
 
         [ObservableProperty] private string _searchText = string.Empty;
         [ObservableProperty] private bool _isLoading;
         [ObservableProperty] private ClientSummaryDto? _selectedClient;
-        public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
-        private List<ClientSummaryDto> _allClients = new();
 
-        // Constructor with IServiceProvider
-        public ClientListViewModel(IClientDataService clientDataService, IServiceProvider serviceProvider)
+        public ClientListViewModel(IClientDataService clientDataService, IServiceProvider serviceProvider, ILogger<ClientListViewModel> logger)
         {
             _clientDataService = clientDataService;
             _serviceProvider = serviceProvider;
+            _logger = logger;
+
+            // Create the filtered view over the Data Service's collection
+            FilteredClientsView = CollectionViewSource.GetDefaultView(_clientDataService.Clients);
+            FilteredClientsView.Filter = ClientFilter;
+
             _clientDataService.ClientsDataChanged += OnClientsDataChanged;
             _ = LoadClientsAsync();
         }
 
+        private bool ClientFilter(object obj)
+        {
+            if (obj is not ClientSummaryDto c) return false;
+            if (string.IsNullOrWhiteSpace(SearchText)) return true;
+            return c.FullName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true ||
+                   c.PhoneNumber?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true;
+        }
+
+        partial void OnSearchTextChanged(string value)
+        {
+            FilteredClientsView.Refresh();
+        }
+
         [RelayCommand]
-        private async Task LoadClientsAsync(CancellationToken token = default)
+        private async Task LoadClientsAsync()
         {
             if (IsLoading) return;
             IsLoading = true;
             try
             {
-                token.ThrowIfCancellationRequested();
-
                 await _clientDataService.LoadClientsAsync();
-                _allClients = _clientDataService.Clients.ToList();
-
-                ApplyFilter();
-
+                FilteredClientsView.Refresh(); // apply current filter
             }
-            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur chargement clients");
+                MessageBox.Show("Impossible de charger les clients.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             finally { IsLoading = false; }
-        }
-
-        private void ApplyFilter()
-        {
-            var filteredClients = string.IsNullOrWhiteSpace(SearchText)
-                ? _allClients
-                : _allClients.Where(c =>
-                    (c.FullName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
-                    (c.PhoneNumber?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true))
-                    .ToList();
-
-            Clients.Clear();
-            foreach (var client in filteredClients)
-                Clients.Add(client);
-        }
-
-        partial void OnSearchTextChanged(string value)
-        {
-            _loadCts?.Cancel();
-            _loadCts = new CancellationTokenSource();
-
-            ApplyFilter();
         }
 
         [RelayCommand]
         private async Task AddNewClient()
         {
-            
-            var dialog = new ClientCreateDialog(); // not yet implemented – we can create it
+            var dialog = new ClientCreateDialog();
             if (dialog.ShowDialog() == true)
             {
                 var request = new CreateClientRequest
@@ -95,19 +93,12 @@ namespace Shiakati.ViewModels
                 };
                 try
                 {
-                    var newClient = await _clientDataService.AddClientAsync(request);
-                    if (newClient != null)
-                    {
-                        await LoadClientsAsync(); // refresh
-                    }
-                    else
-                    {
-                        MessageBox.Show("Ce numéro de téléphone existe déjà ou erreur serveur.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
+                    await _clientDataService.AddClientAsync(request);
+                    // UI updates automatically because FilteredClientsView is bound to the Data Service's collection
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Erreur lors de la création du client.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -116,7 +107,6 @@ namespace Shiakati.ViewModels
         private void OpenClientDetail(ClientSummaryDto selectedClient)
         {
             if (selectedClient == null) return;
-
             var detailVm = _serviceProvider.GetRequiredService<ClientDetailViewModel>();
             var detailView = _serviceProvider.GetRequiredService<ClientDetailView>();
             detailView.DataContext = detailVm;
@@ -131,12 +121,26 @@ namespace Shiakati.ViewModels
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             window.ShowDialog();
+            // After closing, refresh if needed
             _ = LoadClientsAsync();
         }
 
         private async void OnClientsDataChanged()
         {
-            await LoadClientsAsync();
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadClientsAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la mise à jour des clients");
+                MessageBox.Show("Impossible de mettre à jour la liste.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _clientDataService.ClientsDataChanged -= OnClientsDataChanged;
         }
     }
 }

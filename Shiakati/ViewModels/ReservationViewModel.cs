@@ -15,7 +15,7 @@ using System.Windows;
 
 namespace Shiakati.ViewModels
 {
-    public partial class ReservationsViewModel : ObservableObject
+    public partial class ReservationsViewModel : ObservableObject, IDisposable
     {
         private readonly IReservationDataService _reservationDataService;
         private readonly IPrintService _printService;
@@ -31,6 +31,7 @@ namespace Shiakati.ViewModels
         {
             _printService = print;
             _reservationDataService = reservationDataService;
+            _reservationDataService.ReservationDataChanged += OnReservationChanged;
             _ = LoadAllAsync();   // fetch everything once at startup
         }
 
@@ -155,6 +156,28 @@ namespace Shiakati.ViewModels
                     MessageBox.Show("Erreur lors de l'opération.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+
+        private async void OnReservationChanged()
+        {
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(()=> LoadAllAsync());
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de la mise à jour des réservations : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                
+
+            }
+        }
+
+        public void Dispose()
+        {
+            _reservationDataService.ReservationDataChanged -= OnReservationChanged;
+
         }
 
     }

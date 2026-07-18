@@ -34,10 +34,11 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private bool _isAlertActive;
         [ObservableProperty] private bool _isAlertPulsing;
         [ObservableProperty] private bool _isAlertStatic;
+        [ObservableProperty] private string _userName;
+
 
         // ViewModels (injected)
         public SalesHistoryViewModel SalesHistory { get; }
-
         public SupplierViewModel Suppliers { get; }
         public PosContainerViewModel PosContainer { get; }
         public ReservationsViewModel ReservationsVM { get; }
@@ -47,7 +48,7 @@ namespace Shiakati.ViewModels
         public ClientListViewModel ClientList { get; }
         public SettingsViewModel Settings { get; }
 
-        [ObservableProperty] private string _userName;
+        
 
         public MainViewModel(
             ICacheService cacheService,
@@ -58,7 +59,8 @@ namespace Shiakati.ViewModels
             SettingsViewModel settingsViewModel,
             StockMovementsViewModel stockMovementsViewModel,
             ClientListViewModel clientList,
-            ReservationsViewModel reservationsViewModel,SupplierViewModel suppliers,
+            ReservationsViewModel reservationsViewModel,
+            SupplierViewModel suppliers,
             DashBordViewModel dashBordViewModel)
         {
             _authService = authService;
@@ -66,6 +68,7 @@ namespace Shiakati.ViewModels
             _authService.OnAuthenticationStateChanged += OnAuthStateChanged;
 
             _cacheService = cacheService;
+
             Suppliers = suppliers;
             ReservationsVM = reservationsViewModel;
             StockMovements = stockMovementsViewModel;

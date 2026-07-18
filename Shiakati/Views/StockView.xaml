@@ -430,9 +430,10 @@
                 <!-- Form content -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
                     <StackPanel>
+                        
                         <TextBlock Text="1. Informations Produit" FontWeight="SemiBold"
-                   Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,5"/>
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="14" Margin="0,0,0,5"/>
 
                         <ComboBox materialDesign:HintAssist.Hint="Catégorie"
                   ItemsSource="{Binding Categories}"
@@ -440,6 +441,7 @@
                   SelectedItem="{Binding DraftCategory}"
                   Style="{StaticResource ShiakatiComboBox}"
                   Margin="0,0,0,5"/>
+                        
                         <ComboBox materialDesign:HintAssist.Hint="Marque"
                   ItemsSource="{Binding FilteredBrands}"
                   Text="{Binding DraftNewBrandName, UpdateSourceTrigger=PropertyChanged}"
@@ -450,27 +452,28 @@
                   Margin="0,0,0,5"/>
 
                         <ComboBox materialDesign:HintAssist.Hint="Nom du produit"
-                  IsEditable="True"
-                  Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}"
-                  ItemsSource="{Binding Products}"
-                  DisplayMemberPath="ProductName"
-                  SelectedItem="{Binding DraftSelectedProduct}"
-                  Style="{StaticResource ShiakatiComboBox}"
-                  Margin="0,0,0,5"/>
+                                  IsEditable="True"
+                                  Text="{Binding DraftProductName, UpdateSourceTrigger=PropertyChanged}"
+                                  ItemsSource="{Binding Products}"
+                                  DisplayMemberPath="ProductName"
+                                  SelectedItem="{Binding DraftSelectedProduct}"
+                                  Style="{StaticResource ShiakatiComboBox}"
+                                  Margin="0,0,0,5"/>
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold"
-                   Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,5"/>
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="14" Margin="0,0,0,5"/>
 
                         <CheckBox Content="Saisir code-barres manuellement"
-                  IsChecked="{Binding IsManualSkuEnabled}"
-                  FontSize="13" Margin="0,0,0,6"
-                  Visibility="{Binding IsNotEditMode, Converter={StaticResource BoolToVis}}"/>
+                                  IsChecked="{Binding IsManualSkuEnabled}"
+                                  FontSize="13" Margin="0,0,0,6"
+                                  Visibility="{Binding IsNotEditMode, Converter={StaticResource BoolToVis}}"/>
+                        
                         <TextBox materialDesign:HintAssist.Hint="Code-barres (SKU)"
-                 Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding IsManualSkuEnabled}"
-                 Style="{StaticResource ShiakatiTextBox}"
-                 Margin="0,0,0,5">
+                                 Text="{Binding DraftSKU, UpdateSourceTrigger=PropertyChanged}"
+                                 IsEnabled="{Binding IsManualSkuEnabled}"
+                                 Style="{StaticResource ShiakatiTextBox}"
+                                 Margin="0,0,0,5">
                             <TextBox.ToolTip>Laissez vide pour générer automatiquement, ou scannez le code-barres existant</TextBox.ToolTip>
                         </TextBox>
 
@@ -538,32 +541,32 @@
                         </Grid>
 
                         <TextBlock Text="3. Quantité et Impression" FontWeight="SemiBold"
-                   Foreground="{StaticResource TextSecondaryBrush}"
-                   FontSize="14" Margin="0,0,0,5"/>
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="14" Margin="0,0,0,5"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Quantité reçue"
-                 Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{StaticResource ShiakatiTextBox}"
-                 FontSize="22" FontWeight="Bold"
-                 Margin="0,0,0,8"
-                 Foreground="{StaticResource PrimaryBrush}"/>
+                                 Text="{Binding DraftQuantity, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource ShiakatiTextBox}"
+                                 FontSize="22" FontWeight="Bold"
+                                 Margin="0,0,0,8"
+                                 Foreground="{StaticResource PrimaryBrush}"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                             <CheckBox Content="Imprimer code-barres"
-                      IsChecked="{Binding PrintLabelsOnSave}"
-                      FontWeight="SemiBold" FontSize="14"
-                      VerticalAlignment="Center"/>
+                                      IsChecked="{Binding PrintLabelsOnSave}"
+                                      FontWeight="SemiBold" FontSize="14"
+                                      VerticalAlignment="Center"/>
                             <TextBox materialDesign:HintAssist.Hint="Qté à imprimer"
-                     Text="{Binding LabelsToPrint, UpdateSourceTrigger=PropertyChanged}"
-                     Width="100" FontSize="14" Margin="20,0,0,0"
-                     Style="{StaticResource ShiakatiTextBox}"
-                     Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}"
-                     VerticalAlignment="Center"/>
+                                     Text="{Binding LabelsToPrint, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="100" FontSize="14" Margin="20,0,0,0"
+                                     Style="{StaticResource ShiakatiTextBox}"
+                                     Visibility="{Binding PrintLabelsOnSave, Converter={StaticResource BoolToVis}}"
+                                     VerticalAlignment="Center"/>
                         </StackPanel>
                         <TextBlock Text="Par défaut, imprime une étiquette par article reçu. Vous pouvez modifier ce nombre."
-                   FontStyle="Italic" FontSize="12"
-                   Foreground="{StaticResource TextSecondaryBrush}"
-                   TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                   FontStyle="Italic" FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" Margin="0,4,0,0"/>
 
 
                         <!-- Bulk variants list (visible only in bulk mode) -->

@@ -127,28 +127,40 @@ namespace Shiakati
             // ---------------------------------------------------------
             services.AddSingleton<MainView>();
             services.AddSingleton<MainViewModel>();
-            services.AddSingleton<PosContainerViewModel>();
+
+            services.AddSingleton<PosContainerViewModel>();//S
             services.AddTransient<POSViewModel>();
+
             services.AddTransient<LoginView>();
             services.AddTransient<LoginViewModel>();
-            services.AddSingleton<StockViewModel>();
+
+            services.AddSingleton<StockViewModel>();//S
             services.AddTransient<StockView>();
-            services.AddTransient<SalesHistoryViewModel>();
+
+            services.AddSingleton<SalesHistoryViewModel>();
             services.AddTransient<SalesHistoryView>();
-            services.AddTransient<SettingsViewModel>();
+
+            services.AddSingleton<SettingsViewModel>();
             services.AddTransient<SettingsView>();
-            services.AddTransient<StockMovementsViewModel>();
+
+            services.AddSingleton<StockMovementsViewModel>();
             services.AddTransient<StockMovementsView>();
-            services.AddTransient<ClientListViewModel>();
+
+            services.AddSingleton<ClientListViewModel>();
             services.AddTransient<ClientListView>();
+
             services.AddTransient<ClientDetailViewModel>();
             services.AddTransient<ClientDetailView>();
-            services.AddTransient<ReservationsViewModel>();
+
+            services.AddSingleton<ReservationsViewModel>();
             services.AddTransient<ReservationsView>();
-            services.AddTransient<DashBordViewModel>();
+
+            services.AddSingleton<DashBordViewModel>();
             services.AddTransient<DashBordView>();
-            services.AddTransient<SupplierViewModel>();
+
+            services.AddSingleton<SupplierViewModel>();
             services.AddTransient<SupplierView>();
+
             services.AddTransient<AddInvoiceItemDialog>();
 
             // . Autres services utilitaires

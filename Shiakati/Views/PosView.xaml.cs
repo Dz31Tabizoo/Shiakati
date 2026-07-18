@@ -23,6 +23,14 @@ namespace Shiakati.Views
         public PosView()
         {
             InitializeComponent();
+
+            this.Unloaded += (s, e) =>
+            {
+                if (this.DataContext is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            };
         }
     }
 }

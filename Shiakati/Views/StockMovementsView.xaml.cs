@@ -23,6 +23,7 @@ namespace Shiakati.Views
         public StockMovementsView()
         {
             InitializeComponent();
+
         }
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace Shiakati.ViewModels
         // ─────────────────────────────────────────────────────────
         //   Services
         // ─────────────────────────────────────────────────────────
+        private readonly ILogger<StockViewModel> _logger;
         private readonly IBarCodePrintService _printerService;
         private readonly ICatalogDataService _catalogDataService;
         
@@ -45,22 +47,24 @@ namespace Shiakati.ViewModels
                               ICatalogDataService catalogDataService,
                               IStockDataService stockService,
                               ICacheService cacheService,
-                              IPrintService printServ)
+                              IPrintService printServ,
+                              ILogger<StockViewModel>logger)
         {
             _printerService = printerService;
             _printService = printServ;
             _catalogDataService = catalogDataService;
-            
+            _logger = logger;
             _stockService = stockService;
             _cacheService = cacheService;
+
+            _stockService.StockDataChanged += OnStockChanged;
 
             // ── The view is created ONCE, bound to the stable source collection ──
             FilteredStockView = CollectionViewSource.GetDefaultView(_stockSource);
             FilteredStockView.Filter = StockFilter;
 
             // Initialise other collections
-            Categories = new ObservableCollection<CategoryModel>();
-            Brands = new ObservableCollection<BrandsModel>();
+            
             FilteredBrands = CollectionViewSource.GetDefaultView(Brands);
             Products = new ObservableCollection<ProductModel>();
             FilterColors = new ObservableCollection<string>();
@@ -73,8 +77,8 @@ namespace Shiakati.ViewModels
         //   Exposed collections
         // ─────────────────────────────────────────────────────────
 
-        public ObservableCollection<CategoryModel> Categories { get; }
-        public ObservableCollection<BrandsModel> Brands { get; }
+        public ObservableCollection<CategoryModel> Categories { get; } = new();
+        public ObservableCollection<BrandsModel> Brands { get; } = new();
         public ICollectionView FilteredBrands { get; private set; }
         public ObservableCollection<ProductModel> Products { get; }
 
@@ -174,7 +178,7 @@ namespace Shiakati.ViewModels
                     .OrderBy(s => s)
                     .ToList();
 
-                Application.Current.Dispatcher.Invoke(() =>
+                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     // Replace the entire content of the stable source collection
                     _stockSource.Clear();
@@ -183,10 +187,14 @@ namespace Shiakati.ViewModels
 
                     // Rebuild filter dropdowns
                     Categories.Clear();
-                    foreach (var c in _catalogDataService.Categories) Categories.Add(c);
+                    
+                    foreach (var c in _catalogDataService.Categories)
+                        Categories.Add(c);
 
                     Brands.Clear();
-                    foreach (var b in _catalogDataService.Brands) Brands.Add(b);
+                     
+                    foreach (var b in _catalogDataService.Brands)
+                        Brands.Add(b);
 
                     Products.Clear();
                     foreach (var p in prods) Products.Add(p);
@@ -227,7 +235,7 @@ namespace Shiakati.ViewModels
             }
 
             // Dropdown filters
-            if (SelectedCategory != null &&
+            if (SelectedCategory != null && 
                 !string.Equals(p.CategoryName, SelectedCategory.CategoryName, StringComparison.OrdinalIgnoreCase))
                 return false;
             if (SelectedBrand != null &&
@@ -916,6 +924,25 @@ namespace Shiakati.ViewModels
             DraftWidth = null;
             DraftLength = string.Empty;
             DraftQuantity = null;
+        }
+
+
+        private async void OnStockChanged()
+        {
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadInitialDataAsync(forceRefresh: true));
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Erreur lors de la mise à jour du stock.");
+                MessageBox.Show($"Erreur lors de la mise à jour du stock : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _stockService.StockDataChanged -= OnStockChanged;
         }
     }
 }

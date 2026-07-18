@@ -153,10 +153,10 @@ namespace Shiakati.Services.Implementations
         // ───  ClientService ────────────────────────────────────────────
         public async Task LoadClientsAsync(bool forceRefresh = false)
         {
-            if (!forceRefresh && _catalogLoaded) return;
+            if (!forceRefresh && _clientsLoaded) return;
 
             // If forcing refresh, reset the flag
-            if (forceRefresh) _catalogLoaded = false;
+            if (forceRefresh) _clientsLoaded = false;
 
             var data = await _cache.GetOrLoadAsync(CacheKeys.Clients, async () =>
             {
@@ -292,10 +292,10 @@ namespace Shiakati.Services.Implementations
 
         public async Task LoadProductsAsync(bool forceRefresh = false)
         {
-            if (!forceRefresh && _catalogLoaded) return;
+            if (!forceRefresh && _productsLoaded) return;
 
             // If forcing refresh, reset the flag
-            if (forceRefresh) _catalogLoaded = false;
+            if (forceRefresh) _productsLoaded = false;
 
             var data = await _cache.GetOrLoadAsync(CacheKeys.Products, async () =>
             {
@@ -313,10 +313,10 @@ namespace Shiakati.Services.Implementations
 
         public async Task LoadVariantsAsync(bool forceRefresh = false)
         {
-            if (!forceRefresh && _catalogLoaded) return;
+            if (!forceRefresh && _variantsLoaded) return;
 
             // If forcing refresh, reset the flag
-            if (forceRefresh) _catalogLoaded = false;
+            if (forceRefresh) _variantsLoaded = false;
 
             var data = await _cache.GetOrLoadAsync(CacheKeys.Variants, async () =>
             {

@@ -35,6 +35,7 @@ namespace Shiakati.ViewModels
         {
             _saleDataService = saleDataService;
             _logger = logger;
+            _saleDataService.SalesDataChanged += OnSaleDataChanged;
             _ = LoadSalesAsync();
         }
 
@@ -197,6 +198,14 @@ namespace Shiakati.ViewModels
             }
 
             DailyBonuses = new ObservableCollection<DailyBonusModel>(bonusList);
+        }
+
+        private async void OnSaleDataChanged()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                CalculateDailyBonuses(); // Recalculate bonuses on any sale change
+            });
         }
     }
 }

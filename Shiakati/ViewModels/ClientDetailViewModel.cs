@@ -5,6 +5,7 @@ using Shiakati.Services.Implementations;
 using Shiakati.Services.Interfaces;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,11 +13,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Runtime.CompilerServices;
 
 namespace Shiakati.ViewModels
 {
-    public partial class ClientDetailViewModel : ObservableObject
+    public partial class ClientDetailViewModel : ObservableObject, IDisposable
     {
+        private readonly ILogger<ClientDetailViewModel> _log;
         private readonly IClientDataService _clientDataService;
         private int _clientId;
 
@@ -27,16 +30,9 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal _totalPayments;
         [ObservableProperty] private ObservableCollection<ClientSaleDto> _sales = new();
 
-
-
-
-
-        // Credits tab
         public ObservableCollection<CreditDto> Credits { get; } = new();
-        // Versements tab
         public ObservableCollection<VersementDto> Versements { get; } = new();
 
-        // Form fields
         [ObservableProperty] private decimal _creditAmount;
         [ObservableProperty] private string? _creditNotes;
         [ObservableProperty] private decimal _versementAmount;
@@ -44,23 +40,19 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private DateTime? _creditExpiresAt;
         [ObservableProperty] private decimal _totalPurchases;
 
-        public ClientDetailViewModel(IClientDataService clientDataService)
+        public ClientDetailViewModel(IClientDataService clientDataService, ILogger<ClientDetailViewModel> logger)
         {
             _clientDataService = clientDataService;
+            _log = logger;
             _clientDataService.ClientsDataChanged += OnClientChanged;
-
         }
 
         public async Task LoadClientAsync(int clientId)
         {
             _clientId = clientId;
             await LoadAsync();
-
-
         }
 
-
-        // In LoadAsync, call the sales endpoint:
         private async Task LoadAsync()
         {
             IsLoading = true;
@@ -78,12 +70,15 @@ namespace Shiakati.ViewModels
                 TotalCreditsAvailable = Credits.Where(c => !c.IsRedeemed).Sum(c => c.Amount);
                 TotalPayments = Versements.Sum(v => v.Amount);
 
-
-                // Load sales
                 var salesList = await _clientDataService.GetClientSalesAsync(_clientId);
                 Sales.Clear();
                 foreach (var s in salesList) Sales.Add(s);
                 TotalPurchases = Sales.Sum(s => s.TotalAmount ?? 0);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Erreur lors du chargement des détails du client");
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally { IsLoading = false; }
         }
@@ -92,7 +87,6 @@ namespace Shiakati.ViewModels
         private async Task EditClient()
         {
             if (Client == null) return;
-            // Open edit dialog (similar to create)
             var dialog = new ClientEditDialog(Client.FullName, Client.PhoneNumber, Client.Address, Client.Email);
             if (dialog.ShowDialog() == true)
             {
@@ -107,8 +101,7 @@ namespace Shiakati.ViewModels
                 try
                 {
                     await _clientDataService.UpdateClientAsync(updatedClient);
-
-                    await LoadAsync(); // refresh detail
+                    await LoadAsync();
                 }
                 catch (Exception ex)
                 {
@@ -125,10 +118,13 @@ namespace Shiakati.ViewModels
             var success = await _clientDataService.GrantCreditAsync(request);
             if (success)
             {
-                CreditAmount = 0; CreditNotes = null; CreditExpiresAt = null;
-                await LoadAsync(); // refresh
+                CreditAmount = 0;
+                CreditNotes = null;
+                CreditExpiresAt = null;
+                await LoadAsync();
             }
-            else MessageBox.Show("Erreur lors de l'ajout du crédit.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                MessageBox.Show("Erreur lors de l'ajout du crédit.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         [RelayCommand]
@@ -139,16 +135,30 @@ namespace Shiakati.ViewModels
             var success = await _clientDataService.AddVersementAsync(request);
             if (success)
             {
-                VersementAmount = 0; VersementNotes = null;
+                VersementAmount = 0;
+                VersementNotes = null;
                 await LoadAsync();
             }
-            else MessageBox.Show("Erreur lors de l'enregistrement du versement.");
+            else
+                MessageBox.Show("Erreur lors de l'enregistrement du versement.");
         }
-
 
         private async void OnClientChanged()
         {
-            await LoadAsync();
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadAsync());
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Erreur lors de la mise à jour du client");
+                MessageBox.Show("Impossible de mettre à jour les détails.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _clientDataService.ClientsDataChanged -= OnClientChanged;
         }
     }
 }

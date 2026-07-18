@@ -23,6 +23,15 @@ namespace Shiakati.Views
         public ClientDetailView()
         {
             InitializeComponent();
+            this.Unloaded += (s, e) =>
+            {
+                // Dispose du ViewModel lorsque la vue est déchargée
+                if (this.DataContext is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            };
+
         }
 
         private void OnlyDigits_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

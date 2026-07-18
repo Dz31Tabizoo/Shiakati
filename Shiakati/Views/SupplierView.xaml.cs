@@ -30,6 +30,14 @@ namespace Shiakati.Views
         public SupplierView()
         {
             InitializeComponent();
+            this.Unloaded += (s, e) =>
+            {
+                // Dispose du ViewModel lorsque la vue est déchargée
+                if (this.DataContext is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            };
         }
 
         private static bool _cleanupDone = false;

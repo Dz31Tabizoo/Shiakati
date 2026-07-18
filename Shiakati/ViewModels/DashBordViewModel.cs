@@ -9,6 +9,7 @@ using Shiakati.Services;
 using Shiakati.Services.Interfaces.APIServices;
 using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Views;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
@@ -18,8 +19,9 @@ using System.Windows;
 
 namespace Shiakati.ViewModels
 {
-    public partial class DashBordViewModel : ObservableObject
+    public partial class DashBordViewModel : ObservableObject, IDisposable
     {
+        private readonly ILogger<DashBordViewModel> _logger;
         private readonly IDashBordDataService _dashboardDataService;
         private CancellationTokenSource? _loadCts;
         private readonly IAuthenticationClientService authservice;
@@ -52,11 +54,12 @@ namespace Shiakati.ViewModels
         // UI state
         [ObservableProperty] private bool _isLoading;
 
-        public DashBordViewModel(IDashBordDataService dashboardDataService, IStockDataService stockService, IAuthenticationClientService authservice)
+        public DashBordViewModel(IDashBordDataService dashboardDataService,ILogger<DashBordViewModel> logger , IStockDataService stockService, IAuthenticationClientService authservice)
         {
             _dashboardDataService = dashboardDataService;
             this.authservice = authservice; // ✅ Fix order
             _stockService = stockService;
+            _logger = logger;
 
             EndDate = DateTime.Today;
             StartDate = EndDate.Value.AddDays(-30);
@@ -225,7 +228,20 @@ namespace Shiakati.ViewModels
 
         private async void OnDashBordDataChanged()
         {
-            await LoadDashboardAsync();
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadDashboardAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la mise à jour du tableau de bord suite à un changement de données.");
+                MessageBox.Show($"Erreur lors de la mise à jour du tableau de bord : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _dashboardDataService.DashBordDataChanged -= OnDashBordDataChanged;
         }
     }
 }

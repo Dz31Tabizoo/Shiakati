@@ -17,7 +17,6 @@ namespace Shiakati.Views
         public SettingsView()
         {
             InitializeComponent();
-            
         }
     }
 }

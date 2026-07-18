@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Shiakati.Models;
 using Shiakati.Services.Implementations;
@@ -19,25 +20,20 @@ namespace Shiakati.ViewModels
         //APPdATA COMMING
         private readonly ISupplierDataService _supplierDataService;
         private readonly IStockDataService _prod;
+        private readonly ILogger<SupplierViewModel> _logger;
 
 
-        public ObservableCollection<SupplierDto> Suppliers { get; } = new();
+        public ObservableCollection<SupplierDto> Suppliers => _supplierDataService.Suppliers;
 
-        [ObservableProperty]
-        private SupplierDto? _selectedSupplier;
+        [ObservableProperty] private SupplierDto? _selectedSupplier;
 
-        [ObservableProperty]
-        private InvoiceImageDto? _selectedInvoice;
+        [ObservableProperty] private InvoiceImageDto? _selectedInvoice;
 
         [ObservableProperty] private ObservableCollection<SupplierInvoiceItemDto> _invoiceItems = new();
 
+        [ObservableProperty] private bool _isEditing;
 
-
-        [ObservableProperty]
-        private bool _isEditing;
-
-        [ObservableProperty]
-        private string? _editName;
+        [ObservableProperty] private string? _editName;
 
         [ObservableProperty] private DateTime? _invoiceDate = DateTime.Today;
         [ObservableProperty] private int? _productsTotal;
@@ -46,10 +42,14 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private decimal? _amountRest;
         public bool IsSupplierSelected => SelectedSupplier != null;
 
-        public SupplierViewModel(ISupplierDataService supplierDataService, IStockDataService prod)
+        public SupplierViewModel(ISupplierDataService supplierDataService,ILogger<SupplierViewModel> logger, IStockDataService prod)
         {
+            
             _supplierDataService = supplierDataService;
             _prod = prod;
+            _logger = logger;
+
+            _supplierDataService.SupplierDataChanged += OnSupplierDataChanged;
             _ = LoadSuppliers();
             
         }
@@ -58,57 +58,45 @@ namespace Shiakati.ViewModels
         public async Task LoadSuppliers()
         {
             await _supplierDataService.LoadSuppliersAsync();
-            var list = _supplierDataService.Suppliers.ToList();
-            Suppliers.Clear();
-            foreach (var s in list)
-                Suppliers.Add(s);
+                      
         }
 
-        [RelayCommand]
-        private async Task AddSupplier()
+        [RelayCommand] private async Task AddSupplier()
         {
             var newSupplier = new SupplierDto { Name = "Nouveau fournisseur" };
             var created = await _supplierDataService.CreateSupplierAsync(newSupplier);
-            Suppliers.Add(created);
+            
             SelectedSupplier = created;
         }
 
-        [RelayCommand]
-        private async Task SaveSupplier()
+        [RelayCommand] private async Task SaveSupplier()
         {
             if (SelectedSupplier == null) return;
             await _supplierDataService.UpdateSupplierAsync(SelectedSupplier);
 
-            var index = Suppliers.IndexOf(SelectedSupplier);
-            Suppliers[index] = SelectedSupplier;
+            
             IsEditing = false;
         }
 
-        [RelayCommand]
-        private async Task DeleteSupplier()
+        [RelayCommand] private async Task DeleteSupplier()
         {
             if (SelectedSupplier == null) return;
             if (MessageBox.Show("Supprimer ce fournisseur ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 await _supplierDataService.DeleteSupplierAsync(SelectedSupplier.SupplierId);
-                Suppliers.Remove(SelectedSupplier);
+                
                 SelectedSupplier = null;
             }
         }
 
-        [RelayCommand]
-        private async Task UploadInvoice()
+        [RelayCommand] private async Task UploadInvoice()
         {
             if (SelectedSupplier == null) return;
 
-            // Create a dialog to collect invoice details
-            var dialog = new InvoiceUploadDialog
-            {
-                Owner = Application.Current.MainWindow
-            };
+            var dialog = new InvoiceUploadDialog { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
             {
-                var uploaded = await _supplierDataService.UploadInvoiceAsync(
+                await _supplierDataService.UploadInvoiceAsync(
                     SelectedSupplier.SupplierId,
                     dialog.FilePath,
                     dialog.InvoiceDate,
@@ -116,49 +104,33 @@ namespace Shiakati.ViewModels
                     dialog.TotalAmount,
                     dialog.AmountPaid
                 );
-                SelectedSupplier.Invoices.Add(uploaded);
-
-                var index = Suppliers.IndexOf(SelectedSupplier);
-                Suppliers[index] = SelectedSupplier;
+                // ✅ UI updates automatically
             }
         }
+
 
         partial void OnSelectedSupplierChanged(SupplierDto? value)
         {
             OnPropertyChanged(nameof(IsSupplierSelected));
         }
 
-        [RelayCommand]
-        private async Task DeleteInvoice(int invoiceId)
+        [RelayCommand] private async Task DeleteInvoice(int invoiceId)
         {
             if (SelectedSupplier == null) return;
-            var result = MessageBox.Show("Supprimer cette facture ?", "Confirmation", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if (MessageBox.Show("Supprimer cette facture ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 await _supplierDataService.DeleteInvoiceAsync(invoiceId);
-                var inv = SelectedSupplier.Invoices.FirstOrDefault(i => i.Id == invoiceId);
-                if (inv != null) SelectedSupplier.Invoices.Remove(inv);
+                // ✅ UI updates automatically
             }
-            else
-            {
-                return;
-            }
-
         }
 
-        [RelayCommand]
-        private async Task EditInvoice(InvoiceImageDto invoice)
+        [RelayCommand] private async Task EditInvoice(InvoiceImageDto invoice)
         {
             if (SelectedSupplier == null || invoice == null) return;
 
-            var dialog = new InvoiceUploadDialog(invoice)
-            {
-                Owner = Application.Current.MainWindow
-            };
-
+            var dialog = new InvoiceUploadDialog(invoice) { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
             {
-                // Build the update request
                 var request = new UpdateInvoiceRequest
                 {
                     InvoiceId = invoice.Id,
@@ -168,47 +140,30 @@ namespace Shiakati.ViewModels
                     AmountPaid = dialog.AmountPaid
                 };
 
-                // Pass the new file only if replaced
                 string? newFilePath = dialog.FileReplaced ? dialog.FilePath : null;
-
-                var updated = await _supplierDataService.UpdateInvoiceAsync(request, newFilePath);
-
-                // Replace the old invoice in the ObservableCollection
-                var index = SelectedSupplier.Invoices.IndexOf(invoice);
-                if (index >= 0)
-                    SelectedSupplier.Invoices[index] = updated;
-
-                // Refresh the main supplier list (if needed)
-                var supplierIndex = Suppliers.IndexOf(SelectedSupplier);
-                if (supplierIndex >= 0)
-                    Suppliers[supplierIndex] = SelectedSupplier;
+                await _supplierDataService.UpdateInvoiceAsync(request, newFilePath);
+                // ✅ UI updates automatically
             }
         }
 
         // inovice items Commands
 
-        [RelayCommand]
-        private async Task LoadInvoiceItems(InvoiceImageDto invoice)
+        [RelayCommand] private async Task LoadInvoiceItems(InvoiceImageDto invoice)
         {
             if (invoice == null) return;
-            // Do NOT set SelectedInvoice here
             var items = await _supplierDataService.GetInvoiceItemsAsync(invoice.Id);
             InvoiceItems.Clear();
             foreach (var item in items)
                 InvoiceItems.Add(item);
         }
 
-        
-        [RelayCommand]
-        private async Task AddInvoiceItem()
+
+
+        [RelayCommand] private async Task AddInvoiceItem()
         {
             if (SelectedInvoice == null) return;
 
-            var dialog = new AddInvoiceItemDialog(_prod) // Use correct service
-            {
-                Owner = Application.Current.MainWindow
-            };
-
+            var dialog = new AddInvoiceItemDialog(_prod) { Owner = Application.Current.MainWindow };
             if (dialog.ShowDialog() == true)
             {
                 var request = new AddInvoiceItemRequest
@@ -218,19 +173,16 @@ namespace Shiakati.ViewModels
                     UnitCost = dialog.UnitCost,
                     Notes = dialog.Notes
                 };
-                var newItem = await _supplierDataService.AddInvoiceItemAsync(SelectedInvoice.Id, request);
-                InvoiceItems.Add(newItem);
+                await _supplierDataService.AddInvoiceItemAsync(SelectedInvoice.Id, request);
+                // ✅ UI updates automatically (Data Service refreshes supplier)
             }
         }
 
-        [RelayCommand]
-        private async Task DeleteInvoiceItem(int itemId)
+        [RelayCommand] private async Task DeleteInvoiceItem(int itemId)
         {
             if (MessageBox.Show("Supprimer cet article ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                await _supplierDataService.DeleteInvoiceItemAsync(itemId);
-                var item = InvoiceItems.FirstOrDefault(i => i.SupplierInvoiceItemId == itemId);
-                if (item != null) InvoiceItems.Remove(item);
+                await _supplierDataService.DeleteInvoiceItemAsync(itemId);                
             }
         }
 
@@ -238,6 +190,23 @@ namespace Shiakati.ViewModels
         {
             if (value != null)
                 _ = LoadInvoiceItems(value);
+        }
+
+        private async void OnSupplierDataChanged()
+        {
+            try
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() => LoadSuppliers());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du rechargement des fournisseurs : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void Dispose()
+        {
+            _supplierDataService.SupplierDataChanged -= OnSupplierDataChanged;
         }
     }
 }

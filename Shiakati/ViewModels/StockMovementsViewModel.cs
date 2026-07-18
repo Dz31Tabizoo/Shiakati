@@ -18,7 +18,7 @@ namespace Shiakati.ViewModels
         [ObservableProperty] private DateTime? _startDate = DateTime.Today.AddMonths(-1);
         [ObservableProperty] private DateTime? _endDate = DateTime.Today;
 
-        public ObservableCollection<StockMovementModel> Movements { get; } = new();
+        public ObservableCollection<StockMovementModel> Movements => _movementDataService.Movements;
 
         public StockMovementsViewModel(IStockMovementDataService movementDataService, ILogger<StockMovementsViewModel> logger)
         {
@@ -34,12 +34,11 @@ namespace Shiakati.ViewModels
             try
             {
                 IsLoading = true;
-                Movements.Clear();
+                
                 await _movementDataService.LoadMovementsAsync(StartDate, EndDate);
 
 
-                foreach (var m in _movementDataService.Movements) 
-                    Movements.Add(m);
+                
             }
             catch (Exception ex)
             {
@@ -91,5 +90,8 @@ namespace Shiakati.ViewModels
             EndDate = DateTime.Today;
             await LoadMovementsAsync();
         }
+
+        
+       
     }
 }

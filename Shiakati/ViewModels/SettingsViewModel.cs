@@ -39,6 +39,11 @@ namespace Shiakati.ViewModels
             
         }
 
+        private async Task LoadCategories()
+        {
+            await _catalogDataService.LoadCatalogAsync();
+        }
+
         [RelayCommand]
         private async Task AddCategory()
         {
@@ -142,5 +147,7 @@ namespace Shiakati.ViewModels
                 }
             }
         }
+
+        
     }
 }
