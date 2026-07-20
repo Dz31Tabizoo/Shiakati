@@ -157,8 +157,12 @@
                         </StackPanel>
                     </Border>
 
-                    <DataGrid Grid.Row="0" ItemsSource="{Binding FilteredStockView}"
+                    <DataGrid 
+                          Grid.Row="0" ItemsSource="{Binding FilteredStockView}"
                           AutoGenerateColumns="False"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True"
                           CanUserAddRows="False"
                           IsReadOnly="True"
                           HeadersVisibility="Column"

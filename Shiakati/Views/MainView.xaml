@@ -118,6 +118,15 @@
 
                         <StackPanel Orientation="Horizontal">
 
+                            <TextBlock Text="" VerticalAlignment="Center" Margin="12,8,12,0"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource BgAltBrush}"/>
+                            <materialDesign:PackIcon Foreground="White" Kind="Download" Width="36" Height="36" VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+
                             <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{StaticResource BgAltBrush}"/>
