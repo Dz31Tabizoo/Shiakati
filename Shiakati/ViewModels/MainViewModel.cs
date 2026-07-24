@@ -21,6 +21,28 @@ namespace Shiakati.ViewModels
         private readonly IAuthenticationClientService _authService;
         private readonly ICacheService _cacheService;
 
+        //style and language settings
+        [ObservableProperty] private bool _isDarkMode;
+        [ObservableProperty] private bool _isArabicLanguage;
+
+        partial void OnIsDarkModeChanged(bool value)
+        {
+            ThemeManager.ApplyTheme(value);
+            // Save preference
+            Properties.Settings.Default.IsDarkMode = value;
+            Properties.Settings.Default.Save();
+        }
+
+        //partial void OnIsArabicLanguageChanged(bool value)
+        //{
+        //    var culture = value ? "ar" : "fr";
+        //    ChangeLanguage(culture);
+        //    Properties.Settings.Default.Language = culture;
+        //    Properties.Settings.Default.Save();
+        //}
+
+
+
         public string Version { get => AppVersion.GetVersion(); set { } }
 
 
@@ -106,6 +128,7 @@ namespace Shiakati.ViewModels
             IsAlertPulsing = false;
             IsAlertStatic = false;
 
+            IsDarkMode = false;
             
         }
 

@@ -11,7 +11,7 @@
         AllowsTransparency="True"
         MouseLeftButtonDown="Window_MouseDown"
         Background="Transparent"
-        FontFamily="{StaticResource BodyFont}">
+        FontFamily="{DynamicResource BodyFont}">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -19,7 +19,7 @@
 
     <!-- Main Card -->
     <Border CornerRadius="22"
-            Background="{StaticResource BgBrush}"
+            Background="{DynamicResource BgBrush}"
             Margin="25">
         <Border.Effect>
             <DropShadowEffect BlurRadius="25" ShadowDepth="3" Opacity="0.25"/>
@@ -71,8 +71,8 @@
                                    Stretch="Uniform"/>
                             <TextBlock Text="Numidix Lab"
                                        FontSize="20"
-                                       FontFamily="{StaticResource BodyFont}"
-                                       Foreground="{StaticResource BgBrush}"
+                                       FontFamily="{DynamicResource BodyFont}"
+                                       Foreground="{DynamicResource BgBrush}"
                                        VerticalAlignment="Center" Margin="5,0"/>
                         </StackPanel>
                     </StackPanel>
@@ -91,8 +91,8 @@
                 <Button Grid.Row="0"
                         HorizontalAlignment="Right"
                         Command="{Binding CloseApplicationCommand}"
-                        Style="{StaticResource IconButton}"
-                        Foreground="{StaticResource TextSecondaryBrush}">
+                        Style="{DynamicResource IconButton}"
+                        Foreground="{DynamicResource TextSecondaryBrush}">
                     <materialDesign:PackIcon Kind="Close" Width="22" Height="22"/>
                 </Button>
 
@@ -100,41 +100,41 @@
                 <StackPanel Grid.Row="1" Margin="20,19,20,21">
 
                     <TextBlock Text="Bienvenue / مرحباً"
-               FontFamily="{StaticResource HeadingFont}"
+               FontFamily="{DynamicResource HeadingFont}"
                FontSize="34" FontWeight="Bold"
                HorizontalAlignment="Center"
-               Foreground="{StaticResource PrimaryBrush}"
+               Foreground="{DynamicResource PrimaryBrush}"
                Margin="0,0,0,8"/>
 
                     <TextBlock Text="Veuillez vous connecter pour continuer"
                FontSize="16"
                HorizontalAlignment="Center"
-               Foreground="{StaticResource TextSecondaryBrush}"
+               Foreground="{DynamicResource TextSecondaryBrush}"
                Margin="0,0,0,40"/>
 
                     <!-- Username -->
                     <TextBox x:Name="TxtUsername"
                              Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ShiakatiTextBox}"
+                             Style="{DynamicResource ShiakatiTextBox}"
                              materialDesign:HintAssist.Hint="Nom d'utilisateur / اسم المستخدم"
-                             materialDesign:HintAssist.Foreground="{StaticResource TextSecondaryBrush}"
+                             materialDesign:HintAssist.Foreground="{DynamicResource TextSecondaryBrush}"
                              materialDesign:HintAssist.FloatingScale="0.6"
                              Margin="0,0,0,18"/>
                     <!-- Password – fully masked, clean floating hint -->
                     <PasswordBox x:Name="TxtPassword"
-             Style="{StaticResource MaterialDesignRevealPasswordBox}"
+             Style="{DynamicResource MaterialDesignRevealPasswordBox}"
              materialDesign:HintAssist.Hint="  Mot de passe / كلمة المرور"
-             materialDesign:HintAssist.Foreground="{StaticResource TextSecondaryBrush}"
+             materialDesign:HintAssist.Foreground="{DynamicResource TextSecondaryBrush}"
              materialDesign:HintAssist.FloatingScale="0.8"
              FontSize="16"
-             Foreground="{StaticResource TextPrimaryBrush}"
+             Foreground="{DynamicResource TextPrimaryBrush}"
              Height="50"
              Margin="0,0,0,30"/>
 
                     <!-- Error message – auto‑sized, wraps if needed -->
                     <TextBlock x:Name="TxtErrorMessage"
                Text="{Binding ErrorMessage}"
-               Foreground="{StaticResource DangerBrush}"
+               Foreground="{DynamicResource DangerBrush}"
                FontSize="14"
                                
                TextWrapping="Wrap"
@@ -149,7 +149,7 @@
                             FontSize="20"
                             Height="60"
                             Margin="0,4,0,0"
-                            Style="{StaticResource PrimaryGoldenButton}">
+                            Style="{DynamicResource PrimaryGoldenButton}">
                         <Button.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding LoginCommand}"
                         CommandParameter="{Binding ElementName=TxtPassword}"/>
@@ -158,7 +158,7 @@
                         <TextBlock Text="SE CONNECTER" 
                    Foreground="White" 
                    FontSize="20" 
-                   FontFamily="{StaticResource HeadingFont}"
+                   FontFamily="{DynamicResource HeadingFont}"
                    FontWeight="SemiBold"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center"/>
@@ -167,7 +167,7 @@
                 </StackPanel>
                 <!-- Footer -->
                 <TextBlock Grid.Row="2"
-                           Foreground="{StaticResource TextSecondaryBrush}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,0">
                     <Run Text="Shiakati POS v"/>

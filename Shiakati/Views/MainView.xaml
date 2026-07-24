@@ -8,7 +8,7 @@
         Background="Transparent"
         WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
-        FontFamily="{StaticResource BodyFont}">
+        FontFamily="{DynamicResource BodyFont}">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -28,7 +28,7 @@
             <Setter Property="MinWidth" Value="96"/>
             <Setter Property="Padding" Value="16,8"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -36,12 +36,12 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" CornerRadius="8" Background="{StaticResource NavGradientBrush}">
+                        <Border x:Name="border" CornerRadius="8" Background="{DynamicResource NavGradientBrush}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource NavGradientHoverBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource NavGradientHoverBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -54,7 +54,7 @@
             <Setter Property="MinWidth" Value="96"/>
             <Setter Property="Padding" Value="16,8"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -62,12 +62,12 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="border" CornerRadius="8" Background="{StaticResource NavGradientBrush}">
+                        <Border x:Name="border" CornerRadius="8" Background="{DynamicResource NavGradientBrush}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource NavGradientHoverBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource NavGradientHoverBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -78,7 +78,7 @@
     </Window.Resources>
 
     <!-- ============ ROUNDED WINDOW CORNERS ============ -->
-    <Border CornerRadius="14" Background="{StaticResource BgBrush}">
+    <Border CornerRadius="14" Background="{DynamicResource BgBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -90,20 +90,20 @@
             </Grid.RowDefinitions>
 
             <!-- ═══════════ 1. TITLE BAR ═══════════ -->
-            <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{StaticResource SecondaryBrush}"
+            <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{DynamicResource SecondaryBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
-                    BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
+                    BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
                 <Grid Margin="10,0">
                     <!-- App logo + name (left) -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
                                Width="25" Height="36" VerticalAlignment="Center" Stretch="Uniform"/>
                         <TextBlock Text=" Shiakati  شياكتي" 
-                                   FontFamily="{StaticResource ArabicFont}" 
+                                   FontFamily="{DynamicResource ArabicFont}" 
                                    FontSize="24" FontWeight="Bold" Margin="8,0"
                                    Foreground="White" VerticalAlignment="Center"/>
                         <TextBlock 
-                                   Foreground="{StaticResource TextOnPrimaryBrush}"
+                                   Foreground="{DynamicResource TextOnPrimaryBrush}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Margin="2,10,0,0">
                         <Run Text="POS v"/>
@@ -116,11 +116,53 @@
                     <!-- Right side controls: navigation toggle + window buttons -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
 
+                        <!-- Right side controls (already exists) -->
+                        
+
+                          
+
+                            <!-- 🌙 Dark / Light toggle -->
+                            <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                                          IsChecked="{Binding IsDarkMode}"
+                                          ToolTip="Mode sombre / clair"
+                                          Margin="12,0"
+                                          Width="40" Height="40">
+                                <ToggleButton.Content>
+                                    <materialDesign:PackIcon Kind="WeatherNight" 
+                                     Foreground="{DynamicResource PrimaryBrush}"/>
+                                </ToggleButton.Content>
+                                <materialDesign:ToggleButtonAssist.OnContent>
+                                    <materialDesign:PackIcon Kind="WeatherSunny" 
+                                     Foreground="{DynamicResource PrimaryBrush}"/>
+                                </materialDesign:ToggleButtonAssist.OnContent>
+                            </ToggleButton>
+
+                            <!-- 🌐 Language toggle (FR ↔ AR) -->
+                            <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                                          IsChecked="{Binding IsArabicLanguage}"
+                                          ToolTip="Langue : Français / العربية"
+                                          Margin="4,0"
+                                          Width="40" Height="40">
+                                <ToggleButton.Content>
+                                    <TextBlock Text="FR" FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryBrush}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </ToggleButton.Content>
+                                <materialDesign:ToggleButtonAssist.OnContent>
+                                    <TextBlock Text="AR" FontWeight="Bold" 
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       FontFamily="{DynamicResource ArabicFont}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </materialDesign:ToggleButtonAssist.OnContent>
+                            </ToggleButton>
+
+                            
+                        
                         <StackPanel Orientation="Horizontal">
 
                             <TextBlock Text="" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource BgAltBrush}"/>
+                                       Foreground="{DynamicResource BgAltBrush}"/>
                             <materialDesign:PackIcon Foreground="White" Kind="Download" Width="36" Height="36" VerticalAlignment="Center"/>
 
                         </StackPanel>
@@ -129,7 +171,7 @@
 
                             <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource BgAltBrush}"/>
+                                       Foreground="{DynamicResource BgAltBrush}"/>
                             <materialDesign:PackIcon Foreground="White" Kind="CalendarToday" Width="36" Height="36" VerticalAlignment="Center"/>
 
                         </StackPanel>
@@ -138,7 +180,7 @@
 
                             <TextBlock Text="{Binding UserName}" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource BgAltBrush}"/>
+                                       Foreground="{DynamicResource BgAltBrush}"/>
                             <materialDesign:PackIcon Foreground="White" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
                             
                         </StackPanel>
@@ -166,7 +208,7 @@
                                 <Grid>
                                     <!-- Badge Border – Visibility controlled by DataTrigger, not animated -->
                                     <Border x:Name="BadgeBorder"
-                                            Background="{StaticResource DangerBrush}" CornerRadius="10" 
+                                            Background="{DynamicResource DangerBrush}" CornerRadius="10" 
                                             Width="20" Height="20" 
                                             HorizontalAlignment="Right" VerticalAlignment="Top"
                                             Margin="0,2,-5,0">
@@ -243,14 +285,14 @@
                         </Button>
                         <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
                         <ToggleButton x:Name="NavVisibilityToggle" 
-                                      Style="{StaticResource NavToggleStyle}"
+                                      Style="{DynamicResource NavToggleStyle}"
                                       Margin="0,0,16,0">
                             <ToggleButton.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Foreground="White" Kind="Menu" Width="36" Height="36" VerticalAlignment="Center"/>
                                     <TextBlock Text="Menu" VerticalAlignment="Center" Margin="12,0,0,0"
                                                FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                               Foreground="{DynamicResource PrimaryBrush}"/>
                                 </StackPanel>
                             </ToggleButton.Content>
                             <materialDesign:ToggleButtonAssist.OnContent>
@@ -258,25 +300,25 @@
                                     <materialDesign:PackIcon Kind="MenuOpen" Width="36" Height="36" VerticalAlignment="Center"/>
                                     <TextBlock Text="Masquer" VerticalAlignment="Center" Margin="12,0,0,0"
                                                FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                               Foreground="{DynamicResource PrimaryBrush}"/>
                                 </StackPanel>
                             </materialDesign:ToggleButtonAssist.OnContent>
                         </ToggleButton>
 
                         <!-- Window control buttons -->
                         <Button x:Name="BtnMinmize" Content="—" FontSize="20" FontWeight="ExtraBlack" Click="BtnMinmize_Click" 
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Foreground="{StaticResource PrimaryBrush}" 
+                                Style="{DynamicResource MaterialDesignFlatButton}" 
+                                Foreground="{DynamicResource PrimaryBrush}" 
                                 Width="48" Height="48"/>
                         <Button x:Name="btnMaximize" Content="☐" FontWeight="ExtraBlack" FontSize="20" Click="btnMaximize_Click" 
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Foreground="{StaticResource PrimaryBrush}" 
+                                Style="{DynamicResource MaterialDesignFlatButton}" 
+                                Foreground="{DynamicResource PrimaryBrush}" 
                                 Width="48" Height="48"/>
                         <Button x:Name="btnClose" Click="btnClose_Click" 
-                                Style="{StaticResource MaterialDesignFlatButton}" 
+                                Style="{DynamicResource MaterialDesignFlatButton}" 
                                 Width="48" Height="48">
                             <StackPanel Width="48" Height="48" VerticalAlignment="Center"  HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Foreground="{StaticResource PrimaryBrush}" Kind="Close" Width="48" Height="48" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Foreground="{DynamicResource PrimaryBrush}" Kind="Close" Width="48" Height="48" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -284,13 +326,13 @@
             </Border>
 
             <!-- ═══════════ 2. COLLAPSIBLE NAVIGATION BAR ═══════════ -->
-            <Border Grid.Row="1" Height="80" Background="{StaticResource BgBrush}"
-                    BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1"
+            <Border Grid.Row="1" Height="80" Background="{DynamicResource BgBrush}"
+                    BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1"
                     Visibility="{Binding ElementName=NavVisibilityToggle, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                 <Grid Margin="20,0">
                     <!-- Left: main navigation buttons -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Button Style="{StaticResource TopNavButtonStyle}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Command="{Binding NavigateToDashBordCommand}"
@@ -301,7 +343,7 @@
                                 <TextBlock Text="Tableau Bord" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToPOSCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToPOSCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar">
@@ -310,7 +352,7 @@
                                 <TextBlock Text="Caisse" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToStockCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToStockCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -321,7 +363,7 @@
                         </Button>
 
                         <!-- Historique toggle -->
-                        <ToggleButton x:Name="btnHistorique" Style="{StaticResource TopNavToggleButtonStyle}"
+                        <ToggleButton x:Name="btnHistorique" Style="{DynamicResource TopNavToggleButtonStyle}"
                                       MinWidth="180" MinHeight="60" Margin="0,0,18,0"
                                       FontSize="17">
                             <StackPanel Orientation="Horizontal">
@@ -336,8 +378,8 @@
                                IsOpen="{Binding IsChecked, ElementName=btnHistorique}" 
                                StaysOpen="False"
                                AllowsTransparency="True">
-                            <Border CornerRadius="10" Background="{StaticResource BgBrush}"
-                                    BorderBrush="{StaticResource BgAltBrush}" BorderThickness="1">
+                            <Border CornerRadius="10" Background="{DynamicResource BgBrush}"
+                                    BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="1">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.3"/>
                                 </Border.Effect>
@@ -345,9 +387,9 @@
                                     <Button Command="{Binding NavigateToSalesHistoryCommand}"
                                             Click="CloseNavBar"
                                             Width="180" Height="60"
-                                            FontSize="17" FontFamily="{StaticResource HeadingFont}"
+                                            FontSize="17" FontFamily="{DynamicResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
-                                            Style="{StaticResource TopNavButtonStyle}" Margin="2">
+                                            Style="{DynamicResource TopNavButtonStyle}" Margin="2">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="ReceiptTextClock" Width="22" Height="22" Margin="0,0,8,0"/>
                                             <TextBlock Text="Historique Ventes" VerticalAlignment="Center"/>
@@ -356,9 +398,9 @@
                                     <Button Command="{Binding NavigateToStockMovementsCommand}"
                                             Click="CloseNavBar"
                                             Width="180" Height="60"
-                                            FontSize="17" FontFamily="{StaticResource HeadingFont}"
+                                            FontSize="17" FontFamily="{DynamicResource HeadingFont}"
                                             FontWeight="SemiBold" Foreground="White"
-                                            Style="{StaticResource TopNavButtonStyle}" Margin="2">
+                                            Style="{DynamicResource TopNavButtonStyle}" Margin="2">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="DatabaseClock" Width="22" Height="22" Margin="0,0,8,0"/>
                                             <TextBlock Text="Mouvement Stock" VerticalAlignment="Center"/>
@@ -368,7 +410,7 @@
                             </Border>
                         </Popup>
 
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -377,7 +419,7 @@
                                 <TextBlock Text="Clients" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToSuppliersCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToSuppliersCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -388,7 +430,7 @@
                         </Button>
 
 
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -397,7 +439,7 @@
                                 <TextBlock Text="Réservations" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
+                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17" Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
@@ -408,7 +450,7 @@
                     </StackPanel>
 
                     <!-- Right: Logout -->
-                    <Button Style="{StaticResource SecondaryButton}" Command="{Binding LogoutCommand}" 
+                    <Button Style="{DynamicResource SecondaryButton}" Command="{Binding LogoutCommand}" 
                             HorizontalAlignment="Right" MinWidth="140" MinHeight="60"
                             FontSize="17">
                         <StackPanel Orientation="Horizontal">
@@ -431,8 +473,8 @@
 
                 <!-- Header bar (visible when CurrentViewTitle is NOT null AND NOT empty) -->
                 <Border Grid.Row="0" Height="48"
-            Background="{StaticResource BgAltBrush}"
-            BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
+            Background="{DynamicResource BgAltBrush}"
+            BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
                     <Border.Style>
                         <Style TargetType="Border">
                             <!-- Default: visible -->
@@ -450,16 +492,16 @@
                     </Border.Style>
                     <Grid Margin="16,0">
                         <TextBlock Text="{Binding CurrentViewTitle}"
-                       FontFamily="{StaticResource HeadingFont}"
+                       FontFamily="{DynamicResource HeadingFont}"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="{StaticResource PrimaryBrush}"
+                       Foreground="{DynamicResource PrimaryBrush}"
                        VerticalAlignment="Center"/>
                         <Button HorizontalAlignment="Right"
-                    Style="{StaticResource MaterialDesignIconButton}"
+                    Style="{DynamicResource MaterialDesignIconButton}"
                     ToolTip="Fermer cette vue"
                                 Margin="0,0,10,0"
                     Command="{Binding CloseCurrentViewCommand}"
-                    Foreground="{StaticResource TextSecondaryBrush}"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
                     Width="36" Height="36">
                             <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
                         </Button>
