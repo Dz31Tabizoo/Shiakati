@@ -1,8 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
-
-    
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">  
     
     <!-- ═══════════════════════════════════════
      CALENDAR POPUP (for DatePicker)
@@ -15,8 +13,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Margin" Value="0,30"/>
-        
+        <Setter Property="Margin" Value="0,30"/>        
     </Style>
 
     <!-- Implicit CalendarDayButton style -->
@@ -46,7 +43,7 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
         <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource BgAltBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource InputBorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="Padding" Value="10,8"/>
         <Setter Property="CalendarStyle" Value="{DynamicResource ShiakatiCalendar}"/>
@@ -137,7 +134,7 @@
         <Setter Property="Padding" Value="5,0,10,0"/> 
         <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextOnPrimaryBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Margin" Value="8,4"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -284,15 +281,15 @@
          ═══════════════════════════════════════ -->
     <Style x:Key="ShiakatiComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
         <Setter Property="FontSize" Value="16"/>
-        <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
+        <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
         <Setter Property="MinHeight" Value="48"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
         <!-- white background -->
-        <Setter Property="BorderBrush" Value="{DynamicResource BgAltBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TextSecondaryBrush}"/>
         <!-- light border -->
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource InputBorderBrush}"/>
         <Setter Property="Padding" Value="12,8,32,8"/>
         <!-- Hint styling -->
         <Setter Property="materialDesign:HintAssist.Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
@@ -302,7 +299,7 @@
          CARDS
          ═══════════════════════════════════════ -->
     <Style x:Key="ShiakatiCard" TargetType="materialDesign:Card">
-        <Setter Property="UniformCornerRadius" Value="12"/>
+        <Setter Property="UniformCornerRadius" Value="12"/>        
         <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
         <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp8"/>
         <Setter Property="Margin" Value="4"/>
@@ -331,7 +328,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
         <Setter Property="Background" Value="{DynamicResource BgAltBrush}"/>
         <Setter Property="Padding" Value="12,8"/>
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
@@ -358,7 +355,8 @@
     </Style>
 
     <Style x:Key="ShiakatiDataGridRow" TargetType="DataGridRow">
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="Height" Value="52"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -378,22 +376,11 @@
     <Style x:Key="ShiakatiSubDataGrid" TargetType="DataGrid" BasedOn="{StaticResource ShiakatiDataGrid}">
         <Setter Property="RowHeight" Value="40"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
         <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-    </Style>
-
-    <Style x:Key="ShiakatiSubDataGridColumnHeader" TargetType="DataGridColumnHeader">
-        <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
-        <Setter Property="FontWeight" Value="Medium"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryLightBrush}"/>
-        <Setter Property="Background" Value="{DynamicResource BgAltBrush}"/>
-        <Setter Property="Padding" Value="10,6"/>
-        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
 
     <Style x:Key="ShiakatiSubDataGridCell" TargetType="DataGridCell" BasedOn="{StaticResource ShiakatiDataGridCell}">
@@ -406,19 +393,31 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="ShiakatiSubDataGridColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource BgAltBrush}"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
     <Style x:Key="ShiakatiSubDataGridRow" TargetType="DataGridRow">
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
         <Setter Property="Height" Value="40"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#F5F7FA"/>
+                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextOnPrimaryBrush}"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
-
     <!-- ═══════════════════════════════════════
          SPACING HELPERS
          ═══════════════════════════════════════ -->
@@ -489,5 +488,67 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+
+    <!-- ============ NAV BUTTON STYLES (moved from MainView) ============ -->
+    <Style x:Key="TopNavButtonStyle" TargetType="Button">
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="MinWidth" Value="96"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="Foreground" Value="White"/>        
+        <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" CornerRadius="8" 
+                        Background="{DynamicResource NavGradientBrush}">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" 
+                                Value="{DynamicResource NavGradientHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TopNavToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="MinWidth" Value="96"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border" CornerRadius="8" 
+                        Background="{DynamicResource NavGradientBrush}">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" 
+                                Value="{DynamicResource NavGradientHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
 
 </ResourceDictionary>

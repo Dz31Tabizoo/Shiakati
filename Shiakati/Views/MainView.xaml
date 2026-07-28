@@ -13,68 +13,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
-        <!-- ============ Gradient brush reused by all nav buttons ============ -->
-        <LinearGradientBrush x:Key="NavGradientBrush" StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Offset="0" Color="#13314B"/>
-            <GradientStop Offset="1" Color="#1D4A6B"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="NavGradientHoverBrush" StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Offset="0" Color="#1D4A6B"/>
-            <GradientStop Offset="1" Color="#2A5B7A"/>
-        </LinearGradientBrush>
-        <!-- ============ NAV BUTTON STYLE (for regular Button) ============ -->
-        <Style x:Key="TopNavButtonStyle" TargetType="Button">
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="MinWidth" Value="96"/>
-            <Setter Property="Padding" Value="16,8"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" CornerRadius="8" Background="{DynamicResource NavGradientBrush}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource NavGradientHoverBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- ============ NAV TOGGLE BUTTON STYLE (for ToggleButton – same look) ============ -->
-        <Style x:Key="TopNavToggleButtonStyle" TargetType="ToggleButton">
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="MinWidth" Value="96"/>
-            <Setter Property="Padding" Value="16,8"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="border" CornerRadius="8" Background="{DynamicResource NavGradientBrush}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource NavGradientHoverBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- The global NavToggleStyle from GlobalStyles.xaml will be used – no need to redefine here -->
     </Window.Resources>
 
     <!-- ============ ROUNDED WINDOW CORNERS ============ -->
@@ -99,11 +37,11 @@
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
                                Width="25" Height="36" VerticalAlignment="Center" Stretch="Uniform"/>
                         <TextBlock Text=" Shiakati  شياكتي" 
-                                   FontFamily="{DynamicResource ArabicFont}" 
+                                   FontFamily="{StaticResource ArabicFont}" 
                                    FontSize="24" FontWeight="Bold" Margin="8,0"
-                                   Foreground="White" VerticalAlignment="Center"/>
+                                   Foreground="{DynamicResource BgBrush}" VerticalAlignment="Center"/>
                         <TextBlock 
-                                   Foreground="{DynamicResource TextOnPrimaryBrush}"
+                                   Foreground="{DynamicResource BgBrush}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Margin="2,10,0,0">
                         <Run Text="POS v"/>
@@ -116,41 +54,40 @@
                     <!-- Right side controls: navigation toggle + window buttons -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
 
-                        <!-- Right side controls (already exists) -->
-                        
-
-                          
-
-                            <!-- 🌙 Dark / Light toggle -->
                             <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
-                                          IsChecked="{Binding IsDarkMode}"
+                                          IsChecked="{Binding IsDarkMode}" 
+                                          Background="{DynamicResource BgBrush}"
                                           ToolTip="Mode sombre / clair"
                                           Margin="12,0"
                                           Width="40" Height="40">
                                 <ToggleButton.Content>
                                     <materialDesign:PackIcon Kind="WeatherNight" 
-                                     Foreground="{DynamicResource PrimaryBrush}"/>
+                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
+                                                             />
+                                    
                                 </ToggleButton.Content>
+                                
                                 <materialDesign:ToggleButtonAssist.OnContent>
                                     <materialDesign:PackIcon Kind="WeatherSunny" 
-                                     Foreground="{DynamicResource PrimaryBrush}"/>
+                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
                                 </materialDesign:ToggleButtonAssist.OnContent>
                             </ToggleButton>
 
                             <!-- 🌐 Language toggle (FR ↔ AR) -->
                             <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
                                           IsChecked="{Binding IsArabicLanguage}"
+                                          Background="{DynamicResource BgBrush}"
                                           ToolTip="Langue : Français / العربية"
                                           Margin="4,0"
                                           Width="40" Height="40">
                                 <ToggleButton.Content>
                                     <TextBlock Text="FR" FontWeight="Bold" 
-                                               Foreground="{DynamicResource PrimaryBrush}"
+                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </ToggleButton.Content>
                                 <materialDesign:ToggleButtonAssist.OnContent>
                                     <TextBlock Text="AR" FontWeight="Bold" 
-                       Foreground="{DynamicResource PrimaryBrush}"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                        FontFamily="{DynamicResource ArabicFont}"
                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </materialDesign:ToggleButtonAssist.OnContent>
@@ -492,12 +429,12 @@
                     </Border.Style>
                     <Grid Margin="16,0">
                         <TextBlock Text="{Binding CurrentViewTitle}"
-                       FontFamily="{DynamicResource HeadingFont}"
+                       FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryBrush}"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                        VerticalAlignment="Center"/>
                         <Button HorizontalAlignment="Right"
-                    Style="{DynamicResource MaterialDesignIconButton}"
+                    Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="Fermer cette vue"
                                 Margin="0,0,10,0"
                     Command="{Binding CloseCurrentViewCommand}"

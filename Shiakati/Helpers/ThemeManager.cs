@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+
 
 namespace Shiakati.Helpers
 {
@@ -30,9 +32,15 @@ namespace Shiakati.Helpers
 
             var newTheme = new ResourceDictionary
             {
-                Source = new Uri(newThemeUri, UriKind.Relative) // ← this is line 34
+                Source = new Uri(newThemeUri, UriKind.Relative)
             };
             appDict.Add(newTheme);
+
+            // Toggle MaterialDesign base theme to match
+            var paletteHelper = new PaletteHelper();
+            var theme = paletteHelper.GetTheme();
+            theme.SetBaseTheme(isDark ? BaseTheme.Dark : BaseTheme.Light);
+            paletteHelper.SetTheme(theme);
         }
     }
 }

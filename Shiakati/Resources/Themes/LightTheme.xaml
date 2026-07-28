@@ -7,6 +7,9 @@
     <Color x:Key="SecondaryColor">#AB7D4C</Color>
     <Color x:Key="DangerColor">#FF4949</Color>
     <Color x:Key="AccentColor">#5B99CF</Color>
+    <Color x:Key="DarkAccentColor">#1565C0</Color>
+    <Color x:Key="GreenLightColor">#4CAF50</Color>
+    
 
     <!-- ── Backgrounds ── -->
     <Color x:Key="BgColor">#FFFFFF</Color>
@@ -14,6 +17,7 @@
     <Color x:Key="SurfaceColor">#E6D9C8</Color>
 
     <!-- ── Brushes ── -->
+    <SolidColorBrush x:Key="InputBorderBrush" Color="#CCCCCC"/>
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
@@ -22,6 +26,10 @@
     <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="BgAltBrush" Color="{StaticResource BgAltColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="DarkAccentBrush" Color="{StaticResource DarkAccentColor}"/>
+    <SolidColorBrush x:Key="GreenLightBrush" Color="{StaticResource GreenLightColor}"/>
+    <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="{StaticResource PrimaryColor}"/>
+
 
     <!-- ── Text ── -->
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="#13314B"/>
@@ -46,4 +54,17 @@
     <Style TargetType="Window">
         <Setter Property="TextElement.Foreground" Value="{StaticResource TextPrimaryBrush}"/>
     </Style>
+
+
+    <!-- Navigation button gradients (light theme) -->
+    <LinearGradientBrush x:Key="NavGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#13314B"/>
+        <GradientStop Offset="1" Color="#1D4A6B"/>
+    </LinearGradientBrush>
+    
+    <LinearGradientBrush x:Key="NavGradientHoverBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#1D4A6B"/>
+        <GradientStop Offset="1" Color="#2A5B7A"/>
+    </LinearGradientBrush>
+    
 </ResourceDictionary>

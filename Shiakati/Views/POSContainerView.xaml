@@ -12,8 +12,8 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border  Grid.Row="0" Background="{StaticResource BgBrush}"
-                BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1">
+        <Border  Grid.Row="0" Background="{DynamicResource BgBrush}"
+                BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
             <Grid>
                 <!-- Larger, touch‑optimised “Nouvelle vente” button -->
                 <Button HorizontalAlignment="Right"
@@ -49,16 +49,16 @@
                         <materialDesign:PackIcon Kind="Receipt"
                                                  Width="16" Height="16"
                                                  VerticalAlignment="Center"
-                                                 Foreground="{StaticResource PrimaryBrush}"
+                                                 Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                                  Margin="0,0,6,0"/>
                         <TextBlock Text="{Binding TabName}"
                                    VerticalAlignment="Center"
                                    FontSize="14" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                    Margin="0,0,8,0"/>
                         <Button Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
                                 CommandParameter="{Binding}"
-                                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                Style="{DynamicResource MaterialDesignIconForegroundButton}"
                                 Width="20" Height="20" Margin="0,-2,0,0"
                                 ToolTip="Fermer la vente">
                             <materialDesign:PackIcon Kind="Close" Width="12" Height="12"/>

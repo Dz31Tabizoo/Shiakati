@@ -17,7 +17,7 @@
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                  Background="{StaticResource BgAltBrush}">
+                  Background="{DynamicResource BgAltBrush}">
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -28,7 +28,7 @@
             </Grid.RowDefinitions>
 
             <!-- ═══════ ROW 0 : TOOLBAR ═══════ -->
-            <Border Grid.Row="0" Background="{StaticResource BgBrush}" CornerRadius="12"
+            <Border Grid.Row="0" Background="{DynamicResource BgBrush}" CornerRadius="12"
                     Padding="16,12" Margin="0,0,0,16"
                     materialDesign:ElevationAssist.Elevation="Dp4">
                 <Grid>
@@ -41,12 +41,12 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Column="0">
                         <materialDesign:PackIcon Kind="ViewDashboardOutline" 
-                                                  Foreground="{StaticResource PrimaryBrush}"
+                                                  Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                                   Width="28" Height="28" Margin="0,0,12,0"/>
                         <TextBlock Text="Tableau de bord" 
                                    FontFamily="{StaticResource HeadingFont}"
                                    FontSize="24" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -54,13 +54,11 @@
                         <TextBlock Text="Du" VerticalAlignment="Center" Margin="0,0,8,0"
                                    FontFamily="{StaticResource BodyFont}" FontSize="14"/>
                         <DatePicker SelectedDate="{Binding StartDate}"
-                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
                                     Width="140" Margin="0,0,16,0"/>
 
                         <TextBlock Text="Au" VerticalAlignment="Center" Margin="0,0,8,0"
                                    FontFamily="{StaticResource BodyFont}" FontSize="14"/>
                         <DatePicker SelectedDate="{Binding EndDate}"
-                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
                                     Width="140" Margin="0,0,16,0"/>
 
                         <!-- ✅ Fixed duplicate Content error -->
@@ -91,46 +89,46 @@
             <WrapPanel Grid.Row="1" Margin="0,0,0,16" Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Chiffre d'affaires" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Chiffre d'affaires" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <TextBlock Text="{Binding TotalRevenue, StringFormat={StaticResource CurrencyFormat}}"
                                    FontSize="28" FontFamily="{StaticResource HeadingFont}"
-                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                                   Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" Margin="0,8,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Ventes" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Ventes" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <TextBlock Text="{Binding TotalOrders, StringFormat={StaticResource NumberFormat}}"
                                    FontSize="28" FontFamily="{StaticResource HeadingFont}"
-                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                                   Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" Margin="0,8,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Panier moyen" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Panier moyen" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <TextBlock Text="{Binding AverageBasket, StringFormat={StaticResource CurrencyFormat}}"
                                    FontSize="28" FontFamily="{StaticResource HeadingFont}"
-                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                                   Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" Margin="0,8,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Marge totale" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Marge totale" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <TextBlock Text="{Binding TotalMargin, StringFormat={StaticResource CurrencyFormat}}"
                                    FontSize="28" FontFamily="{StaticResource HeadingFont}"
-                                   Foreground="{StaticResource SecondaryBrush}" Margin="0,8,0,0"/>
+                                   Foreground="{DynamicResource SecondaryBrush}" Margin="0,8,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
                 <materialDesign:Card Style="{StaticResource ShiakatiCard}" Width="Auto" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Marge moyenne" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Marge moyenne" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                         <TextBlock Text="{Binding AverageMarginPercentage, StringFormat={StaticResource PercentFormat}}"
                                    FontSize="28" FontFamily="{StaticResource HeadingFont}"
-                                   Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0"/>
+                                   Foreground="{DynamicResource SecondaryBrush}" Margin="0,8,0,0"/>
                     </StackPanel>
                 </materialDesign:Card>
             </WrapPanel>
@@ -154,9 +152,9 @@
                         <TextBlock Grid.Row="0" Text="Évolution des ventes" 
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="SemiBold"
-                       Foreground="{StaticResource PrimaryBrush}"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                        Margin="0,0,0,12"/>
-                        <Border Grid.Row="1" Background="{StaticResource BgAltBrush}" CornerRadius="8" Padding="10">
+                        <Border Grid.Row="1" Background="{DynamicResource BgAltBrush}" CornerRadius="8" Padding="10">
                             <lvc:CartesianChart Series="{Binding DailySalesSeries}" Margin="0" MinHeight="180">
                                 <lvc:CartesianChart.AxisX>
                                     <lvc:Axis Title="Date" Labels="{Binding DailyLabels}" 
@@ -171,7 +169,7 @@
                 </materialDesign:Card>
 
                 <!-- Right : User Performance -->
-                <materialDesign:Card Grid.Column="1" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
+                <materialDesign:Card Grid.Column="1" Background="{DynamicResource BgBrush}" Style="{StaticResource ShiakatiCard}" Margin="8,0,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -180,15 +178,16 @@
                         <TextBlock Grid.Row="0" Text="Performance des vendeurs" 
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="SemiBold"
-                       Foreground="{StaticResource PrimaryBrush}"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                        Margin="0,0,0,12"/>
                         <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
-                      Style="{StaticResource ShiakatiSubDataGrid}"
-                      ColumnHeaderStyle="{StaticResource ShiakatiSubDataGridColumnHeader}"
-                      CellStyle="{StaticResource ShiakatiSubDataGridCell}"
-                      RowStyle="{StaticResource ShiakatiSubDataGridRow}"
+                      Style="{StaticResource ShiakatiDataGrid}"
+                      ColumnHeaderStyle="{StaticResource ShiakatiDataGridColumnHeader}"
+                      CellStyle="{StaticResource ShiakatiDataGridCell}"
+                      RowStyle="{StaticResource ShiakatiDataGridRow}"
                       ItemsSource="{Binding UserPerformances}"
+                      Background="Transparent"
                       AutoGenerateColumns="False"
                       HorizontalScrollBarVisibility="Auto"
                       MaxWidth="350">
@@ -234,7 +233,7 @@
                         <TextBlock Grid.Row="0" Text="📈 Top ventes" 
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="SemiBold"
-                       Foreground="{StaticResource PrimaryBrush}"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                        Margin="0,0,0,12"/>
                         <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
@@ -268,7 +267,7 @@
                         <TextBlock Grid.Row="0" Text="💰 Top rentabilité" 
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="SemiBold"
-                       Foreground="{StaticResource SecondaryBrush}"
+                       Foreground="{DynamicResource SecondaryBrush}"
                        Margin="0,0,0,12"/>
                         <!-- DataGrid with horizontal scroll -->
                         <DataGrid Grid.Row="1" 
@@ -303,7 +302,7 @@
                 <TextBlock Grid.Row="0" Text="⚠️ Alertes stock" 
                            FontFamily="{StaticResource HeadingFont}"
                            FontSize="18" FontWeight="SemiBold"
-                           Foreground="{StaticResource DangerBrush}"
+                           Foreground="{DynamicResource DangerBrush}"
                            Margin="0,0,0,8"/>
 
                 <!-- ✅ Fixed DataGrid: removed problematic NoRowsIndicatorKey -->

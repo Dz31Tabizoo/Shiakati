@@ -35,11 +35,11 @@
 
             <!-- Search bar -->
             <materialDesign:Card Grid.Row="0" Padding="12" UniformCornerRadius="12" Margin="0,0,0,12"
-                                 Background="{StaticResource BgBrush}" Style="{StaticResource ShiakatiCard}">
+                                 Background="{DynamicResource BgBrush}" Style="{DynamicResource ShiakatiCard}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="BarcodeScan" Width="28" Height="28"
                                              VerticalAlignment="Center"
-                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
                                              Margin="0,0,10,0"/>
                     <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Scanner un code-barres ou chercher un produit..."
@@ -128,9 +128,9 @@
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border x:Name="ContainerBorder"
-                                                Background="White"
+                                                Background="{DynamicResource BgBrush}"
                                                 CornerRadius="10"
-                                                BorderBrush="#E0E0E0"
+                                                BorderBrush="{DynamicResource BgAltBrush}"
                                                 BorderThickness="1">
                                         <Border.Effect>
                                             <DropShadowEffect ShadowDepth="1" BlurRadius="6" Opacity="0.15" Color="#000000"/>
@@ -151,7 +151,7 @@
 
                                                 <TextBlock Grid.Column="0"
                        Text="{Binding BrandName}"
-                       FontSize="12" Foreground="{StaticResource PrimaryBrush}"
+                       FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
                        FontWeight="DemiBold"
                        MaxWidth="100"
                        HorizontalAlignment="Left"
@@ -160,7 +160,7 @@
                                                 <materialDesign:PackIcon Grid.Column="1"
                                      Kind="Barcode"
                                      Width="22" Height="22"
-                                     Foreground="{StaticResource SecondaryBrush}"
+                                     Foreground="{DynamicResource SecondaryBrush}"
                                      HorizontalAlignment="Right"
                                      VerticalAlignment="Center"
                                      ToolTip="{Binding Sku}"/>
@@ -181,7 +181,7 @@
                                                     <TextBlock Grid.Row="0"
                            Text="{Binding ProductName}"
                            FontSize="14" FontWeight="SemiBold"
-                           Foreground="#333"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            HorizontalAlignment="Left"
                            TextTrimming="CharacterEllipsis"
                            VerticalAlignment="Center" Margin="0,0,0,3"/>
@@ -189,7 +189,7 @@
                                                     <TextBlock Grid.Row="1"
                            Text="{Binding SalePrice, StringFormat={}{0:N2} DA}"
                            FontSize="13" FontWeight="Bold" 
-                           Foreground="{StaticResource SecondaryBrush}"
+                           Foreground="{DynamicResource SecondaryBrush}"
                            Margin="2,0,0,0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
@@ -204,9 +204,9 @@
                                             </Grid>
 
                                             <Grid Grid.Row="2" Margin="0,4,0,0">
-                                                <Border Background="#E3F2FD" CornerRadius="6"
+                                                <Border Background="{DynamicResource BgAltBrush}" CornerRadius="6"
                     Padding="6,3" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                    <TextBlock FontSize="11" Foreground="#1565C0"
+                                                    <TextBlock FontSize="11" Foreground="{DynamicResource DarkAccentBrush}"
                            FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis"
                            MaxWidth="110">
@@ -215,10 +215,10 @@
                                                 </Border>
 
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <Ellipse Width="8" Height="8" Fill="#4CAF50"
+                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GreenLightBrush}"
                                                                 VerticalAlignment="Center" Margin="0,0,5,0"/>
                                                     <TextBlock Text="{Binding StockQuantity}"
-                                                               FontSize="13" Foreground="#4CAF50"
+                                                               FontSize="13" Foreground="{DynamicResource GreenLightBrush}"
                                                                FontWeight="SemiBold"
                                                                VerticalAlignment="Center"/>
                                                 </StackPanel>
@@ -227,7 +227,7 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
                                             <Setter TargetName="ContainerBorder" Property="Effect">
                                                 <Setter.Value>
                                                     <DropShadowEffect ShadowDepth="1" BlurRadius="6" Opacity="0.15" Color="#000000"/>
@@ -236,7 +236,7 @@
                                         </Trigger>
                                         <Trigger Property="IsPressed" Value="True">
                                             <Setter TargetName="ContainerBorder" Property="Background" Value="#F5F5F5"/>
-                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
                                             <Setter TargetName="ContainerBorder" Property="Effect">
                                                 <Setter.Value>
                                                     <DropShadowEffect ShadowDepth="0" BlurRadius="2" Opacity="0.1" Color="#000000"/>
@@ -254,7 +254,7 @@
 
         <!-- ═══════════ RIGHT: Cart & Checkout ═══════════ -->
         <materialDesign:Card Grid.Column="1" UniformCornerRadius="16"
-                     Width="Auto" MinWidth="400" Background="White"
+                     Width="Auto" MinWidth="400" 
                      Style="{StaticResource ShiakatiCard}">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
@@ -269,7 +269,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Edit banner -->
-                <materialDesign:Card Grid.Row="0" Background="#FFF3E0" Foreground="#E65100"
+                <materialDesign:Card Grid.Row="0" Background="{DynamicResource BgAltBrush}" Foreground="{DynamicResource DangerBrush}"
                              Padding="10" Margin="0,0,0,10"
                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
                              UniformCornerRadius="8">
@@ -298,28 +298,28 @@
                     
                     <TextBlock Grid.Column="0" Text="Ticket Actuel"
                                FontSize="20" FontWeight="Bold" Padding="0,10"
-                               Foreground="{StaticResource PrimaryBrush}" />
+                               Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" />
 
                     <Border HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0"
                                 CornerRadius="8"
-                                BorderBrush="{StaticResource SecondaryBrush}"
+                                BorderBrush="{DynamicResource SecondaryBrush}"
                                 BorderThickness="1.5"
-                                Background="{StaticResource BgBrush}"
+                                Background="{DynamicResource BgBrush}"
                                 Padding="8,6" Margin="0,0,0,8">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="AccountCircle"
                                              Width="20" Height="20"
                                              VerticalAlignment="Center"
-                                             Foreground="{StaticResource SecondaryBrush}"
+                                             Foreground="{DynamicResource SecondaryBrush}"
                                              Margin="0,0,8,0"/>
                             <TextBlock Text="{Binding ClientDisplay}"
                                VerticalAlignment="Center"
                                FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="0,0,8,0"/>
                             <Button Content="Clients Shiakati"
                             Command="{Binding OpenClientSelectionDialogCommand}"
-                            Style="{StaticResource SecondaryButton}"
+                            Style="{DynamicResource SecondaryButton}"
                             MinHeight="32" FontSize="13"
                             Padding="8,4"
                             VerticalAlignment="Center"/>
@@ -415,7 +415,7 @@
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TotalPrice, StringFormat={}{0:N2}}"
                                        VerticalAlignment="Center" FontWeight="Bold"
-                                       Foreground="{StaticResource PrimaryBrush}" Margin="10,0"/>
+                                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" Margin="10,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -426,7 +426,7 @@
                                 <DataTemplate>
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
                                     Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="Crimson">
+                                    CommandParameter="{Binding}" HorizontalAlignment="Right" Foreground="{DynamicResource DangerBrush}">
                                         <materialDesign:PackIcon Kind="CartRemove" Width="24" Height="24"/>
                                     </Button>
                                 </DataTemplate>
@@ -463,7 +463,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="TOTAL" FontSize="24" FontWeight="Bold"
-                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,15,0"/>
+                           Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" Margin="0,0,15,0"/>
                         <TextBlock Grid.Column="1" Text="{Binding CartTotal, StringFormat={}{0:N2} DA}"
                            FontSize="32" FontWeight="Bold"
                            HorizontalAlignment="Right"
