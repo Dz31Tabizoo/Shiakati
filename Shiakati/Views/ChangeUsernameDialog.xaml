@@ -4,45 +4,82 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Changer le nom d'utilisateur" Width="400" Height="320"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        WindowStyle="None"
         FontFamily="{StaticResource BodyFont}"
-        Background="{StaticResource BgBrush}">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Style="{StaticResource ShiakatiDialogStyle}"
+        >
 
-        <TextBlock Grid.Row="0" Text="Changer le nom d'utilisateur" FontSize="18" FontWeight="Bold"
-                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
+    <Border BorderThickness="1" BorderBrush="{DynamicResource DarkLightTextNavyWhiteBrush}">
 
-        <!-- New username -->
-        <TextBox x:Name="NewUsernameBox" Grid.Row="1"
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" 
+                  Height="40"
+                  Margin="0,0,0,15"
+                  Background="{DynamicResource SecondaryBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Window title (left aligned) -->
+                <TextBlock Grid.Column="0"
+                           Text="Changer le nom d'utilisateur"
+                           FontSize="15" FontWeight="Bold"
+                           Foreground="{StaticResource TextOnPrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+
+                <!-- Close button (right aligned) -->
+                <Button Grid.Column="1"
+                        x:Name="btnClose"
+                        Click="btnClose_Click"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Width="48" Height="48"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource TextOnPrimaryBrush}">
+                    <materialDesign:PackIcon Kind="Close" 
+                                 Width="24" Height="24"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                </Button>
+            </Grid>
+
+            <!-- New username -->
+            <TextBox x:Name="NewUsernameBox" Grid.Row="1"
                  materialDesign:HintAssist.Hint="Nouveau nom d'utilisateur"
                  Style="{StaticResource ShiakatiTextBox}"
                  FontSize="14" Margin="0,0,0,10"/>
 
-        <!-- Password with reveal -->
-        <Grid Grid.Row="2" Margin="0,0,0,10">
-            <PasswordBox x:Name="PasswordBox"
+            <!-- Password with reveal -->
+            <Grid Grid.Row="2" Margin="0,0,0,10">
+                <PasswordBox x:Name="PasswordBox"
                          Style="{StaticResource MaterialDesignRevealPasswordBox}"
                          materialDesign:HintAssist.Hint="Mot de passe actuel"
                          FontSize="14" Height="50"    />
-            <TextBox x:Name="PasswordTextBox"
+                <TextBox x:Name="PasswordTextBox"
                      Style="{StaticResource ShiakatiTextBox}"
                      FontSize="14" Height="50"
                      Visibility="Collapsed"
                      />
-        </Grid>
+            </Grid>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Annuler" IsCancel="True" Click="Cancel_Click"
+            <!-- Buttons -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Annuler" IsCancel="True" Click="Cancel_Click"
                     Style="{StaticResource SecondaryButton}" MinHeight="44" FontSize="14" Margin="0,0,10,0"/>
-            <Button Content="Enregistrer" IsDefault="True" Click="Save_Click"
+                <Button Content="Enregistrer" IsDefault="True" Click="Save_Click"
                     Style="{StaticResource PrimaryButton}" MinHeight="44" FontSize="14"/>
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

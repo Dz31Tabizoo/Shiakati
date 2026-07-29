@@ -557,6 +557,7 @@
         <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
         <Setter Property="BorderThickness" Value="5"/>
+        <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="WindowChrome.WindowChrome">
