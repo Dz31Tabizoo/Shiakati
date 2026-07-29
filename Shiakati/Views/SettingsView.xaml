@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="768" d:DesignWidth="1024"
              FontFamily="{StaticResource BodyFont}"
-             Background="{StaticResource BgBrush}">
+             Background="{DynamicResource BgBrush}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -19,8 +19,8 @@
             <Setter Property="Padding" Value="16"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
-            <Setter Property="Background" Value="{StaticResource BgBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BgAltBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BgAltBrush}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -35,11 +35,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="card" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                                <Setter TargetName="card" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                                <Setter TargetName="card" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter TargetName="card" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="card" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                                <Setter TargetName="card" Property="Background" Value="{DynamicResource BgAltBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -64,9 +64,9 @@
                          Margin="0,0,0,12">
                 <StackPanel>
                     <materialDesign:PackIcon Kind="PrinterCheck" Width="48" Height="48"
-                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
                                              HorizontalAlignment="Center"/>
-                    <TextBlock Text="Ticket Caisse" HorizontalAlignment="Center"
+                    <TextBlock Text="Ticket Caisse" HorizontalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}"
                                FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 </StackPanel>
             </RadioButton>
@@ -77,7 +77,7 @@
                          Margin="0,0,0,12">
                 <StackPanel>
                     <materialDesign:PackIcon Kind="BarcodeScanner" Width="48" Height="48"
-                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
                                              HorizontalAlignment="Center"/>
                     <TextBlock Text="Étiquettes" HorizontalAlignment="Center"
                                FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
@@ -89,9 +89,9 @@
                          Style="{StaticResource ShiakatiSettingsCard}">
                 <StackPanel>
                     <materialDesign:PackIcon Kind="ShapePlus" Width="48" Height="48"
-                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
                                              HorizontalAlignment="Center"/>
-                    <TextBlock Text="Catégories" HorizontalAlignment="Center"
+                    <TextBlock Text="Catégories" HorizontalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}"
                                FontSize="14" FontWeight="SemiBold" Margin="0,8,0,12"/>
                 </StackPanel>
             </RadioButton>
@@ -100,9 +100,9 @@
              Style="{StaticResource ShiakatiSettingsCard}">
                 <StackPanel>
                     <materialDesign:PackIcon Kind="UserSettings" Width="48" Height="48"
-                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Foreground="{DynamicResource TextPrimaryBrush}"
                                              HorizontalAlignment="Center"/>
-                    <TextBlock Text="Utilisateurs" HorizontalAlignment="Center"
+                    <TextBlock Text="Utilisateurs" HorizontalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}"
                                FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 </StackPanel>
             </RadioButton>
@@ -129,7 +129,7 @@
                               Margin="0,0,0,12"/>
 
                     <TextBlock Text="Note : Si vide, l'imprimante par défaut sera utilisée."
-                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                               FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                Margin="4,0,0,20" FontStyle="Italic"/>
 
                     <Button 
@@ -153,7 +153,7 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                         <materialDesign:PackIcon Kind="BarcodeScanner" Width="24" Height="24"
-                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                                 Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,10,0"/>
                         <TextBlock Text="Impression Étiquettes" FontSize="18" FontWeight="Bold"
                                    FontFamily="{StaticResource HeadingFont}"/>
                     </StackPanel>
@@ -166,7 +166,7 @@
                               Margin="0,0,0,12"/>
 
                     <TextBlock Text="Format recommandé : 40mm x 20mm"
-                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                               FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                Margin="4,0,0,20" FontStyle="Italic"/>
 
                     <Button 
@@ -188,16 +188,16 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                         <materialDesign:PackIcon Kind="ShapePlus" Width="24" Height="24"
-                                                 Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
-                        <TextBlock Text="Gestion des Catégories" FontSize="18" FontWeight="Bold"
+                                                 Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Gestion des Catégories" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"
                                    FontFamily="{StaticResource HeadingFont}"/>
                     </StackPanel>
 
-                    <TextBlock Text="Liste des catégories :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <TextBlock Text="Liste des catégories :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"/>
                     <ListBox ItemsSource="{Binding GlobalCategories}"
                              DisplayMemberPath="CategoryName"
                              Height="180" Margin="0,0,0,20"
-                             BorderThickness="1" BorderBrush="{StaticResource BgAltBrush}">
+                             BorderThickness="1" BorderBrush="{DynamicResource BgAltBrush}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Padding" Value="12,8"/>
@@ -206,7 +206,7 @@
                         </ListBox.ItemContainerStyle>
                     </ListBox>
 
-                    <TextBlock Text="Nouvelle catégorie :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14"/>
+                    <TextBlock Text="Nouvelle catégorie :" Margin="0,0,0,8" FontWeight="Medium" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"/>
                     <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Ex: Chaussures, Parfums..."
                              Style="{StaticResource ShiakatiTextBox}"
@@ -234,13 +234,13 @@
                 <StackPanel>
 
                     <!-- Header -->
-                    <Border BorderBrush="{StaticResource BgAltBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,16">
+                    <Border BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,16">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="UserSettings" Width="24" Height="24"
-                                         Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                                         Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,10,0"/>
                             <TextBlock Text="Gestion du compte" FontSize="18" FontWeight="SemiBold"
                            FontFamily="{StaticResource HeadingFont}"
-                           Foreground="{StaticResource PrimaryBrush}"/>
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
                     </Border>
 
@@ -289,7 +289,7 @@
 
                     <!-- Subtle hint text -->
                     <TextBlock Text="Gérez les accès et les identifiants de votre compte"
-                   FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
                    Margin="0,12,0,0" HorizontalAlignment="Center"/>
                 </StackPanel>
             </materialDesign:Card>

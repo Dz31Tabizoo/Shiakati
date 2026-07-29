@@ -4,7 +4,10 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Nouveau client" Width="500" Height="400"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        FontFamily="{StaticResource BodyFont}">
+        FontFamily="{StaticResource BodyFont}"
+        Style="{StaticResource ShiakatiDialogStyle}">
+
+    <Border BorderThickness="4" BorderBrush="{DynamicResource DarkLightTextNavyWhiteBrush}">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -38,4 +41,5 @@
                     MinHeight="44" FontSize="14"/>
         </StackPanel>
     </Grid>
+    </Border>
 </Window>

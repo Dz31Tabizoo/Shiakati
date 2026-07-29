@@ -71,7 +71,7 @@
                                    Stretch="Uniform"/>
                             <TextBlock Text="Numidix Lab"
                                        FontSize="20"
-                                       FontFamily="{DynamicResource BodyFont}"
+                                       FontFamily="{StaticResource BodyFont}"
                                        Foreground="{DynamicResource BgBrush}"
                                        VerticalAlignment="Center" Margin="5,0"/>
                         </StackPanel>
@@ -91,7 +91,7 @@
                 <Button Grid.Row="0"
                         HorizontalAlignment="Right"
                         Command="{Binding CloseApplicationCommand}"
-                        Style="{DynamicResource IconButton}"
+                        Style="{StaticResource IconButton}"
                         Foreground="{DynamicResource TextSecondaryBrush}">
                     <materialDesign:PackIcon Kind="Close" Width="22" Height="22"/>
                 </Button>
@@ -100,10 +100,10 @@
                 <StackPanel Grid.Row="1" Margin="20,19,20,21">
 
                     <TextBlock Text="Bienvenue / مرحباً"
-               FontFamily="{DynamicResource HeadingFont}"
+               FontFamily="{StaticResource HeadingFont}"
                FontSize="34" FontWeight="Bold"
                HorizontalAlignment="Center"
-               Foreground="{DynamicResource PrimaryBrush}"
+               Foreground="{DynamicResource TextPrimaryBrush}"
                Margin="0,0,0,8"/>
 
                     <TextBlock Text="Veuillez vous connecter pour continuer"

@@ -28,17 +28,18 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <materialDesign:PackIcon Kind="Truck" 
-                                              Foreground="{StaticResource PrimaryBrush}"
-                                              Width="28" Height="28" Margin="0,0,12,0"/>
+                                             HorizontalAlignment="Center"
+                                              Foreground="{DynamicResource TextPrimaryBrush}"
+                                              Width="28" Height="28" Margin="0,12,12,0"/>
                     <TextBlock Text="Gestion des Fournisseurs" 
                                FontFamily="{StaticResource HeadingFont}"
                                FontSize="22" FontWeight="SemiBold"
-                               Foreground="{StaticResource PrimaryBrush}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding Suppliers.Count, StringFormat=' ({0})'}" 
                                FontFamily="{StaticResource BodyFont}"
                                FontSize="16"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                VerticalAlignment="Center"
                                Margin="8,0,0,0"/>
                 </StackPanel>
@@ -133,13 +134,13 @@
                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,20,0,0">
                             <TextBlock Text="Sélectionnez un fournisseur" 
                                        FontSize="18"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Margin="0,50,0,0"/>
                             <materialDesign:PackIcon Kind="HandPointingLeft" 
                                                       Width="48" Height="48"
-                                                      Foreground="{StaticResource TextSecondaryBrush}"
+                                                      Foreground="{DynamicResource TextSecondaryBrush}"
                                                       HorizontalAlignment="Center"
                                                       Margin="0,20,0,0"/>
                         </StackPanel>
@@ -155,12 +156,12 @@
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="0,0,0,12">
                                     <materialDesign:PackIcon Kind="Account" 
-                                                              Foreground="{StaticResource PrimaryBrush}"
+                                                              Foreground="{DynamicResource TextPrimaryBrush}"
                                                               Width="20" Height="20" Margin="0,0,10,0"/>
                                     <TextBlock Text="Détails du fournisseur" 
                                                FontFamily="{StaticResource HeadingFont}"
                                                FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="0,0,0,12">
@@ -248,7 +249,7 @@
                                 </Grid>
                             </Grid>
 
-                            <Border BorderBrush="{StaticResource BgAltBrush}" 
+                            <Border BorderBrush="{DynamicResource BgAltBrush}" 
                                     BorderThickness="0,1,0,0" 
                                     Margin="0,16,0,12"/>
 
@@ -261,7 +262,7 @@
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                                     <materialDesign:PackIcon Kind="FileDocument" 
-                                                              Foreground="{StaticResource SecondaryBrush}"
+                                                              Foreground="{DynamicResource SecondaryBrush}"
                                                               Width="20" Height="20" Margin="0,0,8,0"/>
                                     <TextBlock Text="Factures" 
                                                FontFamily="{StaticResource HeadingFont}"
@@ -359,7 +360,7 @@
                                                             Click="PreviewInvoice_Click"
                                                             Tag="{Binding}">
                                                         <materialDesign:PackIcon Kind="Eye" 
-                                                                                  Foreground="{StaticResource AccentBrush}"
+                                                                                  Foreground="{DynamicResource AccentBrush}"
                                                                                   Width="20" Height="20"/>
                                                     </Button>
 

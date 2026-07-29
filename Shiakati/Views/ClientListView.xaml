@@ -53,7 +53,7 @@
                 <DataGridTextColumn Header="Crédits" Binding="{Binding TotalCredits, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Versements" Binding="{Binding TotalVersements, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"/>
                 <DataGridTextColumn Header="Achats" Binding="{Binding TotalPurchases, StringFormat={}{0:N2} DA}" Width="Auto" FontSize="14"
-                        Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold"/>
+                        Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">

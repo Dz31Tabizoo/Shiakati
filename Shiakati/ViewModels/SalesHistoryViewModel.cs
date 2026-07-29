@@ -163,6 +163,7 @@ namespace Shiakati.ViewModels
 
             if (nonVoided.Count == 0)
             {
+                DailyBonuses.Clear();
                 MessageBox.Show("Aucune vente valide à analyser.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }

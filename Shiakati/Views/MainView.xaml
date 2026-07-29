@@ -31,7 +31,7 @@
             <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{DynamicResource SecondaryBrush}"
                     MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
                     BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
-                <Grid Margin="10,0">
+                <Grid Margin="8,5,8,0">
                     <!-- App logo + name (left) -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
@@ -42,7 +42,7 @@
                                    Foreground="{DynamicResource BgBrush}" VerticalAlignment="Center"/>
                         <TextBlock 
                                    Foreground="{DynamicResource BgBrush}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
                                    Margin="2,10,0,0">
                         <Run Text="POS v"/>
                         <Run Text="{Binding Version,Mode=OneWay}"/>
@@ -57,6 +57,7 @@
                             <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
                                           IsChecked="{Binding IsDarkMode}" 
                                           Background="{DynamicResource BgBrush}"
+                                          VerticalAlignment="Center"
                                           ToolTip="Mode sombre / clair"
                                           Margin="12,0"
                                           Width="40" Height="40">
@@ -77,6 +78,7 @@
                             <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
                                           IsChecked="{Binding IsArabicLanguage}"
                                           Background="{DynamicResource BgBrush}"
+                                          VerticalAlignment="Center"
                                           ToolTip="Langue : Français / العربية"
                                           Margin="4,0"
                                           Width="40" Height="40">
@@ -88,37 +90,37 @@
                                 <materialDesign:ToggleButtonAssist.OnContent>
                                     <TextBlock Text="AR" FontWeight="Bold" 
                        Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
-                       FontFamily="{DynamicResource ArabicFont}"
+                       FontFamily="{StaticResource ArabicFont}"
                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </materialDesign:ToggleButtonAssist.OnContent>
                             </ToggleButton>
 
                             
                         
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
                             <TextBlock Text="" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="White" Kind="Download" Width="36" Height="36" VerticalAlignment="Center"/>
+                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="Download" Width="36" Height="36" VerticalAlignment="Center"/>
 
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
                             <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="White" Kind="CalendarToday" Width="36" Height="36" VerticalAlignment="Center"/>
+                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="CalendarToday" Width="36" Height="36" VerticalAlignment="Center"/>
 
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
                             <TextBlock Text="{Binding UserName}" VerticalAlignment="Center" Margin="12,8,12,0"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="White" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
+                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
                             
                         </StackPanel>
                         <!-- ============ NOTIFICATION BUTTON ============ -->
@@ -126,21 +128,22 @@
                                 Background="Transparent" BorderThickness="0"
                                 Height="Auto"
                                 Cursor="Hand" Margin="8,5"
+                                VerticalAlignment="Center"
                                 ToolTip="{Binding AlertBadgeCount, StringFormat='{}{0} alerte(s) stock'}">
 
                             <Button.Resources>
                                 <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource BgBrush}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
-                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource BgBrush}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Resources>
 
                             <Grid>
-                                <materialDesign:PackIcon Kind="Notifications" Width="36" Height="36" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="Notifications" Foreground="{DynamicResource BgBrush}" Width="36" Height="36" VerticalAlignment="Center"/>
 
                                 <Grid>
                                     <!-- Badge Border – Visibility controlled by DataTrigger, not animated -->
@@ -163,7 +166,7 @@
                                             <ScaleTransform ScaleX="1" ScaleY="1" CenterX="10" CenterY="10"/>
                                         </Border.RenderTransform>
                                         <TextBlock Text="{Binding AlertBadgeCount}" 
-                           Foreground="White" FontSize="12" FontWeight="Bold"
+                           Foreground="{DynamicResource BgBrush}" FontSize="12" FontWeight="Bold"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
 
@@ -222,14 +225,14 @@
                         </Button>
                         <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
                         <ToggleButton x:Name="NavVisibilityToggle" 
-                                      Style="{DynamicResource NavToggleStyle}"
+                                      Style="{StaticResource NavToggleStyle}"
                                       Margin="0,0,16,0">
                             <ToggleButton.Content>
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Foreground="White" Kind="Menu" Width="36" Height="36" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="Menu" Width="36" Height="36" VerticalAlignment="Center"/>
                                     <TextBlock Text="Menu" VerticalAlignment="Center" Margin="12,0,0,0"
                                                FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource PrimaryBrush}"/>
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 </StackPanel>
                             </ToggleButton.Content>
                             <materialDesign:ToggleButtonAssist.OnContent>
@@ -237,7 +240,7 @@
                                     <materialDesign:PackIcon Kind="MenuOpen" Width="36" Height="36" VerticalAlignment="Center"/>
                                     <TextBlock Text="Masquer" VerticalAlignment="Center" Margin="12,0,0,0"
                                                FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource PrimaryBrush}"/>
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 </StackPanel>
                             </materialDesign:ToggleButtonAssist.OnContent>
                         </ToggleButton>
@@ -245,17 +248,17 @@
                         <!-- Window control buttons -->
                         <Button x:Name="BtnMinmize" Content="—" FontSize="20" FontWeight="ExtraBlack" Click="BtnMinmize_Click" 
                                 Style="{DynamicResource MaterialDesignFlatButton}" 
-                                Foreground="{DynamicResource PrimaryBrush}" 
+                                Foreground="{StaticResource InputBorderBrush}" 
                                 Width="48" Height="48"/>
                         <Button x:Name="btnMaximize" Content="☐" FontWeight="ExtraBlack" FontSize="20" Click="btnMaximize_Click" 
                                 Style="{DynamicResource MaterialDesignFlatButton}" 
-                                Foreground="{DynamicResource PrimaryBrush}" 
+                                Foreground="{StaticResource InputBorderBrush}" 
                                 Width="48" Height="48"/>
                         <Button x:Name="btnClose" Click="btnClose_Click" 
-                                Style="{DynamicResource MaterialDesignFlatButton}" 
+                                Style="{StaticResource MaterialDesignFlatButton}" 
                                 Width="48" Height="48">
                             <StackPanel Width="48" Height="48" VerticalAlignment="Center"  HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Foreground="{DynamicResource PrimaryBrush}" Kind="Close" Width="48" Height="48" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Foreground="{StaticResource InputBorderBrush}" Kind="Close" Width="48" Height="48" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -300,7 +303,7 @@
                         </Button>
 
                         <!-- Historique toggle -->
-                        <ToggleButton x:Name="btnHistorique" Style="{DynamicResource TopNavToggleButtonStyle}"
+                        <ToggleButton x:Name="btnHistorique" Style="{StaticResource TopNavToggleButtonStyle}"
                                       MinWidth="180" MinHeight="60" Margin="0,0,18,0"
                                       FontSize="17">
                             <StackPanel Orientation="Horizontal">
@@ -347,7 +350,7 @@
                             </Border>
                         </Popup>
 
-                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
+                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToClientsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -356,7 +359,7 @@
                                 <TextBlock Text="Clients" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToSuppliersCommand}"
+                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToSuppliersCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -367,7 +370,7 @@
                         </Button>
 
 
-                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
+                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavigateToReservationsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17"
                                 Click="CloseNavBar" >
@@ -376,7 +379,7 @@
                                 <TextBlock Text="Réservations" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Style="{DynamicResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
+                        <Button Style="{StaticResource TopNavButtonStyle}" Command="{Binding NavToSettingsCommand}"
                                 MinWidth="140" MinHeight="60" Margin="0,0,18,0"
                                 FontSize="17" Click="CloseNavBar" >
                             <StackPanel Orientation="Horizontal">
@@ -387,7 +390,7 @@
                     </StackPanel>
 
                     <!-- Right: Logout -->
-                    <Button Style="{DynamicResource SecondaryButton}" Command="{Binding LogoutCommand}" 
+                    <Button Style="{StaticResource SecondaryButton}" Command="{Binding LogoutCommand}" 
                             HorizontalAlignment="Right" MinWidth="140" MinHeight="60"
                             FontSize="17">
                         <StackPanel Orientation="Horizontal">

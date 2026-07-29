@@ -25,8 +25,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <materialDesign:PackIcon Kind="BookEdit" Width="24" Height="24" Margin="8,0" VerticalAlignment="Center" Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" />
             <TextBlock Text="Réservations" FontSize="22" FontWeight="Bold"
-                       Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
             <Button Content="Actives" Command="{Binding FilterByStatusCommand}" CommandParameter="active" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
             <Button Content="Honorées" Command="{Binding FilterByStatusCommand}" CommandParameter="fulfilled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
             <Button Content="Annulées" Command="{Binding FilterByStatusCommand}" CommandParameter="cancelled" Style="{StaticResource HelpChipButton}" Margin="0,0,4,0"/>
@@ -100,12 +101,12 @@
                                 <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Honorer"
                                         Command="{Binding DataContext.FulfillReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                         IsEnabled="{Binding CanModify}">
-                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="20" Height="20"/>
+                                    <materialDesign:PackIcon Kind="Check" Foreground="{DynamicResource GreenLightBrush}" Width="20" Height="20"/>
                                 </Button>
                                 <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Annuler"
                                         Command="{Binding DataContext.CancelReservationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                         IsEnabled="{Binding CanModify}">
-                                    <materialDesign:PackIcon Kind="CloseCircle" Foreground="{StaticResource DangerBrush}" Width="20" Height="20"/>
+                                    <materialDesign:PackIcon Kind="CloseCircle" Foreground="{DynamicResource DangerBrush}" Width="20" Height="20"/>
                                 </Button>
                             </StackPanel>
                             </DataTemplate>
@@ -115,7 +116,7 @@
 
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <Border Padding="24,12,24,16" Background="{StaticResource BgAltBrush}">
+                    <Border Padding="24,12,24,16" Background="{DynamicResource BgAltBrush}">
 
                         <DataGrid ItemsSource="{Binding Items}"
                                   AutoGenerateColumns="False"

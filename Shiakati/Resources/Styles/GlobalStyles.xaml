@@ -205,7 +205,7 @@
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontFamily" Value="{DynamicResource HeadingFont}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="Padding" Value="20,8"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -337,6 +337,7 @@
 
     <Style x:Key="ShiakatiDataGridCell" TargetType="DataGridCell">
         <Setter Property="Padding" Value="12,4"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridCell">
@@ -429,7 +430,7 @@
     <Style x:Key="NavToggleStyle" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
         <Setter Property="Width" Value="56"/>
         <Setter Property="Height" Value="56"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -443,7 +444,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{DynamicResource BgAltBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource BgBrush}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
@@ -544,6 +545,44 @@
                                 Value="{DynamicResource NavGradientHoverBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    <!-- Dialog window style – paints the title bar with the app background -->
+    <Style x:Key="ShiakatiDialogStyle" TargetType="Window">
+        <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+        <Setter Property="BorderThickness" Value="5"/>
+        <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome GlassFrameThickness="0"
+                          CornerRadius="0"
+                          CaptionHeight="30"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Window">
+                    <!-- Root border with shadow and accent border -->
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{DynamicResource BgAltBrush}"
+                        BorderThickness="1">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2"
+                                          BlurRadius="8"
+                                          Opacity="0.5"
+                                          Color="{DynamicResource SecondaryColor}"/>
+                        </Border.Effect>
+                        <AdornerDecorator>
+                            <ContentPresenter/>
+                        </AdornerDecorator>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
