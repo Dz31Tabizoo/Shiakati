@@ -6,8 +6,8 @@
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         Title="État du Stock" Height="700" Width="1100"
         WindowStartupLocation="CenterOwner"
-        FontFamily="{StaticResource BodyFont}"
-        Background="{StaticResource BgAltBrush}">
+        WindowStyle="None"
+        Style="{StaticResource ShiakatiDialogStyle}">
 
     <Window.Resources>
         <sys:String x:Key="CurrencyFormat">{0:N2} DA</sys:String>
@@ -24,19 +24,19 @@
                         <ColumnDefinition Width="160"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{Binding ProductName}" 
-                               FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                                Margin="10,0,0,0"/>
                     <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
-                               FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
-                               FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                               FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
-                               FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                               FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"
                                HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
-                               FontSize="14" Foreground="{StaticResource SecondaryBrush}"
+                               FontSize="14" Foreground="{DynamicResource SecondaryBrush}"
                                HorizontalAlignment="Right"/>
                 </Grid>
             </Border>
@@ -46,6 +46,7 @@
         <DataTemplate DataType="{x:Type models:BrandStockDto}">
             <Expander IsExpanded="False" Margin="0,0,0,0"
                       Padding="0"
+                      Background="{DynamicResource BgAltBrush}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch">
                 <Expander.Header>
@@ -59,22 +60,22 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding BrandName}" 
                                    FontSize="16" FontWeight="SemiBold" 
-                                   Foreground="{StaticResource PrimaryBrush}"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
                         <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
                                    FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                    HorizontalAlignment="Center"/>
                         <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                         <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                         <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource SecondaryBrush}"
+                                   Foreground="{DynamicResource SecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                     </Grid>
                 </Expander.Header>
@@ -88,6 +89,7 @@
         <DataTemplate DataType="{x:Type models:CategoryStockDto}">
             <Expander IsExpanded="True" Margin="0,0,0,0"
                       Padding="0"
+                      Background="{DynamicResource SurfaceBrush}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch">
                 <Expander.Header>
@@ -101,22 +103,22 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding CategoryName}" 
                                    FontSize="18" FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryBrush}"/>
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
                         <TextBlock Grid.Column="1" Text="{Binding TotalStockQuantity}" 
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                    HorizontalAlignment="Center"/>
                         <TextBlock Grid.Column="2" Text="{Binding TotalPurchaseValue, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                         <TextBlock Grid.Column="3" Text="{Binding TotalSaleValue, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                         <TextBlock Grid.Column="4" Text="{Binding PotentialMargin, StringFormat={StaticResource CurrencyFormat}}" 
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource SecondaryBrush}"
+                                   Foreground="{DynamicResource SecondaryBrush}"
                                    HorizontalAlignment="Right"/>
                     </Grid>
                 </Expander.Header>
@@ -158,7 +160,7 @@
                                 <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgAltBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgAltBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -170,23 +172,58 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Grid Grid.Row="0" 
+                  Height="48"
+                  Margin="0,0,0,0"
+                  Background="{DynamicResource SecondaryBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Window title (left aligned) -->
+            <TextBlock Grid.Column="0"
+                           Text="État du Stock"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource TextOnPrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+
+            <!-- Close button (right aligned) -->
+            <Button Grid.Column="1"
+                        Margin="3,0"
+                        x:Name="btnClose"
+                        Click="btnClose_Click"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Width="46" Height="35"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource TextOnPrimaryBrush}">
+                <materialDesign:PackIcon Kind="Close" 
+                                 Width="24" Height="24"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+            </Button>
+        </Grid>
+
+
         <!-- Header -->
-        <Border Grid.Row="0" Background="{StaticResource BgBrush}" Padding="16,12" 
+        <Border Grid.Row="1" Background="{DynamicResource BgBrush}" Padding="3" 
                 CornerRadius="8,8,0,0"
                 materialDesign:ElevationAssist.Elevation="Dp4">
             <Grid>
+                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="💰 État du Stock" 
-                           FontFamily="{StaticResource HeadingFont}"
-                           FontSize="22" FontWeight="SemiBold"
-                           Foreground="{StaticResource PrimaryBrush}"/>
+                
                 <Button Grid.Column="1" x:Name="RefreshButton"
                         Style="{StaticResource PrimaryGoldenButton}"
                         Width="140" Height="40" Click="RefreshButton_Click">
@@ -199,14 +236,14 @@
         </Border>
 
         <!-- Content -->
-        <Grid Grid.Row="1" Background="{StaticResource BgBrush}">
+        <Grid Grid.Row="2" Background="{DynamicResource BgBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Column Headers -->
-            <Border Grid.Row="0" Background="{StaticResource BgAltBrush}" Padding="10,6">
+            <Border Grid.Row="0" Background="{DynamicResource BgAltBrush}" Padding="10,6">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="360"/>
@@ -218,26 +255,26 @@
                     <TextBlock Grid.Column="0" Text="Catégorie - Marques - Produits" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
-                               Foreground="{StaticResource PrimaryBrush}"/>
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                     <TextBlock Grid.Column="1" Text="Qté" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
-                               Foreground="{StaticResource PrimaryBrush}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="Achat" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
-                               Foreground="{StaticResource PrimaryBrush}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="3" Text="Vente" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
-                               Foreground="{StaticResource PrimaryBrush}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="4" Text="Marge potentielle" 
                                FontFamily="{StaticResource HeadingFont}" 
                                FontWeight="SemiBold" FontSize="14"
-                               Foreground="{StaticResource SecondaryBrush}"
+                               Foreground="{DynamicResource SecondaryBrush}"
                                HorizontalAlignment="Right"/>
                 </Grid>
             </Border>
@@ -245,6 +282,7 @@
             <!-- TreeView -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Auto"
+                          
                           HorizontalAlignment="Stretch">
                 <TreeView x:Name="StockTreeView" 
                           BorderThickness="0" Background="Transparent"
@@ -256,7 +294,7 @@
         </Grid>
 
         <!-- Footer -->
-        <Border Grid.Row="2" Background="{StaticResource PrimaryBrush}" Padding="16,12" CornerRadius="0,0,8,8">
+        <Border Grid.Row="3" Background="{DynamicResource DarkLightTextNavyWhiteBrush}" Padding="16,12" CornerRadius="0,0,8,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="360"/>
@@ -268,22 +306,22 @@
                 <TextBlock Grid.Column="0" Text="TOTAL GÉNÉRAL" 
                            FontFamily="{StaticResource HeadingFont}"
                            FontSize="18" FontWeight="Bold"
-                           Foreground="White"/>
+                           Foreground="{DynamicResource BgAltBrush}"/>
                 <TextBlock Grid.Column="1" x:Name="TotalQtyTextBlock" 
                            FontSize="18" FontWeight="Bold"
-                           Foreground="White" Text="0"
+                           Foreground="{DynamicResource BgAltBrush}" Text="0"
                            HorizontalAlignment="Center"/>
                 <TextBlock Grid.Column="2" x:Name="TotalPurchaseTextBlock" 
                            FontSize="18" FontWeight="Bold"
-                           Foreground="White" Text="0 DA"
+                           Foreground="{DynamicResource BgAltBrush}" Text="0 DA"
                            HorizontalAlignment="Right"/>
                 <TextBlock Grid.Column="3" x:Name="TotalSaleTextBlock" 
                            FontSize="18" FontWeight="Bold"
-                           Foreground="White" Text="0 DA"
+                           Foreground="{DynamicResource BgAltBrush}" Text="0 DA"
                            HorizontalAlignment="Right"/>
                 <TextBlock Grid.Column="4" x:Name="TotalMarginTextBlock" 
                            FontSize="18" FontWeight="Bold"
-                           Foreground="White" Text="0 DA"
+                           Foreground="{DynamicResource BgAltBrush}" Text="0 DA"
                            HorizontalAlignment="Right"/>
             </Grid>
         </Border>
@@ -292,7 +330,7 @@
         <Grid Grid.RowSpan="3" Background="#80FFFFFF" Visibility="Collapsed" x:Name="LoadingOverlay">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <materialDesign:PackIcon Kind="Loading" Width="48" Height="48" 
-                                         Foreground="{StaticResource PrimaryBrush}">
+                                         Foreground="{StaticResource TextPrimaryBrush}">
                     <materialDesign:PackIcon.Triggers>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
@@ -307,7 +345,7 @@
                         <RotateTransform CenterX="24" CenterY="24"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
-                <TextBlock Text="Chargement..." FontSize="18" Foreground="{StaticResource PrimaryBrush}"
+                <TextBlock Text="Chargement..." FontSize="18" Foreground="{StaticResource TextPrimaryBrush}"
                            Margin="0,12,0,0"/>
             </StackPanel>
         </Grid>

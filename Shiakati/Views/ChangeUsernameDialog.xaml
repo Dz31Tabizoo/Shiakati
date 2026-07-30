@@ -9,7 +9,6 @@
         Style="{StaticResource ShiakatiDialogStyle}"
         >
 
-    <Border BorderThickness="1" BorderBrush="{DynamicResource DarkLightTextNavyWhiteBrush}">
 
         <Grid Margin="10">
             <Grid.RowDefinitions>
@@ -81,5 +80,5 @@
                     Style="{StaticResource PrimaryButton}" MinHeight="44" FontSize="14"/>
             </StackPanel>
         </Grid>
-    </Border>
+    
 </Window>

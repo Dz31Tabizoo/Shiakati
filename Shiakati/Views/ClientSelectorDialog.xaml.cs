@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Shiakati.Models;
+using Shiakati.Services.Interfaces;
+using Shiakati.Services.Interfaces.DataServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Shiakati.Models;
-using Shiakati.Services.Interfaces;
-using Shiakati.Services.Interfaces.DataServices;
+using System.Windows.Input;
 
 namespace Shiakati.Views
 {
@@ -73,6 +74,17 @@ namespace Shiakati.Views
                 MessageBox.Show("Veuillez sélectionner un client dans la liste.",
                 "Aucun client sélectionné", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+                this.DragMove();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

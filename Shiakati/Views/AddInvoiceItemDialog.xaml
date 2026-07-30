@@ -6,7 +6,6 @@
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Style="{StaticResource ShiakatiDialogStyle}">
 
-    <Border BorderThickness="4" BorderBrush="{DynamicResource DarkLightTextNavyWhiteBrush}">
         
 
         <Grid Margin="10">
@@ -102,5 +101,5 @@
                     Style="{StaticResource PrimaryButton}" MinHeight="44" FontSize="14"/>
             </StackPanel>
         </Grid>
-    </Border>
+    
 </Window>

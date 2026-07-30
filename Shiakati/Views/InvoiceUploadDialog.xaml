@@ -2,12 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Ajouter une facture" Width="450" Height="550"
+        Title="Ajouter une facture" Width="450" Height="500"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        FontFamily="{StaticResource BodyFont}"
-        Background="{StaticResource BgBrush}">
+        WindowStyle="None"
+        Style="{StaticResource ShiakatiDialogStyle}">
 
-    <Grid Margin="20">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -20,15 +20,49 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Ajouter une facture" FontSize="18" FontWeight="Bold"
-                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,15"/>
+        <Grid Grid.Row="0" 
+                  Height="48"
+                  Margin="0,0,0,15"
+                  Background="{DynamicResource SecondaryBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Window title (left aligned) -->
+            <TextBlock Grid.Column="0"
+                           Text="Ajouter une facture"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{StaticResource TextOnPrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+
+            <!-- Close button (right aligned) -->
+            <Button Grid.Column="1"
+                        x:Name="btnClose"
+                        Click="btnClose_Click"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Width="48" Height="48"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource TextOnPrimaryBrush}">
+                <materialDesign:PackIcon Kind="Close" 
+                                 Width="24" Height="24"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+            </Button>
+        </Grid>
+
 
         <!-- File selection (Add mode) -->
-        <Button x:Name="SelectFileButton" Grid.Row="1"
+        <Button 
+                x:Name="SelectFileButton" Grid.Row="6"
                 Content="Choisir un fichier"
                 Style="{StaticResource PrimaryGoldenButton}"
+                MaxWidth="220" MaxHeight="44"                
                 Click="SelectFileButton_Click"
-                Margin="0,0,0,10"/>
+                />
 
         <!-- File info (Edit mode) -->
         <StackPanel x:Name="FileInfoPanel" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10" Visibility="Collapsed">

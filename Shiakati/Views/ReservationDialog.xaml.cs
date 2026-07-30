@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Shiakati.Views
 {
@@ -26,6 +27,16 @@ namespace Shiakati.Views
             ExpirationDate = DateTime.Today.AddDays(7);
         }
 
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+                this.DragMove();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
         private void CalculateRemaining()
         {
             Remaining = Total - DepositAmount;

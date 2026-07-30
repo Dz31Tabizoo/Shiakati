@@ -3,6 +3,7 @@ using Shiakati.Models;
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Shiakati.Views
 {
@@ -115,6 +116,16 @@ namespace Shiakati.Views
             InvoiceDate = InvoiceDatePicker.SelectedDate;
             DialogResult = true;
             Close();
+        }
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+                this.DragMove();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

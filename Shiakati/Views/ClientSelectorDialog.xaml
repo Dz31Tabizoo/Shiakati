@@ -4,16 +4,55 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Sélectionner un client" Width="850" Height="520"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Style="{StaticResource ShiakatiDialogStyle}"
         FontFamily="{StaticResource BodyFont}">
-    <Grid Margin="16">
+    
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Grid Grid.Row="0" 
+                  Height="48"
+                  Margin="0,0,0,15"
+                  Background="{DynamicResource SecondaryBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Window title (left aligned) -->
+            <TextBlock Grid.Column="0"
+                           Text="Sélectionner un client"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{StaticResource TextOnPrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+
+            <!-- Close button (right aligned) -->
+            <Button Grid.Column="1"
+                        x:Name="btnClose"
+                        Click="btnClose_Click"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Width="48" Height="48"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource TextOnPrimaryBrush}">
+                <materialDesign:PackIcon Kind="Close" 
+                                 Width="24" Height="24"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+            </Button>
+        </Grid>
+
+
         <!-- Search bar -->
-        <TextBox Grid.Row="0"
+        <TextBox Grid.Row="1"
                  x:Name="SearchTextBox"
                  materialDesign:HintAssist.Hint="Rechercher par nom ou téléphone…"
                  Style="{StaticResource ShiakatiTextBox}"
@@ -21,9 +60,10 @@
                  TextChanged="SearchTextBox_TextChanged"/>
 
         <!-- Clients DataGrid -->
-        <DataGrid Grid.Row="1"
+        <DataGrid Grid.Row="2"
                   x:Name="ClientsGrid"
                   AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Auto"
                   IsReadOnly="True"
                   SelectionMode="Single"
                   MouseDoubleClick="ClientsGrid_MouseDoubleClick"
@@ -44,7 +84,7 @@
         </DataGrid>
 
         <!-- Select button -->
-        <Button Grid.Row="2" Content="Sélectionner"
+        <Button Grid.Row="3" Content="Sélectionner"
                 Style="{StaticResource PrimaryButton}"
                 MinHeight="44" FontSize="14"
                 Margin="0,12,0,0" HorizontalAlignment="Right"
