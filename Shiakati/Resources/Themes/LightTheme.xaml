@@ -9,7 +9,9 @@
     <Color x:Key="AccentColor">#5B99CF</Color>
     <Color x:Key="DarkAccentColor">#1565C0</Color>
     <Color x:Key="GreenLightColor">#4CAF50</Color>
-    
+
+    <Color x:Key="ShadowColor">#33000000</Color>
+
 
     <!-- ── Backgrounds ── -->
     <Color x:Key="BgColor">#FFFFFF</Color>

@@ -5,7 +5,7 @@
         Title="Changer le nom d'utilisateur" Width="400" Height="320"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         WindowStyle="None"
-        FontFamily="{StaticResource BodyFont}"
+        
         Style="{StaticResource ShiakatiDialogStyle}"
         >
 
@@ -19,41 +19,41 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" 
-                  Height="40"
-                  Margin="0,0,0,15"
-                  Background="{DynamicResource SecondaryBrush}"
-                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+        <Grid Grid.Row="0" 
+      Height="48"
+      Margin="0,0,0,15"
+      Background="{DynamicResource SecondaryBrush}"
+      MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- Window title (left aligned) -->
-                <TextBlock Grid.Column="0"
-                           Text="Changer le nom d'utilisateur"
-                           FontSize="15" FontWeight="Bold"
-                           Foreground="{StaticResource TextOnPrimaryBrush}"
-                           VerticalAlignment="Center"
-                           Margin="12,0,0,0"/>
+            <!-- Window title (left aligned) -->
+            <TextBlock Grid.Column="0"
+               Text="Changer le nom d'utilisateur"
+               FontSize="18" FontWeight="Bold"
+               Foreground="{StaticResource TextOnPrimaryBrush}"
+               VerticalAlignment="Center"
+               Margin="12,0,0,0"/>
 
-                <!-- Close button (right aligned) -->
-                <Button Grid.Column="1"
-                        x:Name="btnClose"
-                        Click="btnClose_Click"
-                        Style="{StaticResource MaterialDesignFlatButton}"
-                        Width="48" Height="48"
-                        VerticalAlignment="Center"
-                        Foreground="{StaticResource TextOnPrimaryBrush}">
-                    <materialDesign:PackIcon Kind="Close" 
-                                 Width="24" Height="24"
-                                 VerticalAlignment="Center"
-                                 HorizontalAlignment="Center"/>
-                </Button>
-            </Grid>
+            <!-- Close button (right aligned) -->
+            <Button Grid.Column="1"
+            x:Name="btnClose"
+            Click="btnClose_Click"
+            Style="{StaticResource MaterialDesignFlatSecondaryButton}"
+            Width="48" Height="48"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource TextOnPrimaryBrush}">
+                <materialDesign:PackIcon Kind="Close" 
+                     Width="24" Height="24"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"/>
+            </Button>
+        </Grid>
 
-            <!-- New username -->
+        <!-- New username -->
             <TextBox x:Name="NewUsernameBox" Grid.Row="1"
                  materialDesign:HintAssist.Hint="Nouveau nom d'utilisateur"
                  Style="{StaticResource ShiakatiTextBox}"

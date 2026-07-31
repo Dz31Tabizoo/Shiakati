@@ -116,10 +116,15 @@ namespace Shiakati.ViewModels
             {
                 Content = detailView,
                 Title = $"Client : {selectedClient.FullName}",
+                WindowStyle = WindowStyle.None,
+                AllowsTransparency = true,          // required for rounded corners
+                   // hide the default background
+                Style = Application.Current.TryFindResource("ShiakatiDialogStyle") as Style,
                 Width = 900,
-                Height = 600,
+                Height = 800,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+
             window.ShowDialog();
             // After closing, refresh if needed
             _ = LoadClientsAsync();

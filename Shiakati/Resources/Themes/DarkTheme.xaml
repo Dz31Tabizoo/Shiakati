@@ -9,6 +9,8 @@
     <Color x:Key="DarkAccentColor">#72A2D9</Color>
     <Color x:Key="GreenLightColor">#4CAF50</Color>
 
+    <Color x:Key="ShadowColor">#33FFFFFF</Color>
+
     <Color x:Key="BgColor">#0A1926</Color>
     <Color x:Key="BgAltColor">#0F2437</Color>
     <Color x:Key="SurfaceColor">#13314B</Color>

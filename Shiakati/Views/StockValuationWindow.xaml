@@ -169,7 +169,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -178,10 +178,9 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" 
-                  Height="48"
-                  Margin="0,0,0,0"
-                  Background="{DynamicResource SecondaryBrush}"
-                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+      Height="48"      
+      Background="{DynamicResource SecondaryBrush}"
+      MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -190,25 +189,24 @@
 
             <!-- Window title (left aligned) -->
             <TextBlock Grid.Column="0"
-                           Text="État du Stock"
-                           FontSize="16" FontWeight="Bold"
-                           Foreground="{StaticResource TextOnPrimaryBrush}"
-                           VerticalAlignment="Center"
-                           Margin="12,0,0,0"/>
+               Text="Évaluation des stocks"
+               FontSize="18" FontWeight="Bold"
+               Foreground="{StaticResource TextOnPrimaryBrush}"
+               VerticalAlignment="Center"
+               Margin="12,0,0,0"/>
 
             <!-- Close button (right aligned) -->
             <Button Grid.Column="1"
-                        Margin="3,0"
-                        x:Name="btnClose"
-                        Click="btnClose_Click"
-                        Style="{StaticResource MaterialDesignFlatButton}"
-                        Width="46" Height="35"
-                        VerticalAlignment="Center"
-                        Foreground="{StaticResource TextOnPrimaryBrush}">
+            x:Name="btnClose"
+            Click="btnClose_Click"
+            Style="{StaticResource MaterialDesignFlatSecondaryButton}"
+            Width="48" Height="48"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource TextOnPrimaryBrush}">
                 <materialDesign:PackIcon Kind="Close" 
-                                 Width="24" Height="24"
-                                 VerticalAlignment="Center"
-                                 HorizontalAlignment="Center"/>
+                     Width="24" Height="24"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"/>
             </Button>
         </Grid>
 

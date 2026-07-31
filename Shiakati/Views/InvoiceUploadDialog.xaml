@@ -21,10 +21,10 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" 
-                  Height="48"
-                  Margin="0,0,0,15"
-                  Background="{DynamicResource SecondaryBrush}"
-                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+      Height="48"
+      Margin="0,0,0,15"
+      Background="{DynamicResource SecondaryBrush}"
+      MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -33,26 +33,28 @@
 
             <!-- Window title (left aligned) -->
             <TextBlock Grid.Column="0"
-                           Text="Ajouter une facture"
-                           FontSize="18" FontWeight="Bold"
-                           Foreground="{StaticResource TextOnPrimaryBrush}"
-                           VerticalAlignment="Center"
-                           Margin="12,0,0,0"/>
+               Text="Ajouter une facture"
+               FontSize="18" FontWeight="Bold"
+               Foreground="{StaticResource TextOnPrimaryBrush}"
+               VerticalAlignment="Center"
+               Margin="12,0,0,0"/>
 
             <!-- Close button (right aligned) -->
             <Button Grid.Column="1"
-                        x:Name="btnClose"
-                        Click="btnClose_Click"
-                        Style="{StaticResource MaterialDesignFlatButton}"
-                        Width="48" Height="48"
-                        VerticalAlignment="Center"
-                        Foreground="{StaticResource TextOnPrimaryBrush}">
+            x:Name="btnClose"
+            Click="btnClose_Click"
+            Style="{StaticResource MaterialDesignFlatSecondaryButton}"
+            Width="48" Height="48"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource TextOnPrimaryBrush}">
                 <materialDesign:PackIcon Kind="Close" 
-                                 Width="24" Height="24"
-                                 VerticalAlignment="Center"
-                                 HorizontalAlignment="Center"/>
+                     Width="24" Height="24"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"/>
             </Button>
         </Grid>
+
+
 
 
         <!-- File selection (Add mode) -->

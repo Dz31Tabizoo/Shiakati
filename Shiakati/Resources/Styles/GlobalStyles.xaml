@@ -554,16 +554,19 @@
 
     <!-- Dialog window style – paints the title bar with the app background -->
     <Style x:Key="ShiakatiDialogStyle" TargetType="Window">
-        <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
-        <Setter Property="BorderThickness" Value="3"/>
         <Setter Property="WindowStyle" Value="None"/>
+        <Setter Property="AllowsTransparency" Value="True"/>
+        <!-- ← THIS FIXES THE DARK CORNERS -->
+        <Setter Property="Background" Value="Transparent"/>
+        <!-- ← Makes the area outside the border invisible -->
         <Setter Property="FontFamily" Value="{DynamicResource BodyFont}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+        <Setter Property="BorderThickness" Value="3"/>
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome GlassFrameThickness="0"
-                          CornerRadius="0"
+                          CornerRadius="8"
                           CaptionHeight="30"/>
             </Setter.Value>
         </Setter>
@@ -571,14 +574,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
                     <!-- Root border with shadow and accent border -->
-                    <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{DynamicResource BgAltBrush}"
-                        BorderThickness="1">
+                    <Border 
+                        Background="{DynamicResource BgBrush}"
+                        BorderBrush="{DynamicResource TextPrimaryBrush}"
+                        BorderThickness="2"
+                        CornerRadius="8"
+                        ClipToBounds="True">
                         <Border.Effect>
                             <DropShadowEffect ShadowDepth="2"
-                                          BlurRadius="8"
-                                          Opacity="0.5"
-                                          Color="{DynamicResource SecondaryColor}"/>
+                                          BlurRadius="10"                                          
+                                          Color="{DynamicResource ShadowColor}"/>
                         </Border.Effect>
                         <AdornerDecorator>
                             <ContentPresenter/>
@@ -588,7 +593,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
 
 </ResourceDictionary>

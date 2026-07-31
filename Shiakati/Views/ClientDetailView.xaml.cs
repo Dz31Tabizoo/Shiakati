@@ -34,6 +34,22 @@ namespace Shiakati.Views
 
         }
 
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+            {
+                Window parentWindow = Window.GetWindow(this);
+                parentWindow?.DragMove();
+            }
+        }
+
+        // Close the parent window
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Window parentWindow = Window.GetWindow(this);
+            parentWindow?.Close();
+        }
+
         private void OnlyDigits_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, "^[0-9]+$");
