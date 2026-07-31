@@ -26,10 +26,10 @@
     <SolidColorBrush x:Key="DarkAccentBrush" Color="{StaticResource DarkAccentColor}"/>
     <SolidColorBrush x:Key="GreenLightBrush" Color="{StaticResource GreenLightColor}"/>
     <SolidColorBrush x:Key="InputBorderBrush" Color="#3A5068"/>
-    <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="#EEEEEE"/>
 
 
-    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F8FAFC"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#EEEEEE"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="#94A3B8"/>
     <SolidColorBrush x:Key="TextOnPrimaryBrush" Color="#FFFFFF"/>
     

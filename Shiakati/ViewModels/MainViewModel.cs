@@ -274,6 +274,7 @@ namespace Shiakati.ViewModels
         {
             CurrentView = null;
             CurrentViewTitle = null;
+
         }
 
         [RelayCommand] 
@@ -284,4 +285,5 @@ namespace Shiakati.ViewModels
             UserName = _authService.CurrentSession?.UserName ?? "Utilisateur";
         }
     }
+
 }

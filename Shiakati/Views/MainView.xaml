@@ -28,243 +28,274 @@
             </Grid.RowDefinitions>
 
             <!-- ═══════════ 1. TITLE BAR ═══════════ -->
-            <Border x:Name="pnlControlBar" Grid.Row="0" Height="55" Background="{DynamicResource SecondaryBrush}"
-                    MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
-                    BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
-                <Grid Margin="8,5,8,0">
-                    <!-- App logo + name (left) -->
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
-                               Width="25" Height="36" VerticalAlignment="Center" Stretch="Uniform"/>
-                        <TextBlock Text=" Shiakati  شياكتي" 
-                                   FontFamily="{StaticResource ArabicFont}" 
-                                   FontSize="24" FontWeight="Bold" Margin="8,0"
-                                   Foreground="{DynamicResource BgBrush}" VerticalAlignment="Center"/>
-                        <TextBlock 
-                                   Foreground="{DynamicResource BgBrush}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                   Margin="2,10,0,0">
-                        <Run Text="POS v"/>
-                        <Run Text="{Binding Version,Mode=OneWay}"/>
-                        <Run Text=" © 2026"/>
-                            </TextBlock>
+            <Border x:Name="pnlControlBar" Grid.Row="0" Height="60" 
+        Background="{DynamicResource SecondaryBrush}"
+        MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
+        BorderBrush="{DynamicResource InputBorderBrush}" 
+        BorderThickness="0,0,0,1">
 
+                <Grid Margin="12,5,8,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
+                   Width="28" Height="32" VerticalAlignment="Center" Stretch="Uniform"/>
+
+                        <TextBlock Text="Shiakati  شياكتي" 
+                       FontFamily="{StaticResource ArabicFont}" 
+                       FontSize="20" FontWeight="Bold" Margin="10,0,0,0"
+                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" 
+                       VerticalAlignment="Center"/>
+
+                        <Border Background="{DynamicResource BgAltBrush}" 
+                    CornerRadius="10" Padding="8,2" Margin="12,0,0,0" 
+                    VerticalAlignment="Center">
+                            <TextBlock FontSize="11" FontWeight="SemiBold" 
+                           Foreground="{DynamicResource TextSecondaryBrush}" 
+                           VerticalAlignment="Center">
+                    <Run Text="v"/><Run Text="{Binding Version, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Border>
                     </StackPanel>
 
-                    <!-- Right side controls: navigation toggle + window buttons -->
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
 
-                            <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
-                                          IsChecked="{Binding IsDarkMode}" 
-                                          Background="{DynamicResource BgBrush}"
-                                          VerticalAlignment="Center"
-                                          ToolTip="Mode sombre / clair"
-                                          Margin="12,0"
-                                          Width="40" Height="40">
-                                <ToggleButton.Content>
-                                    <materialDesign:PackIcon Kind="WeatherNight" 
-                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
-                                                             />
-                                    
-                                </ToggleButton.Content>
-                                
-                                <materialDesign:ToggleButtonAssist.OnContent>
-                                    <materialDesign:PackIcon Kind="WeatherSunny" 
-                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
-                                </materialDesign:ToggleButtonAssist.OnContent>
-                            </ToggleButton>
-
-                            <!-- 🌐 Language toggle (FR ↔ AR) -->
-                            <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
-                                          IsChecked="{Binding IsArabicLanguage}"
-                                          Background="{DynamicResource BgBrush}"
-                                          VerticalAlignment="Center"
-                                          ToolTip="Langue : Français / العربية"
-                                          Margin="4,0"
-                                          Width="40" Height="40">
-                                <ToggleButton.Content>
-                                    <TextBlock Text="FR" FontWeight="Bold" 
-                                     Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
-                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                </ToggleButton.Content>
-                                <materialDesign:ToggleButtonAssist.OnContent>
-                                    <TextBlock Text="AR" FontWeight="Bold" 
-                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
-                       FontFamily="{StaticResource ArabicFont}"
-                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                </materialDesign:ToggleButtonAssist.OnContent>
-                            </ToggleButton>
-
-                            
-                        
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
-                            <TextBlock Text="" VerticalAlignment="Center" Margin="12,8,12,0"
-                                       FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="Download" Width="36" Height="36" VerticalAlignment="Center"/>
-
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
-                            <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="12,8,12,0"
-                                       FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="CalendarToday" Width="36" Height="36" VerticalAlignment="Center"/>
-
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-
-                            <TextBlock Text="{Binding UserName}" VerticalAlignment="Center" Margin="12,8,12,0"
-                                       FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource BgAltBrush}"/>
-                            <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="User" Width="36" Height="36" VerticalAlignment="Center"/>
-                            
-                        </StackPanel>
-                        <!-- ============ NOTIFICATION BUTTON ============ -->
-                        <Button Command="{Binding NavigateToDashBordCommand}" 
-                                Background="Transparent" BorderThickness="0"
-                                Height="Auto"
-                                Cursor="Hand" Margin="8,5"
-                                VerticalAlignment="Center"
-                                ToolTip="{Binding AlertBadgeCount, StringFormat='{}{0} alerte(s) stock'}">
-
-                            <Button.Resources>
-                                <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Foreground" Value="{DynamicResource BgBrush}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource BgBrush}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Resources>
-
-                            <Grid>
-                                <materialDesign:PackIcon Kind="Notifications" Foreground="{DynamicResource BgBrush}" Width="36" Height="36" VerticalAlignment="Center"/>
-
-                                <Grid>
-                                    <!-- Badge Border – Visibility controlled by DataTrigger, not animated -->
-                                    <Border x:Name="BadgeBorder"
-                                            Background="{DynamicResource DangerBrush}" CornerRadius="10" 
-                                            Width="20" Height="20" 
-                                            HorizontalAlignment="Right" VerticalAlignment="Top"
-                                            Margin="0,2,-5,0">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <Border.RenderTransform>
-                                            <ScaleTransform ScaleX="1" ScaleY="1" CenterX="10" CenterY="10"/>
-                                        </Border.RenderTransform>
-                                        <TextBlock Text="{Binding AlertBadgeCount}" 
-                           Foreground="{DynamicResource BgBrush}" FontSize="12" FontWeight="Bold"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-
-                                    <!-- VisualStateManager – only animates ScaleTransform -->
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="AlertStates">
-                                            <VisualState x:Name="NoAlert">
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1" Duration="0:0:0.1"/>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1" Duration="0:0:0.1"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="HasAlertPulse">
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
-                                             From="1" To="1.4" Duration="0:0:0.4" 
-                                             AutoReverse="True" RepeatBehavior="Forever"/>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
-                                             From="1" To="1.4" Duration="0:0:0.4" 
-                                             AutoReverse="True" RepeatBehavior="Forever"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="HasAlertStatic">
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1" Duration="0:0:0.1"/>
-                                                    <DoubleAnimation Storyboard.TargetName="BadgeBorder"
-                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1" Duration="0:0:0.1"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-
-                                    <!-- Triggers to switch states based on ViewModel properties -->
-                                    <i:Interaction.Triggers>
-                                        <i:DataTrigger Binding="{Binding IsAlertPulsing}" Value="True">
-                                            <i:GoToStateAction StateName="HasAlertPulse"/>
-                                        </i:DataTrigger>
-                                        <i:DataTrigger Binding="{Binding IsAlertStatic}" Value="True">
-                                            <i:GoToStateAction StateName="HasAlertStatic"/>
-                                        </i:DataTrigger>
-                                        <i:DataTrigger Binding="{Binding IsAlertActive}" Value="False">
-                                            <i:GoToStateAction StateName="NoAlert"/>
-                                        </i:DataTrigger>
-                                    </i:Interaction.Triggers>
-                                </Grid>
-                            </Grid>
-                        </Button>
-                        <!-- LARGE navigation toggle – uses GlobalStyles.xaml NavToggleStyle -->
-                        <ToggleButton x:Name="NavVisibilityToggle" 
-                                      Style="{StaticResource NavToggleStyle}"
-                                      Margin="0,0,16,0">
+                        <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                          IsChecked="{Binding IsDarkMode}" 
+                          Background="{StaticResource BgAltBrush}"
+                          BorderThickness="0"
+                          VerticalAlignment="Center"
+                          ToolTip="Mode sombre / clair"
+                          Margin="4,0"
+                          Width="36" Height="36">
                             <ToggleButton.Content>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Foreground="{DynamicResource BgBrush}" Kind="Menu" Width="36" Height="36" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Menu" VerticalAlignment="Center" Margin="12,0,0,0"
-                                               FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
-                                </StackPanel>
+                                <materialDesign:PackIcon Kind="WeatherNight" 
+                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                             Width="20" Height="20"/>
                             </ToggleButton.Content>
                             <materialDesign:ToggleButtonAssist.OnContent>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="MenuOpen" Width="36" Height="36" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Masquer" VerticalAlignment="Center" Margin="12,0,0,0"
-                                               FontSize="16" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
-                                </StackPanel>
+                                <materialDesign:PackIcon Kind="WeatherSunny" 
+                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                             Width="20" Height="20"/>
                             </materialDesign:ToggleButtonAssist.OnContent>
                         </ToggleButton>
 
-                        <!-- Window control buttons -->
-                        <Button x:Name="BtnMinmize" Content="—" FontSize="20" FontWeight="ExtraBlack" Click="BtnMinmize_Click" 
-                                Style="{DynamicResource MaterialDesignFlatButton}" 
-                                Foreground="{StaticResource InputBorderBrush}" 
-                                Width="48" Height="48"/>
-                        <Button x:Name="btnMaximize" Content="☐" FontWeight="ExtraBlack" FontSize="20" Click="btnMaximize_Click" 
-                                Style="{DynamicResource MaterialDesignFlatButton}" 
-                                Foreground="{StaticResource InputBorderBrush}" 
-                                Width="48" Height="48"/>
-                        <Button x:Name="btnClose" Click="btnClose_Click" 
-                                Style="{StaticResource MaterialDesignFlatButton}" 
-                                Width="48" Height="48">
-                            <StackPanel Width="48" Height="48" VerticalAlignment="Center"  HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Foreground="{StaticResource InputBorderBrush}" Kind="Close" Width="48" Height="48" VerticalAlignment="Center"/>
+                        <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                          IsChecked="{Binding IsArabicLanguage}"
+                          Background="{StaticResource BgAltBrush}"
+                          BorderThickness="0"
+                          VerticalAlignment="Center"
+                          ToolTip="Langue : Français / العربية"
+                          Margin="4,0"
+                          Width="36" Height="36">
+                            <ToggleButton.Content>
+                                <TextBlock Text="FR" FontSize="12" FontWeight="Bold" 
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </ToggleButton.Content>
+                            <materialDesign:ToggleButtonAssist.OnContent>
+                                <TextBlock Text="ع" FontSize="14" FontWeight="Bold" 
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontFamily="{StaticResource ArabicFont}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </materialDesign:ToggleButtonAssist.OnContent>
+                        </ToggleButton>
+
+                        <Rectangle Width="1" Height="24" Fill="{DynamicResource InputBorderBrush}" Margin="8,0"/>
+
+                        <Border Background="{StaticResource BgAltBrush}" CornerRadius="6" Padding="8,4" Margin="4,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <materialDesign:PackIcon Kind="CalendarToday" Foreground="{DynamicResource TextSecondaryBrush}" 
+                                             Width="18" Height="18" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ToDay}" VerticalAlignment="Center" Margin="6,0,2,0"
+                               FontSize="13" FontWeight="Medium"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
                             </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource BgAltBrush}" CornerRadius="6" Padding="8,4" Margin="4,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Account" Foreground="{DynamicResource SecondaryBrush}" 
+                                             Width="20" Height="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding UserName}" VerticalAlignment="Center" Margin="6,0,2,0"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource BgAltBrush}" CornerRadius="6" Padding="8,4" Margin="4,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Command="{Binding NavigateToDashBordCommand}" 
+                                        Background="Transparent" BorderThickness="0"
+                                        
+                                        Height="32" Width="36" Padding="0"
+                                        Cursor="Hand" Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        ToolTip="{Binding AlertBadgeCount, StringFormat='{}{0} alerte(s) stock'}">
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <materialDesign:PackIcon Kind="MarketplaceOutline" 
+                                             Foreground="{DynamicResource TextSecondaryBrush}"  Margin="-3,0,0,0"
+                                             Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                                        <Border x:Name="BadgeBorder"
+                                                    Background="Orange" CornerRadius="7" 
+                                                    Width="15" Height="15" 
+                                                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                    Margin="0,-3,-5,0">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsAlertActive}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Border.RenderTransform>
+                                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="7" CenterY="7"/>
+                                            </Border.RenderTransform>
+                                            <TextBlock Text="{Binding AlertBadgeCount}" 
+                                   Foreground="{StaticResource BgAltBrush}" FontSize="9" FontWeight="Bold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="AlertStates">
+                                                <VisualState x:Name="NoAlert">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                     To="1" Duration="0:0:0.1"/>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                     To="1" Duration="0:0:0.1"/>
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="HasAlertPulse">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                     From="1" To="1.3" Duration="0:0:0.4" 
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                     From="1" To="1.3" Duration="0:0:0.4" 
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                                    </Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="HasAlertStatic">
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                     To="1" Duration="0:0:0.1"/>
+                                                        <DoubleAnimation Storyboard.TargetName="BadgeBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                     To="1" Duration="0:0:0.1"/>
+                                                    </Storyboard>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+
+                                        <i:Interaction.Triggers>
+                                            <i:DataTrigger Binding="{Binding IsAlertPulsing}" Value="True">
+                                                <i:GoToStateAction StateName="HasAlertPulse"/>
+                                            </i:DataTrigger>
+                                            <i:DataTrigger Binding="{Binding IsAlertStatic}" Value="True">
+                                                <i:GoToStateAction StateName="HasAlertStatic"/>
+                                            </i:DataTrigger>
+                                            <i:DataTrigger Binding="{Binding IsAlertActive}" Value="False">
+                                                <i:GoToStateAction StateName="NoAlert"/>
+                                            </i:DataTrigger>
+                                        </i:Interaction.Triggers>
+                                    </Grid>
+
+                                </Button>
+                            </StackPanel>
+                            </Border>
+
+                        <ToggleButton x:Name="NavVisibilityToggle" 
+              Style="{StaticResource NavToggleStyle}"
+              Margin="6,0,12,0">
+
+                            <ToggleButton.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Menu" 
+                                     Width="20" Height="20" 
+                                     VerticalAlignment="Center"/>
+                                    <TextBlock Text="Menu" 
+                       VerticalAlignment="Center" 
+                       Margin="6,0,0,0"
+                       FontSize="13" 
+                       FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </ToggleButton.Content>
+
+                            <materialDesign:ToggleButtonAssist.OnContent>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="MenuOpen" 
+                                     Width="20" Height="20" 
+                                     VerticalAlignment="Center"/>
+                                    <TextBlock Text="Masquer" 
+                       VerticalAlignment="Center" 
+                       Margin="6,0,0,0"
+                       FontSize="13" 
+                       FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </materialDesign:ToggleButtonAssist.OnContent>
+
+                        </ToggleButton>
+
+
+
+                        <Rectangle Width="1" Height="24" Fill="{DynamicResource InputBorderBrush}" Margin="0,0,4,0"/>
+
+                        <Button x:Name="BtnMinmize" Click="BtnMinmize_Click" 
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Padding="0" Width="40" Height="40" ToolTip="Réduire">
+                            <materialDesign:PackIcon Kind="WindowMinimize" Foreground="{DynamicResource TextPrimaryBrush}" Width="18" Height="18"/>
                         </Button>
+
+                        <Button x:Name="btnMaximize" Click="btnMaximize_Click" 
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Padding="0" Width="40" Height="40" ToolTip="Agrandir">
+                            <materialDesign:PackIcon Kind="CropSquare" Foreground="{DynamicResource TextPrimaryBrush}" Width="18" Height="18"/>
+                        </Button>
+
+                        <Button x:Name="btnClose" Click="btnClose_Click" 
+                    Padding="0" Width="40" Height="40" ToolTip="Fermer">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Button>
+
                     </StackPanel>
                 </Grid>
             </Border>
-
+            
             <!-- ═══════════ 2. COLLAPSIBLE NAVIGATION BAR ═══════════ -->
             <Border Grid.Row="1" Height="80" Background="{DynamicResource BgBrush}"
                     BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1"
@@ -434,7 +465,7 @@
                         <TextBlock Text="{Binding CurrentViewTitle}"
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center"/>
                         <Button HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignIconButton}"

@@ -19,7 +19,7 @@
 
     <!-- Main Card -->
     <Border CornerRadius="22"
-            Background="{DynamicResource BgBrush}"
+            Background="{DynamicResource BgAltBrush}"
             Margin="25">
         <Border.Effect>
             <DropShadowEffect BlurRadius="25" ShadowDepth="3" Opacity="0.25"/>

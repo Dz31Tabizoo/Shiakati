@@ -29,7 +29,7 @@
 
             <!-- ====== TOP BAR (search + actions) ====== -->
             <materialDesign:Card Grid.Row="0" Padding="12" UniformCornerRadius="12" Margin="0,0,0,12"
-                                 Background="{StaticResource BgBrush}" Style="{StaticResource ShiakatiCard}">
+                                 Background="{DynamicResource BgBrush}" Style="{StaticResource ShiakatiCard}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -94,7 +94,7 @@
 
             <!-- ====== FILTER BAR ====== -->
             <materialDesign:Card Grid.Row="1" Padding="16,12" UniformCornerRadius="12"
-                                 Margin="0,0,0,12" Background="{StaticResource BgBrush}"
+                                 Margin="0,0,0,12" Background="{DynamicResource BgBrush}"
                                  Style="{StaticResource ShiakatiCard}">
                 <WrapPanel Orientation="Horizontal">
                     <ComboBox materialDesign:HintAssist.Hint="Catégorie"
@@ -150,7 +150,7 @@
                            VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding TotalFilteredQuantity}"
                            FontWeight="Bold"
-                           Foreground="{DynamicResource PrimaryBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            FontSize="16"
                            VerticalAlignment="Center"
                            Margin="6,0,0,0"/>
@@ -232,11 +232,11 @@
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsActive}" Value="False">
                                                                 <Setter Property="Header" Value="Restaurer l'article"/>
-                                                                <Setter Property="Foreground" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                                                 <Setter Property="Icon">
                                                                     <Setter.Value>
                                                                         <materialDesign:PackIcon Kind="Restore" Width="16" Height="16"
-                                                                         Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" />
+                                                                         Foreground="{DynamicResource TextPrimaryBrush}" />
                                                                     </Setter.Value>
                                                                 </Setter>
                                                             </DataTrigger>
@@ -353,7 +353,7 @@
                             <!-- Remise Fixe – slightly larger -->
                             <DataGridTextColumn Header="Remise Fixe"
                         Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}"
-                        Foreground="Orange"
+                        Foreground="{DynamicResource NavGradientHoverBrush}"
                         FontWeight="SemiBold" FontSize="15" Width="Auto" MinWidth="90"/>
                         </DataGrid.Columns>
 
@@ -374,7 +374,7 @@
                 <Style TargetType="materialDesign:Card" BasedOn="{StaticResource ShiakatiCard}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                            <Setter Property="Background" Value="#FFFDE7"/>
+                            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -394,16 +394,17 @@
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Setter Property="Kind" Value="TruckDeliveryOutline"/>
-                                <Setter Property="Foreground" Value="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Kind" Value="Edit"/>
-                                        <Setter Property="Foreground" Value="#C2410C"/>
+                                        <Setter Property="Foreground" Value="Orange"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </materialDesign:PackIcon.Style>
                     </materialDesign:PackIcon>
+                    
                     <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center"
                                FontFamily="{StaticResource HeadingFont}">
                         <TextBlock.Style>
@@ -413,7 +414,7 @@
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsEditMode}" Value="True">
                                         <Setter Property="Text" Value="Modification d'article"/>
-                                        <Setter Property="Foreground" Value="#7C2D12"/>
+                                        <Setter Property="Foreground" Value="Orange"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -465,7 +466,7 @@
                                   Margin="0,0,0,5"/>
 
                         <TextBlock Text="2. Détails du Produit" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    FontSize="14" Margin="0,0,0,5"/>
 
                         <CheckBox Content="Saisir code-barres manuellement"
@@ -553,7 +554,7 @@
                                  Style="{StaticResource ShiakatiTextBox}"
                                  FontSize="22" FontWeight="Bold"
                                  Margin="0,0,0,8"
-                                 Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"/>
+                                 Foreground="{DynamicResource TextPrimaryBrush}"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                             <CheckBox Content="Imprimer code-barres"
@@ -602,7 +603,7 @@
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Command="{Binding DataContext.RemoveBulkVariantCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                         CommandParameter="{Binding}">
-                                                    <materialDesign:PackIcon Kind="Delete" Foreground="{StaticResource DangerBrush}" Width="24" Height="24"/>
+                                                    <materialDesign:PackIcon Kind="Delete" Foreground="{DynamicResource DangerBrush}" Width="24" Height="24"/>
                                                 </Button>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
