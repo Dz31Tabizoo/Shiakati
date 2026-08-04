@@ -190,12 +190,11 @@
 
                         <!-- Row style with context menu -->
                         <DataGrid.RowStyle>
-                            <Style TargetType="DataGridRow" BasedOn="{StaticResource ShiakatiDataGridRow}">
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                                 <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                 <Setter Property="ContextMenu">
                                     <Setter.Value>
                                         <ContextMenu>
-                                            <!-- Modifier -->
                                             <MenuItem Header="Modifier l'article"
                               Command="{Binding PlacementTarget.Tag.DataContext.PrepareEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}"
@@ -206,7 +205,6 @@
                                             </MenuItem>
                                             <Separator/>
 
-                                            <!-- Imprimer -->
                                             <MenuItem Header="Imprimer Code-Barres"
                               Command="{Binding PlacementTarget.Tag.DataContext.PrintFromGridCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
@@ -216,7 +214,6 @@
                                             </MenuItem>
                                             <Separator/>
 
-                                            <!-- Supprimer / Restaurer (toggle) -->
                                             <MenuItem Command="{Binding PlacementTarget.Tag.DataContext.DeleteStockItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
                                                 <MenuItem.Style>
@@ -225,8 +222,7 @@
                                                         <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
                                                         <Setter Property="Icon">
                                                             <Setter.Value>
-                                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"
-                                                                 Foreground="{DynamicResource DangerBrush}" />
+                                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" Foreground="{DynamicResource DangerBrush}" />
                                                             </Setter.Value>
                                                         </Setter>
                                                         <Style.Triggers>
@@ -235,8 +231,7 @@
                                                                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                                                                 <Setter Property="Icon">
                                                                     <Setter.Value>
-                                                                        <materialDesign:PackIcon Kind="Restore" Width="16" Height="16"
-                                                                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                                        <materialDesign:PackIcon Kind="Restore" Width="16" Height="16" Foreground="{DynamicResource TextPrimaryBrush}" />
                                                                     </Setter.Value>
                                                                 </Setter>
                                                             </DataTrigger>
@@ -246,7 +241,6 @@
                                             </MenuItem>
                                             <Separator/>
 
-                                            <!-- Inventaire -->
                                             <MenuItem Header="Lancer l'inventaire du produit"
                               Command="{Binding PlacementTarget.Tag.DataContext.LaunchInventoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               CommandParameter="{Binding}">
@@ -265,22 +259,19 @@
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
+
                         <DataGrid.Columns>
-                            <!-- Status (unchanged) -->
                             <DataGridTemplateColumn Header="Statut" Width="Auto" MinWidth="90">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <Border x:Name="DeleteBadge" Background="{DynamicResource DangerBrush}"
-                        CornerRadius="6" Padding="8,4" Visibility="Collapsed">
+                                            <Border x:Name="DeleteBadge" Background="{DynamicResource DangerBrush}" CornerRadius="6" Padding="8,4" Visibility="Collapsed">
                                                 <TextBlock Text="SUPPRIMÉ" Foreground="White" FontSize="10" FontWeight="Bold"/>
                                             </Border>
-                                            <Border x:Name="RuptureBadge" Background="#FFEDD5"
-                        CornerRadius="6" Padding="8,4" Visibility="Collapsed">
+                                            <Border x:Name="RuptureBadge" Background="#FFEDD5" CornerRadius="6" Padding="8,4" Visibility="Collapsed">
                                                 <TextBlock Text="RUPTURE" Foreground="#C2410C" FontSize="10" FontWeight="Bold"/>
                                             </Border>
-                                            <Border x:Name="ActiveBadge" Background="#DCFCE7"
-                        CornerRadius="6" Padding="8,4" Visibility="Visible">
+                                            <Border x:Name="ActiveBadge" Background="#DCFCE7" CornerRadius="6" Padding="8,4" Visibility="Visible">
                                                 <TextBlock Text="ACTIF" Foreground="#166534" FontSize="10" FontWeight="Bold"/>
                                             </Border>
                                         </Grid>
@@ -303,58 +294,26 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <!-- SKU (unchanged) -->
-                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"
-                        FontWeight="Normal" FontSize="11"
-                        Foreground="{DynamicResource TextSecondaryBrush}"
-                        Width="Auto" MinWidth="90"/>
 
-                            <!-- Catégorie (unchanged) -->
-                            <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}"
-                        Width="Auto" MinWidth="110" FontSize="13"/>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" FontWeight="Normal" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Width="Auto" MinWidth="90"/>
 
-                            <!-- Marque – slightly larger -->
-                            <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}"
-                        FontSize="15" FontWeight="Medium"
-                        Width="Auto" MinWidth="110"/>
+                            <DataGridTextColumn Header="Catégorie" Binding="{Binding CategoryName}" Width="Auto" MinWidth="110" FontSize="13"/>
 
-                            <!-- Produit – prominent -->
-                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}"
-                        FontSize="16" FontWeight="SemiBold"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
-                        Width="*" MinWidth="200"/>
+                            <DataGridTextColumn Header="Marque" Binding="{Binding BrandName}" FontSize="15" FontWeight="Medium" Width="Auto" MinWidth="110"/>
 
-                            <!-- Couleur – slightly larger -->
-                            <DataGridTextColumn Header="Couleur" Binding="{Binding Color}"
-                        Width="Auto" MinWidth="90" FontSize="15"/>
+                            <DataGridTextColumn Header="Produit" Binding="{Binding ProductName}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Width="*" MinWidth="200"/>
 
-                            <!-- Taille – slightly larger -->
-                            <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}"
-                        Width="Auto" MinWidth="70" FontSize="15"/>
+                            <DataGridTextColumn Header="Couleur" Binding="{Binding Color}" Width="Auto" MinWidth="90" FontSize="15"/>
 
-                            <!-- Stock (unchanged) -->
-                            <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}"
-                        FontWeight="SemiBold" FontSize="14"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
-                        Width="Auto" MinWidth="70"/>
+                            <DataGridTextColumn Header="Taille" Binding="{Binding FullSize}" Width="Auto" MinWidth="70" FontSize="15"/>
 
-                            <!-- Prix de vente – larger -->
-                            <DataGridTextColumn Header="P. Vente"
-                        Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}"
-                        Foreground="{DynamicResource SecondaryBrush}"
-                        FontWeight="Bold" FontSize="16" Width="Auto" MinWidth="100"/>
+                            <DataGridTextColumn Header="Stock" Binding="{Binding StockQuantity}" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" Width="Auto" MinWidth="70"/>
 
-                            <!-- Prix d'achat (unchanged) -->
-                            <DataGridTextColumn Header="P. Achat"
-                        Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}"
-                        Foreground="{DynamicResource DangerBrush}"
-                        FontSize="13" Width="Auto" MinWidth="90"/>
+                            <DataGridTextColumn Header="P. Vente" Binding="{Binding SalePrice, StringFormat={}{0:N2} DA}" Foreground="{DynamicResource SecondaryBrush}" FontWeight="Bold" FontSize="16" Width="Auto" MinWidth="100"/>
 
-                            <!-- Remise Fixe – slightly larger -->
-                            <DataGridTextColumn Header="Remise Fixe"
-                        Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}"
-                        Foreground="{DynamicResource NavGradientHoverBrush}"
-                        FontWeight="SemiBold" FontSize="15" Width="Auto" MinWidth="90"/>
+                            <DataGridTextColumn Header="P. Achat" Binding="{Binding PurchasePrice, StringFormat={}{0:N2} DA}" Foreground="{DynamicResource DangerBrush}" FontSize="13" Width="Auto" MinWidth="90"/>
+
+                            <DataGridTextColumn Header="Remise Fixe" Binding="{Binding DiscountFixed, StringFormat={}{0:N2} DA}" Foreground="{DynamicResource NavGradientHoverBrush}" FontWeight="SemiBold" FontSize="15" Width="Auto" MinWidth="90"/>
                         </DataGrid.Columns>
 
                     </DataGrid>

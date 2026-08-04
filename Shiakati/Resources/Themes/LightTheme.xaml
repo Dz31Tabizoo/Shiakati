@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- ── Primary palette ── -->
     <Color x:Key="PrimaryColor">#13314B</Color>
     <Color x:Key="PrimaryLightColor">#415871</Color>
     <Color x:Key="SecondaryColor">#AB7D4C</Color>
@@ -12,13 +11,18 @@
 
     <Color x:Key="ShadowColor">#33000000</Color>
 
-
-    <!-- ── Backgrounds ── -->
     <Color x:Key="BgColor">#FFFFFF</Color>
     <Color x:Key="BgAltColor">#EEEEEE</Color>
     <Color x:Key="SurfaceColor">#E6D9C8</Color>
 
-    <!-- ── Brushes ── -->
+    <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignCardBackground" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignBackground" Color="{StaticResource BgColor}"/>
+
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Paper" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Card.Background" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Background" Color="{StaticResource BgColor}"/>
+
     <SolidColorBrush x:Key="InputBorderBrush" Color="#CCCCCC"/>
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
@@ -32,19 +36,15 @@
     <SolidColorBrush x:Key="GreenLightBrush" Color="{StaticResource GreenLightColor}"/>
     <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="{StaticResource PrimaryColor}"/>
 
-
-    <!-- ── Text ── -->
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="#13314B"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6B7280"/>
     <SolidColorBrush x:Key="TextOnPrimaryBrush" Color="White"/>
 
-    <!-- ── Font families ── -->
     <FontFamily x:Key="HeadingFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Montserrat/static/#Montserrat SemiBold</FontFamily>
     <FontFamily x:Key="BodyFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Poppins/#Poppins</FontFamily>
     <FontFamily x:Key="ArabicFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Cairo/static/#Cairo</FontFamily>
     <FontFamily x:Key="ArabicHeadingFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Markazi_Text/static/#Markazi Text</FontFamily>
 
-    <!-- ── Default font ── -->
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
     </Style>
@@ -57,16 +57,13 @@
         <Setter Property="TextElement.Foreground" Value="{StaticResource TextPrimaryBrush}"/>
     </Style>
 
-
-    <!-- Navigation button gradients (light theme) -->
     <LinearGradientBrush x:Key="NavGradientBrush" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Offset="0" Color="#13314B"/>
         <GradientStop Offset="1" Color="#1D4A6B"/>
     </LinearGradientBrush>
-    
+
     <LinearGradientBrush x:Key="NavGradientHoverBrush" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Offset="0" Color="#1D4A6B"/>
         <GradientStop Offset="1" Color="#2A5B7A"/>
     </LinearGradientBrush>
-    
 </ResourceDictionary>

@@ -444,7 +444,7 @@
 
                 <!-- Header bar (visible when CurrentViewTitle is NOT null AND NOT empty) -->
                 <Border Grid.Row="0" Height="48"
-            Background="{DynamicResource BgAltBrush}"
+            Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -465,16 +465,16 @@
                         <TextBlock Text="{Binding CurrentViewTitle}"
                        FontFamily="{StaticResource HeadingFont}"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Foreground="{DynamicResource PrimaryLightBrush}"
                        VerticalAlignment="Center"/>
                         <Button HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="Fermer cette vue"
                                 Margin="0,0,10,0"
                     Command="{Binding CloseCurrentViewCommand}"
-                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Foreground="{DynamicResource PrimaryLightBrush}"
                     Width="36" Height="36">
-                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
+                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="{StaticResource BgBrush}"/>
                         </Button>
                     </Grid>
                 </Border>

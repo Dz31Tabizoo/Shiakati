@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border  Grid.Row="0" Background="{DynamicResource BgBrush}"
+        <Border  Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
             <Grid>
                 <!-- Larger, touch‑optimised “Nouvelle vente” button -->
@@ -41,7 +41,7 @@
                     ItemsSource="{Binding PosTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     Style="{StaticResource MaterialDesignTabControl}"
-                    Background="Transparent">
+                    Background="{DynamicResource SurfaceBrush}">
 
             <TabControl.ItemTemplate>
                 <DataTemplate>

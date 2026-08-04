@@ -8,31 +8,40 @@
     <Color x:Key="AccentColor">#5B99CF</Color>
     <Color x:Key="DarkAccentColor">#72A2D9</Color>
     <Color x:Key="GreenLightColor">#4CAF50</Color>
-
     <Color x:Key="ShadowColor">#33FFFFFF</Color>
-
     <Color x:Key="BgColor">#0A1926</Color>
     <Color x:Key="BgAltColor">#0F2437</Color>
     <Color x:Key="SurfaceColor">#13314B</Color>
-    
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}"/>
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
-    <SolidColorBrush x:Key="BgAltBrush" Color="{StaticResource BgAltColor}"/>
+    <SolidColorBrush x:Key="BgAltBrush" Color="{StaticResource SurfaceColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
     <SolidColorBrush x:Key="DarkAccentBrush" Color="{StaticResource DarkAccentColor}"/>
     <SolidColorBrush x:Key="GreenLightBrush" Color="{StaticResource GreenLightColor}"/>
     <SolidColorBrush x:Key="InputBorderBrush" Color="#3A5068"/>
     <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="#EEEEEE"/>
 
+    <SolidColorBrush x:Key="MaterialDesignCardBackground" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignBackground" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignTextFieldBoxBackground" Color="Transparent"/>
+    <SolidColorBrush x:Key="MaterialDesignTextBoxHoverBackground" Color="Transparent"/>
+
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Card.Background" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Paper" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Background" Color="{StaticResource BgColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.TextBox.HoverBackground" Color="Transparent"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.TextBox.Viewbox.Background" Color="Transparent"/>
 
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="#EEEEEE"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="#94A3B8"/>
     <SolidColorBrush x:Key="TextOnPrimaryBrush" Color="#FFFFFF"/>
-    
+
     <FontFamily x:Key="HeadingFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Montserrat/static/#Montserrat SemiBold</FontFamily>
     <FontFamily x:Key="BodyFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Poppins/#Poppins</FontFamily>
     <FontFamily x:Key="ArabicFont">pack://application:,,,/Shiakati;component/Resources/Fonts/Cairo/static/#Cairo</FontFamily>
@@ -52,8 +61,6 @@
         <Setter Property="Background" Value="{StaticResource BgBrush}"/>
     </Style>
 
-
-    <!-- Navigation button gradients (dark theme) -->
     <LinearGradientBrush x:Key="NavGradientBrush" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Offset="0" Color="#AB7D4C"/>
         <GradientStop Offset="1" Color="#BB976F"/>
@@ -62,5 +69,4 @@
         <GradientStop Offset="0" Color="#BB976F"/>
         <GradientStop Offset="1" Color="#C9A57E"/>
     </LinearGradientBrush>
-    
 </ResourceDictionary>

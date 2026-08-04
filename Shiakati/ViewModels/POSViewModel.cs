@@ -5,18 +5,19 @@ using Microsoft.Extensions.Logging;
 using Shiakati.Messages;
 using Shiakati.Models;
 using Shiakati.Properties;
-using Shiakati.Services.Interfaces.DataServices;
 using Shiakati.Services.Implementations; // ✅ Add this
+using Shiakati.Services.Interfaces.CacheService;
+using Shiakati.Services.Interfaces.DataServices;
+using Shiakati.Services.Interfaces.PrintServices;
 using Shiakati.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using ZXing;
-using Shiakati.Services.Interfaces.PrintServices;
-using Shiakati.Services.Interfaces.CacheService;
-using System.Linq.Expressions;
 
 namespace Shiakati.ViewModels
 {
@@ -26,26 +27,24 @@ namespace Shiakati.ViewModels
         private readonly ILogger<POSViewModel> _logger;
         private readonly IPrintService _printService;
         private readonly ICatalogDataService _catalogDataService;
-
         private readonly IStockDataService _stockService;
         private readonly ICacheService _cacheService;
         private readonly ISaleDataService _saleDataService;
         private readonly IClientDataService _clientDataService;
         private bool _skipGridRefresh;
 
-        // ---- Stable collection for the ICollectionView ----
+        // Stable collection for the ICollectionView
         private readonly ObservableCollection<ProductVariantModel> _posProducts = new();
 
         public POSViewModel(string name, ILogger<POSViewModel> logger, IPrintService printService,
                             ICatalogDataService catalogDataService, IStockDataService stockService,
-                            ICacheService cacheService, IReservationDataService reservation, ISaleDataService saleDataService,
-                            IClientDataService clientDataService)
+                            ICacheService cacheService, IReservationDataService reservation,
+                            ISaleDataService saleDataService, IClientDataService clientDataService)
         {
             TabName = name;
             _logger = logger;
             _printService = printService;
             _catalogDataService = catalogDataService;
-
             _stockService = stockService;
             _cacheService = cacheService;
             _saleDataService = saleDataService;
@@ -54,7 +53,6 @@ namespace Shiakati.ViewModels
 
             CartItems.CollectionChanged += CartItems_CollectionChanged;
 
-            // Create the view ONCE, bound to the stable collection
             FilteredProductsView = CollectionViewSource.GetDefaultView(_posProducts);
             FilteredProductsView.Filter = ProductFilter;
 
@@ -69,123 +67,103 @@ namespace Shiakati.ViewModels
 
             WeakReferenceMessenger.Default.Register<StockUpdatedMessage>(this, (r, m) =>
             {
-                // Reload on the UI thread – the source collection will be updated automatically
                 Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
             });
+
+            SelectedColor = "TOUT";
+            SelectedSize = "TOUT";
         }
 
+        // ---------- Data ----------
+        private List<ProductVariantModel> _allProducts = new();
         private Dictionary<string, ProductVariantModel> _skuLookup = new(StringComparer.OrdinalIgnoreCase);
+        private List<CategoryModel> _allCategories = new();
+        private List<BrandsModel> _allBrands = new();
 
+        // ---------- Observable properties ----------
         [ObservableProperty] private string _tabName;
         [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _searchText = string.Empty;
 
+        // Stage 1 – Categories
+        [ObservableProperty] private ObservableCollection<CategoryModel> _categories = new();
+        [ObservableProperty] private CategoryModel? _selectedCategory;
 
+        // Stage 2 – Brands
+        [ObservableProperty] private ObservableCollection<BrandsModel> _brandsForCategory = new();
+        [ObservableProperty] private BrandsModel? _selectedBrand;
 
-        [ObservableProperty] private ObservableCollection<string> _categories = new();
-        [ObservableProperty] private ObservableCollection<string> _brands = new();
-        [ObservableProperty] private ObservableCollection<string> _filterColors = new();
-        [ObservableProperty] private ObservableCollection<string> _filterSizes = new();
-
-        [ObservableProperty] private string _selectedCategory = "TOUT";
-        [ObservableProperty] private string _selectedBrand = "TOUT";
+        // Stage 3 – Filters
+        [ObservableProperty] private ObservableCollection<string> _availableColors = new();
+        [ObservableProperty] private ObservableCollection<string> _availableSizes = new();
         [ObservableProperty] private string _selectedColor = "TOUT";
         [ObservableProperty] private string _selectedSize = "TOUT";
 
+        // Visibility helpers
+        public bool IsStage1Visible => SelectedCategory == null;
+        public bool IsStage2Visible => SelectedCategory != null && SelectedBrand == null;
+        public bool IsStage3Visible => SelectedBrand != null;
+
+        // Search
+        [ObservableProperty] private string _searchText = string.Empty;
+
+        // Client / Cart / Checkout
         [ObservableProperty] private ClientSummaryDto? _selectedClient;
         [ObservableProperty] private string _clientDisplay = "Aucun";
         [ObservableProperty] private decimal? _creditPaidAmount;
         [ObservableProperty] private DateTime? _creditExpiresAt;
         [ObservableProperty] private bool isCreditSale;
-
         [ObservableProperty] private bool _isEditMode;
         [ObservableProperty] private string _editTicketNumber = string.Empty;
         [ObservableProperty] private int? _editSaleId;
-
-        private List<ProductVariantModel> _allProducts = new();
-
-        // The view stays the same instance, only its content changes
-        public ICollectionView FilteredProductsView { get; }
         public ObservableCollection<CartItem> CartItems { get; } = new();
 
+        public ICollectionView FilteredProductsView { get; }
         public decimal? CartSubTotal => CartItems.Sum(x => x.RawTotal ?? 0);
         public decimal? TotalDiscountAmount => CartItems.Sum(x => x.TotalLineDiscount ?? 0);
         public decimal? CartTotal => CartSubTotal - TotalDiscountAmount;
-        //---------- Loading -----------------
-        private void SetFiltersToTout()
-        {
-            SelectedCategory = "TOUT";
-            SelectedBrand = "TOUT";
-            SelectedColor = "TOUT";
-            SelectedSize = "TOUT";
-        }
+
+        // ---------- Loading ----------
         public async Task LoadProductsAsync()
         {
-            SetFiltersToTout();
             try
             {
                 IsLoading = true;
 
                 await _catalogDataService.LoadCatalogAsync();
-
-                Categories.Clear();
-                Categories.Add("TOUT");
-                foreach (var cat in _catalogDataService.Categories)
-                    Categories.Add(cat.CategoryName);
-
-                
-
                 await _stockService.LoadVariantsAsync();
-                _allProducts = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
 
+                _allProducts = _stockService.Variants
+                    .Where(i => i.IsActive == true && i.StockQuantity > 0)
+                    .ToList();
+                _allCategories = _catalogDataService.Categories.ToList();
+                _allBrands = _catalogDataService.Brands.ToList();
+
+                // Build SKU lookup
                 _skuLookup = _allProducts
                     .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
                     .ToDictionary(p => p.Sku!, StringComparer.OrdinalIgnoreCase);
 
+                // Populate active categories (those with at least one active variant)
+                var activeCategoryNames = _allProducts.Select(p => p.CategoryName).Distinct().ToHashSet();
+                Categories.Clear();
+                foreach (var cat in _allCategories.Where(c => activeCategoryNames.Contains(c.CategoryName)))
+                    Categories.Add(cat);
 
-                // ---- Replace the content of the stable collection ----
+                // Reset selections
+                SelectedCategory = null;
+                SelectedBrand = null;
+                BrandsForCategory.Clear();
+
+                // Fill the stable collection
                 _posProducts.Clear();
-
-                foreach (var p in _allProducts)
-                    _posProducts.Add(p);
-
-                // The ICollectionView automatically updates, but we call Refresh() to reapply filters
+                foreach (var p in _allProducts) _posProducts.Add(p);
                 FilteredProductsView.Refresh();
 
-                // Rebuild filter lists (these are separate)
-                var distinctBrands = _allProducts
-                    .Where(p => !string.IsNullOrWhiteSpace(p.BrandName))
-                    .Select(p => p.BrandName!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(b => b)
-                    .ToList();
-                Brands.Clear();
-                Brands.Add("TOUT");
-                foreach (var b in distinctBrands) Brands.Add(b);
-
-                var distinctColors = _allProducts
-                    .Where(p => !string.IsNullOrWhiteSpace(p.Color))
-                    .Select(p => p.Color!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(c => c)
-                    .ToList();
-                FilterColors.Clear();
-                FilterColors.Add("TOUT");
-                foreach (var c in distinctColors) FilterColors.Add(c);
-
-                var distinctSizes = _allProducts
-                    .Where(p => !string.IsNullOrWhiteSpace(p.FullSize))
-                    .Select(p => p.FullSize!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(s => s)
-                    .ToList();
-                FilterSizes.Clear();
-                FilterSizes.Add("TOUT");
-                foreach (var s in distinctSizes) FilterSizes.Add(s);
+                RefreshVisibility();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erreur lors du chargement des produits pour le POS.");
+                _logger.LogError(ex, "Erreur lors du chargement initial du POS.");
                 MessageBox.Show("Impossible de charger le catalogue. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -194,7 +172,116 @@ namespace Shiakati.ViewModels
             }
         }
 
-        // ────────────── Search & Scan Detection ──────────────
+
+
+
+        // ---------- Stage navigation ----------
+        [RelayCommand]
+        private void SelectCategory(CategoryModel category)
+        {
+            if (category == null) return;
+            SelectedCategory = category;
+            SelectedBrand = null;
+
+            // Get distinct, trimmed brand names for this category (case‑insensitive)
+            var brandNames = _allProducts
+                .Where(p => string.Equals(p.CategoryName, category.CategoryName, StringComparison.OrdinalIgnoreCase))
+                .Select(p => p.BrandName?.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            // Get the corresponding BrandsModel objects (one per distinct name)
+            var brands = _allBrands
+                .Where(b => brandNames.Contains(b.BrandName?.Trim(), StringComparer.OrdinalIgnoreCase))
+                .ToList();
+
+            // Remove duplicates that have the same trimmed name (different IDs)
+            var distinctBrands = brands
+                .GroupBy(b => b.BrandName?.Trim() ?? "", StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
+
+            BrandsForCategory.Clear();
+            foreach (var b in distinctBrands)
+                BrandsForCategory.Add(b);
+
+            SelectedColor = "TOUT";
+            SelectedSize = "TOUT";
+
+            RefreshVisibility();
+            FilteredProductsView.Refresh();
+        }
+
+        [RelayCommand]
+        private void SelectBrand(BrandsModel brand)
+        {
+            if (brand == null) return;
+            SelectedBrand = brand;
+
+            var selectedCategoryName = SelectedCategory?.CategoryName ?? "(null)";
+            var selectedBrandName = brand.BrandName;
+
+
+            var productsForBrand = _allProducts
+                .Where(p =>
+                {
+                    bool brandMatch = string.Equals(p.BrandName?.Trim(), selectedBrandName?.Trim(), StringComparison.OrdinalIgnoreCase);
+                    bool categoryMatch = string.Equals(p.CategoryName?.Trim(), selectedCategoryName?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+                    if (!brandMatch || !categoryMatch)
+                        return false;
+
+                    return true;
+                })
+                .ToList();
+
+            var colors = productsForBrand
+                .Where(p => !string.IsNullOrWhiteSpace(p.Color))
+                .Select(p => p.Color!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(c => c)
+                .ToList();
+            AvailableColors.Clear();
+            AvailableColors.Add("TOUT");
+            foreach (var c in colors) AvailableColors.Add(c);
+
+            var sizes = productsForBrand
+                .Where(p => !string.IsNullOrWhiteSpace(p.FullSize))
+                .Select(p => p.FullSize!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s)
+                .ToList();
+            AvailableSizes.Clear();
+            AvailableSizes.Add("TOUT");
+            foreach (var s in sizes) AvailableSizes.Add(s);
+
+            SelectedColor = "TOUT";
+            SelectedSize = "TOUT";
+
+            RefreshVisibility();
+            FilteredProductsView.Refresh();
+        }
+
+        [RelayCommand]
+        private void Reset()
+        {
+            SelectedCategory = null;
+            SelectedBrand = null;
+            SelectedColor = "TOUT";
+            SelectedSize = "TOUT";
+            BrandsForCategory.Clear();
+            RefreshVisibility();
+            FilteredProductsView.Refresh();
+        }
+
+        private void RefreshVisibility()
+        {
+            OnPropertyChanged(nameof(IsStage1Visible));
+            OnPropertyChanged(nameof(IsStage2Visible));
+            OnPropertyChanged(nameof(IsStage3Visible));
+        }
+
+        // ────────────── Search & Scan ──────────────
         private CancellationTokenSource? _searchDebounceToken;
 
         partial void OnSearchTextChanged(string value)
@@ -205,49 +292,59 @@ namespace Shiakati.ViewModels
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                // After a scan we skip the refresh – otherwise restore full list
                 if (_skipGridRefresh)
                 {
                     _skipGridRefresh = false;
-                    return;          // ← no grid update after a scanned product was added
+                    return;
                 }
                 FilteredProductsView.Refresh();
                 return;
             }
 
-            // Exact SKU match? (works for both scanner and manual typing)
             if (_skuLookup.TryGetValue(value, out var exactMatch))
             {
-                _skipGridRefresh = true;               // prevent the next empty‑text refresh
-                AddToCart(exactMatch);                 // this will also clear SearchText
+                _skipGridRefresh = true;
+                AddToCart(exactMatch);
                 return;
             }
 
-            // No match – normal text search with debounce
             Task.Delay(500, token).ContinueWith(_ =>
             {
                 if (!token.IsCancellationRequested)
                     Application.Current.Dispatcher.Invoke(() => FilteredProductsView.Refresh());
             }, token);
         }
+
         private bool ProductFilter(object obj)
         {
             if (obj is not ProductVariantModel p) return false;
             if (p.IsActive != true || p.StockQuantity <= 0) return false;
 
-            if (!string.IsNullOrWhiteSpace(SelectedCategory) && SelectedCategory != "TOUT" &&
-                !string.Equals(p.CategoryName, SelectedCategory, StringComparison.OrdinalIgnoreCase)) return false;
-            if (!string.IsNullOrWhiteSpace(SelectedBrand) && SelectedBrand != "TOUT" &&
-                !string.Equals(p.BrandName, SelectedBrand, StringComparison.OrdinalIgnoreCase)) return false;
+            // Must have a brand selected
+            if (SelectedBrand == null) return false;
+            if (!string.Equals(p.BrandName, SelectedBrand.BrandName, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // ➕ Filter by the selected category as well
+            if (SelectedCategory != null &&
+                !string.Equals(p.CategoryName, SelectedCategory.CategoryName, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Color filter
             if (!string.IsNullOrWhiteSpace(SelectedColor) && SelectedColor != "TOUT" &&
                 !string.Equals(p.Color, SelectedColor, StringComparison.OrdinalIgnoreCase)) return false;
+
+            // Size filter
             if (!string.IsNullOrWhiteSpace(SelectedSize) && SelectedSize != "TOUT" &&
                 !string.Equals(p.FullSize, SelectedSize, StringComparison.OrdinalIgnoreCase)) return false;
+
+            // Search text
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 return (p.ProductName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true) ||
                        (p.Sku != null && p.Sku.Equals(SearchText, StringComparison.OrdinalIgnoreCase));
             }
+
             return true;
         }
 
@@ -291,14 +388,6 @@ namespace Shiakati.ViewModels
             }
         }
         // ────────────── Filter toggles ──────────────
-        [RelayCommand] private void ToggleCategory(string category) { SelectedCategory = ToggleValue(SelectedCategory, category); FilteredProductsView.Refresh(); }
-        [RelayCommand] private void ToggleBrand(string brand) { SelectedBrand = ToggleValue(SelectedBrand, brand); FilteredProductsView.Refresh(); }
-        [RelayCommand] private void ToggleColor(string color) { SelectedColor = ToggleValue(SelectedColor, color); FilteredProductsView.Refresh(); }
-        [RelayCommand] private void ToggleSize(string size) { SelectedSize = ToggleValue(SelectedSize, size); FilteredProductsView.Refresh(); }
-        private string? ToggleValue(string? current, string value) => string.Equals(current, value, StringComparison.OrdinalIgnoreCase) ? null : value;
-
-        partial void OnSelectedCategoryChanged(string value) => FilteredProductsView.Refresh();
-        partial void OnSelectedBrandChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedColorChanged(string value) => FilteredProductsView.Refresh();
         partial void OnSelectedSizeChanged(string value) => FilteredProductsView.Refresh();
 
@@ -333,6 +422,7 @@ namespace Shiakati.ViewModels
             SearchText = string.Empty;
         }
         [RelayCommand] private void RemoveFromCart(CartItem itemToRemove) => CartItems.Remove(itemToRemove);
+        
         [RelayCommand]
         private void IncrementQty(CartItem item)
         {
@@ -546,64 +636,6 @@ namespace Shiakati.ViewModels
         }
         //----------------------------------------------
 
-        private async Task ReloadProductsInBackground()
-        {
-            try
-            {
-                await _stockService.LoadVariantsAsync();
-
-                var filteredItems = _stockService.Variants.Where(i => i.IsActive == true && i.StockQuantity > 0).ToList();
-
-                // Build filter lists from the loaded items
-                var distinctBrands = filteredItems
-                    .Where(p => !string.IsNullOrWhiteSpace(p.BrandName))
-                    .Select(p => p.BrandName!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(b => b).ToList();
-                var distinctColors = filteredItems
-                    .Where(p => !string.IsNullOrWhiteSpace(p.Color))
-                    .Select(p => p.Color!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(c => c).ToList();
-                var distinctSizes = filteredItems
-                    .Where(p => !string.IsNullOrWhiteSpace(p.FullSize))
-                    .Select(p => p.FullSize!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(s => s).ToList();
-
-                // ---- Update the UI on the dispatcher thread ----
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    // Replace the product collection safely
-                    _allProducts = filteredItems;
-                    _skuLookup = _allProducts
-                        .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
-                        .ToDictionary(p => p.Sku!, StringComparer.OrdinalIgnoreCase);
-
-                    _posProducts.Clear();
-                    foreach (var p in _allProducts) _posProducts.Add(p);
-
-                    // Update brand / color / size filters
-                    Brands.Clear(); Brands.Add("TOUT");
-                    foreach (var b in distinctBrands) Brands.Add(b);
-
-                    FilterColors.Clear(); FilterColors.Add("TOUT");
-                    foreach (var c in distinctColors) FilterColors.Add(c);
-
-                    FilterSizes.Clear(); FilterSizes.Add("TOUT");
-                    foreach (var s in distinctSizes) FilterSizes.Add(s);
-
-                    // Refresh the product grid (filters are already "TOUT")
-                    FilteredProductsView?.Refresh();
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erreur rechargement produits en arrière‑plan");
-                Application.Current.Dispatcher.Invoke(() =>
-                    MessageBox.Show("Impossible de recharger le catalogue.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error));
-            }
-        }
         public void LoadSaleForEditing(SaleModel sale, IEnumerable<SaleItemModel> items)
         {
             if (sale == null || items == null) return;
@@ -627,13 +659,46 @@ namespace Shiakati.ViewModels
                 }
             }
         }
+        private async Task ReloadProductsInBackground()
+        {
+            try
+            {
+                await _stockService.LoadVariantsAsync();
+                var filteredItems = _stockService.Variants
+                    .Where(i => i.IsActive == true && i.StockQuantity > 0)
+                    .ToList();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _allProducts = filteredItems;
+                    _skuLookup = _allProducts
+                        .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
+                        .ToDictionary(p => p.Sku!, StringComparer.OrdinalIgnoreCase);
+
+                    _posProducts.Clear();
+                    foreach (var p in _allProducts) _posProducts.Add(p);
+
+                    // Rebuild categories if needed (optional, but safe)
+                    var activeCategoryNames = _allProducts.Select(p => p.CategoryName).Distinct().ToHashSet();
+                    Categories.Clear();
+                    foreach (var cat in _allCategories.Where(c => activeCategoryNames.Contains(c.CategoryName)))
+                        Categories.Add(cat);
+
+                    FilteredProductsView?.Refresh();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur rechargement produits en arrière‑plan");
+            }
+        }
         private void ResetPOS()
         {
             IsEditMode = false;
             EditTicketNumber = string.Empty;
             EditSaleId = null;
-            SelectedCategory = "TOUT";
-            SelectedBrand = "TOUT";
+            SelectedCategory = null;   // <-- corrected
+            SelectedBrand = null;      // <-- corrected
             SelectedColor = "TOUT";
             SelectedSize = "TOUT";
             SearchText = string.Empty;
@@ -644,6 +709,7 @@ namespace Shiakati.ViewModels
             ClientDisplay = "Aucun";
             ResetCartMemorySafe();
             FilteredProductsView.Refresh();
+            RefreshVisibility();       // ensure we go back to stage 1
         }
         private void ResetCartMemorySafe()
         {
@@ -748,44 +814,14 @@ namespace Shiakati.ViewModels
 
 
         // ------------------- End of reservation ------------------
-        private async void OnCatalogChanged()
-        {
-            try
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Categories.Clear();
-                    Categories.Add("TOUT");
-                    foreach (var cat in _catalogDataService.Categories)
-                        Categories.Add(cat.CategoryName);
-
-                    Brands.Clear();
-                    Brands.Add("TOUT");
-                    foreach (var brand in _catalogDataService.Brands)
-                        Brands.Add(brand.BrandName);
-
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erreur lors de la mise à jour du catalogue.");
-                MessageBox.Show("Impossible de mettre à jour le catalogue. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-
         private async void OnStockChanged()
         {
-            try
-            {
-                await Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
+            await Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
+        }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erreur lors de la mise à jour du stock.");
-                MessageBox.Show("Impossible de mettre à jour le stock. " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        private async void OnCatalogChanged()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() => LoadProductsAsync());
         }
 
         public void Dispose()
