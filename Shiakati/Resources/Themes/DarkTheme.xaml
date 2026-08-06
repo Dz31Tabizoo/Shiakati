@@ -13,6 +13,9 @@
     <Color x:Key="BgAltColor">#0F2437</Color>
     <Color x:Key="SurfaceColor">#88633c</Color>
 
+
+    <SolidColorBrush x:Key="LightSecondaryToNormalBrush" Color="{StaticResource SurfaceColor}"/>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
@@ -69,4 +72,9 @@
         <GradientStop Offset="0" Color="#BB976F"/>
         <GradientStop Offset="1" Color="#C9A57E"/>
     </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SecondaryDarkGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{StaticResource SecondaryColor}"/>
+        <GradientStop Offset="1" Color="#C9A57E"/>
+    </LinearGradientBrush>
+
 </ResourceDictionary>

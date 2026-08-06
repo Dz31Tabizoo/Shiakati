@@ -54,108 +54,174 @@
 
             <!-- STAGE 1 – CATEGORY CARDS -->
             <ScrollViewer Grid.Row="1" 
-              VerticalScrollBarVisibility="Auto"
-              HorizontalScrollBarVisibility="Disabled"
-              Visibility="{Binding IsStage1Visible, Converter={StaticResource BoolToVis}}">
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Visibility="{Binding IsStage1Visible, Converter={StaticResource BoolToVis}}">
                 <ItemsControl ItemsSource="{Binding Categories}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!-- WrapPanel packs items tightly left‑to‑right, then down -->
                             <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+                    
+                    <ItemsControl.ItemTemplate>                        
+                        <DataTemplate>                            
                             <Button Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        CommandParameter="{Binding}"
-                        Width="180" Height="290"
-                        Margin="5" Padding="0"
-                        Cursor="Hand"
-                        Style="{StaticResource MaterialDesignFlatButton}">
+                                    CommandParameter="{Binding}"
+                                    Width="180" Height="290"
+                                    Margin="5" Padding="0"
+                                    Cursor="Hand"
+                                    Style="{StaticResource MaterialDesignFlatButton}">
+                                
                                 <Border CornerRadius="12"
-                            Background="{DynamicResource BgBrush}"
-                            BorderBrush="{DynamicResource BgAltBrush}"
-                            BorderThickness="1">
+                                        Background="{DynamicResource SecondaryDarkGradientBrush}"
+                                        BorderBrush="{DynamicResource BgAltBrush}"
+                                        BorderThickness="1">
                                     <Grid>
+                                        
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
+                                        
                                         <Image Grid.Row="0"
-                                   Source="{Binding CategoryName, Converter={StaticResource CategoryCardImageConverter}}"
-                                   Stretch="Uniform"
-                                   Margin="15"/>
+                                               Source="{Binding CategoryName, Converter={StaticResource CategoryCardImageConverter}}"
+                                               Stretch="Uniform"
+                                               Margin="15"/>
+                                        
                                         <TextBlock Grid.Row="1"
-                                       Text="{Binding CategoryName}"
-                                       FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       HorizontalAlignment="Center"
-                                       Margin="0,0,0,10"
-                                       TextWrapping="Wrap" TextAlignment="Center"/>
+                                                   Text="{Binding CategoryName}"
+                                                   FontSize="18" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,0,0,10"
+                                                   TextWrapping="Wrap" TextAlignment="Center"/>
+                                        
                                     </Grid>
-                                </Border>
-                            </Button>
+                                    
+                                </Border>                                
+                            </Button>                            
                         </DataTemplate>
+                        
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <!-- STAGE 2 – BRAND CHIPS (horizontal scroll) -->
-            <Border Grid.Row="1" Padding="0,4"
-        Visibility="{Binding IsStage2Visible, Converter={StaticResource BoolToVis}}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <!-- ═══════════ STAGE 2 – BRAND CARDS ═══════════ -->
+            <Grid Grid.Row="1" Visibility="{Binding IsStage2Visible, Converter={StaticResource BoolToVis}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                    <Button Grid.Column="0"
-                Content="← Retour" 
-                Style="{StaticResource HelpChipButton}"
-                Command="{Binding ResetCommand}" 
-                Margin="0,0,8,0"
-                VerticalAlignment="Center"/>
+                <!-- Back button -->
+                <Button Grid.Row="0" Content="← Retour"
+            Style="{StaticResource HelpChipButton}"
+            Command="{Binding ResetCommand}"
+            HorizontalAlignment="Left"
+            Margin="4,0,0,4"/>
 
-                    <ScrollViewer Grid.Column="1" 
-                      HorizontalScrollBarVisibility="Auto" 
-                      VerticalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding BrandsForCategory}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Content="{Binding BrandName}" 
-                                Command="{Binding DataContext.SelectBrandCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource HelpChipButton}"
-                                Margin="0,0,8,0"
-                                Height="36"
-                                Padding="12,4"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
+                <!-- User tip -->
+                <TextBlock Grid.Row="1"
+               Text="Sélectionnez une marque :"
+               FontSize="15" FontWeight="Medium"
+               Foreground="{DynamicResource TextSecondaryBrush}"
+               Margin="8,0,0,8"/>
+
+                <!-- Brand cards (fixed size, scrollable vertically) -->
+                <ScrollViewer Grid.Row="2"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding BrandsForCategory}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.SelectBrandCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Width="120" Height="90"         
+                                        Margin="6" Padding="0"
+                                        Cursor="Hand"
+                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="cardBorder"
+                                                    CornerRadius="10"
+                                                    Background="{DynamicResource BgBrush}"
+                                                    BorderBrush="{DynamicResource BgAltBrush}"
+                                                    BorderThickness="1">
+                                                <Border.Effect>
+                                                    <DropShadowEffect ShadowDepth="1" BlurRadius="4"
+                                                          Opacity="0.1" Color="Black"/>
+                                                </Border.Effect>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Placeholder icon (same for all) -->
+                                                    <materialDesign:PackIcon Grid.Row="0"
+                                                                 Kind="TagApprove"
+                                                                 Width="28" Height="28"
+                                                                 Foreground="{DynamicResource SecondaryBrush}"
+                                                                 HorizontalAlignment="Center"
+                                                                 VerticalAlignment="Top"
+                                                                 Margin="0,8,10,4"/>
+
+                                                    <!-- Brand name – always the same area, text trimmed/centered -->
+                                                    <TextBlock Grid.Row="1"
+                                                   Text="{Binding BrandName}"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,10,8,10"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="NoWrap"
+                                                   MaxWidth="160"/>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="cardBorder"
+                                                Property="BorderBrush"
+                                                Value="{DynamicResource SecondaryBrush}"/>
+                                                    <Setter TargetName="cardBorder"
+                                                Property="BorderThickness" Value="2"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
             <!-- STAGE 3 – FILTERS + PRODUCT GRID -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,4"
                 Visibility="{Binding IsStage3Visible, Converter={StaticResource BoolToVis}}">
                 <Button Content="← Retour" Style="{StaticResource HelpChipButton}"
                 Command="{Binding ResetCommand}" Margin="0,0,8,0"/>
+                
                 <ComboBox FontSize="14" 
-          Width="160"
-          Tag="Couleur"
-          ItemsSource="{Binding AvailableColors}"
-          SelectedItem="{Binding SelectedColor}"
-          Margin="0,0,10,0"/>
+                          Width="140"
+                          materialDesign:HintAssist.Hint="Couleur"
+                          Style="{StaticResource ShiakatiComboBox}"
+                          ItemsSource="{Binding AvailableColors}"
+                          SelectedItem="{Binding SelectedColor}"
+                          Margin="0,0,10,0"/>
 
                 <ComboBox FontSize="14" 
-          Width="160"
-          Tag="Taille"
-          ItemsSource="{Binding AvailableSizes}"
-          SelectedItem="{Binding SelectedSize}"
+                          Width="140"
+                          materialDesign:HintAssist.Hint="Taille"
+                          Style="{StaticResource ShiakatiComboBox}"
+                          ItemsSource="{Binding AvailableSizes}"
+                          SelectedItem="{Binding SelectedSize}"
           />
             </StackPanel>
             <!-- Product grid -->
@@ -189,106 +255,88 @@
                 </ListBox.ItemContainerStyle>
 
                 <!-- 👇 THIS WRAPPER IS CRUCIAL -->
+
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Button Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                CommandParameter="{Binding}"
-                                Width="160" Height="108" Margin="4"
-                                Cursor="Hand">
+                CommandParameter="{Binding}"
+                Width="185" Height="124" Margin="4"
+                Cursor="Hand">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border x:Name="ContainerBorder"
-                                                Background="{DynamicResource BgBrush}"
-                                                CornerRadius="10"
-                                                BorderBrush="{DynamicResource BgAltBrush}"
-                                                BorderThickness="1">
-                                        
-
-                                        <Grid Margin="8,6">
+                                    <Border x:Name="CardBorder"
+                            Background="{DynamicResource BgBrush}"
+                            BorderBrush="{DynamicResource InputBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="8,6">
+                                        <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
 
-                                            <Grid Grid.Row="0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
+                                            <Grid Grid.Row="0" Margin="0,0,0,2">
+                                                <TextBlock Text="{Binding BrandName}"
+                                           FontFamily="{StaticResource ArabicFont}"
+                                           FontSize="11" 
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           FontWeight="Medium"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxWidth="100"
+                                           HorizontalAlignment="Left"/>
 
-                                                <TextBlock Grid.Column="0"
-                       Text="{Binding BrandName}"
-                       FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
-                       FontWeight="DemiBold"
-                       MaxWidth="100"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center" Margin="2,0"/>
-
-                                                <materialDesign:PackIcon Grid.Column="1"
-                                     Kind="Barcode"
-                                     Width="22" Height="22"
-                                     Foreground="{DynamicResource SecondaryBrush}"
-                                     HorizontalAlignment="Right"
-                                     VerticalAlignment="Center"
-                                     ToolTip="{Binding Sku}"/>
+                                                <TextBlock Text="{Binding Sku}"
+                                           FontSize="10" 
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           HorizontalAlignment="Right"
+                                           Opacity="0.7"/>
                                             </Grid>
 
-                                            <Grid Grid.Row="1" Margin="0,4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="1"
+                                       Text="{Binding ProductName}"
+                                       FontSize="13" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Margin="0,2"/>
 
-                                                <Grid Grid.Column="0">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
+                                            <Border Grid.Row="2"
+                                    Background="{DynamicResource BgAltBrush}"
+                                    CornerRadius="4"
+                                    Padding="5,2"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,2,0,4">
+                                                <TextBlock FontSize="11"
+                                           Foreground="{DynamicResource DarkAccentBrush}"
+                                           FontWeight="Medium"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxWidth="160">
+                                    <Run Text="{Binding Color}"/><Run Text=" "/><Run Text="{Binding FullSize}"/>
+                                                </TextBlock>
+                                            </Border>
 
-                                                    <TextBlock Grid.Row="0"
-                           Text="{Binding ProductName}"
-                           FontSize="14" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           HorizontalAlignment="Left"
-                           TextTrimming="CharacterEllipsis"
-                           VerticalAlignment="Center" Margin="0,0,0,3"/>
+                                            <Grid Grid.Row="3">
+                                                <TextBlock Text="{Binding SalePrice, StringFormat={}{0:N2} DA}"
+                                           FontSize="13" 
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource SecondaryBrush}"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"/>
 
-                                                    <TextBlock Grid.Row="1"
-                           Text="{Binding SalePrice, StringFormat={}{0:N2} DA}"
-                           FontSize="13" FontWeight="Bold" 
-                           Foreground="{DynamicResource SecondaryBrush}"
-                           Margin="2,0,0,0"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"/>
-                                                </Grid>
-
-                                                <Image Grid.Column="1"
-                   Source="{Binding CategoryName, Converter={StaticResource CategoryToIconConverter}}"
-                   Width="38" Height="40"
-                   Margin="6,0,2,0"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Center"/>
-                                            </Grid>
-
-                                            <Grid Grid.Row="2" Margin="0,4,0,0">
-                                                <Border Background="{DynamicResource BgAltBrush}" CornerRadius="6"
-                    Padding="6,3" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                    <TextBlock FontSize="11" Foreground="{DynamicResource DarkAccentBrush}"
-                           FontWeight="SemiBold"
-                           TextTrimming="CharacterEllipsis"
-                           MaxWidth="110">
-                    <Run Text="{Binding Color}"/> <Run Text="{Binding FullSize, StringFormat=/ {0}}" />
-                                                    </TextBlock>
-                                                </Border>
-
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource GreenLightBrush}"
-                                                                VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                                <StackPanel HorizontalAlignment="Right" 
+                                            Orientation="Horizontal" 
+                                            VerticalAlignment="Center">
+                                                    <Ellipse Width="6" Height="6"
+                                             Fill="{DynamicResource GreenLightBrush}"
+                                             Margin="0,0,4,0"/>
                                                     <TextBlock Text="{Binding StockQuantity}"
-                                                               FontSize="13" Foreground="{DynamicResource GreenLightBrush}"
-                                                               FontWeight="SemiBold"
-                                                               VerticalAlignment="Center"/>
+                                               FontSize="12"
+                                               Foreground="{DynamicResource GreenLightBrush}"
+                                               FontWeight="SemiBold"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -296,24 +344,20 @@
 
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
-                                            <Setter TargetName="ContainerBorder" Property="BorderThickness" Value="2"/>
-                                            <!-- Padding adjustment to avoid layout shift when border thickens -->
-                                            <Setter TargetName="ContainerBorder" Property="Margin" Value="-1"/>
+                                            <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource BgAltBrush}"/>
+                                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="ContainerBorder" Property="Background" Value="{DynamicResource BgAltBrush}"/>
-                                            <Setter TargetName="ContainerBorder" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
-                                            <Setter TargetName="ContainerBorder" Property="BorderThickness" Value="2"/>
-                                            <Setter TargetName="ContainerBorder" Property="Margin" Value="-1"/>
+                                            <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
-
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+
+
             </ListBox>
         </Grid>
 
@@ -627,5 +671,4 @@
             </Grid>
         </materialDesign:Card>
     </Grid>
-
 </UserControl>

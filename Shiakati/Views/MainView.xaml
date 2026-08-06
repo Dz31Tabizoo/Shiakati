@@ -29,38 +29,70 @@
 
             <!-- ═══════════ 1. TITLE BAR ═══════════ -->
             <Border x:Name="pnlControlBar" Grid.Row="0" Height="60" 
-        Background="{DynamicResource SecondaryBrush}"
-        MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
-        BorderBrush="{DynamicResource InputBorderBrush}" 
-        BorderThickness="0,0,0,1">
+                    Background="{StaticResource SecondaryBrush}"
+                    MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
+                    BorderBrush="{StaticResource SecondaryBrush}" 
+                    BorderThickness="0,0,0,1">
 
-                <Grid Margin="12,5,8,0">
+                <Grid Margin="5,5,8,0" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+
+                    <Border Grid.Column="0" 
+                            Background="{StaticResource BgAltBrush}" 
+                            CornerRadius="6" 
+                            Padding="4,2" 
+                            Margin="5,0,35,0"
+                            Height="34"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                            <Image Source="/Resources/Photos/NumidixLogoSQR.png" 
+               Width="32" Height="32" 
+               Stretch="Uniform"
+               VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Numidix Pos" 
+                   FontFamily="{StaticResource HeadingFont}" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   Foreground="{StaticResource PrimaryLightBrush}" 
+                   VerticalAlignment="Center"
+                   Margin="10,3,0,0"/>
+
+                            <Border Background="{DynamicResource SurfaceBrush}" 
+                CornerRadius="10" 
+                Padding="7,2" 
+                Margin="10,3,0,0" 
+                VerticalAlignment="Center">
+                                <TextBlock FontSize="11" 
+                       FontWeight="SemiBold"                    
+                       Foreground="{DynamicResource TextSecondaryBrush}" 
+                       VerticalAlignment="Center">
+                <Run Text="v"/><Run Text="{Binding Version, Mode=OneWay}"/>
+                                </TextBlock>
+                            </Border>
+
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Resources/Photos/shiakati logo on secondary brush.png" 
                    Width="28" Height="32" VerticalAlignment="Center" Stretch="Uniform"/>
 
                         <TextBlock Text="Shiakati  شياكتي" 
                        FontFamily="{StaticResource ArabicFont}" 
-                       FontSize="20" FontWeight="Bold" Margin="10,0,0,0"
-                       Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}" 
+                       FontSize="16" FontWeight="Bold" Margin="5,0,0,0"
+                       Foreground="{StaticResource BgAltBrush}" 
                        VerticalAlignment="Center"/>
 
-                        <Border Background="{DynamicResource BgAltBrush}" 
-                    CornerRadius="10" Padding="8,2" Margin="12,0,0,0" 
-                    VerticalAlignment="Center">
-                            <TextBlock FontSize="11" FontWeight="SemiBold" 
-                                       
-                           Foreground="{DynamicResource TextSecondaryBrush}" 
-                           VerticalAlignment="Center">
-                    <Run Text="v"/><Run Text="{Binding Version, Mode=OneWay}"/>
-                            </TextBlock>
-                        </Border>
+                        
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
@@ -298,8 +330,8 @@
             </Border>
             
             <!-- ═══════════ 2. COLLAPSIBLE NAVIGATION BAR ═══════════ -->
-            <Border Grid.Row="1" Height="80" Background="{StaticResource SurfaceBrush}"
-                    BorderBrush="{DynamicResource SecondaryBrush}" BorderThickness="0,0,0,1"
+            <Border Grid.Row="1" Height="80" Background="{DynamicResource LightSecondaryToNormalBrush}"
+                    BorderBrush="{StaticResource SecondaryBrush}" BorderThickness="0,0,0,1"
                     Visibility="{Binding ElementName=NavVisibilityToggle, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                 <Grid Margin="20,0">
                     <!-- Left: main navigation buttons -->

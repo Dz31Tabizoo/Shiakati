@@ -23,6 +23,7 @@
     <SolidColorBrush x:Key="MaterialDesign.Brush.Card.Background" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="MaterialDesign.Brush.Background" Color="{StaticResource BgColor}"/>
 
+    <SolidColorBrush x:Key="LightSecondaryToNormalBrush" Color="{StaticResource SecondaryColor}"/>
     <SolidColorBrush x:Key="InputBorderBrush" Color="#CCCCCC"/>
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
@@ -66,4 +67,12 @@
         <GradientStop Offset="0" Color="#1D4A6B"/>
         <GradientStop Offset="1" Color="#2A5B7A"/>
     </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="SecondaryDarkGradientBrush" 
+                     StartPoint="0,0" 
+                     EndPoint="1,1">
+        <GradientStop Offset="0" Color="#C9A57E"/>
+        <GradientStop Offset="1" Color="{StaticResource SurfaceColor}"/>
+    </LinearGradientBrush>
+
 </ResourceDictionary>
