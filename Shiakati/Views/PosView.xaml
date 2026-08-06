@@ -53,40 +53,52 @@
             <!-- Client selector -->
 
             <!-- STAGE 1 – CATEGORY CARDS -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled"
-                  HorizontalScrollBarVisibility="Auto"
-                  Visibility="{Binding IsStage1Visible, Converter={StaticResource BoolToVis}}">
+            <ScrollViewer Grid.Row="1" 
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled"
+              Visibility="{Binding IsStage1Visible, Converter={StaticResource BoolToVis}}">
                 <ItemsControl ItemsSource="{Binding Categories}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
+                            <!-- WrapPanel packs items tightly left‑to‑right, then down -->
+                            <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            CommandParameter="{Binding}"
-                            Width="140" Height="140"
-                            Margin="4" Padding="0"
-                            Cursor="Hand"
-                            Style="{StaticResource MaterialDesignFlatButton}">
-                                <Border CornerRadius="12" Background="{DynamicResource BgBrush}"
-                                BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="1"
-                                Width="130" Height="130">
-                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Image Source="{Binding CategoryName, Converter={StaticResource CategoryToIconConverter}}"
-                                       Width="64" Height="64" Stretch="Uniform"/>
-                                        <TextBlock Text="{Binding CategoryName}" FontSize="14"
-                                           FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
-                                           Margin="0,6,0,0" TextWrapping="Wrap" TextAlignment="Center"/>
-                                    </StackPanel>
+                        CommandParameter="{Binding}"
+                        Width="180" Height="290"
+                        Margin="5" Padding="0"
+                        Cursor="Hand"
+                        Style="{StaticResource MaterialDesignFlatButton}">
+                                <Border CornerRadius="12"
+                            Background="{DynamicResource BgBrush}"
+                            BorderBrush="{DynamicResource BgAltBrush}"
+                            BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0"
+                                   Source="{Binding CategoryName, Converter={StaticResource CategoryCardImageConverter}}"
+                                   Stretch="Uniform"
+                                   Margin="15"/>
+                                        <TextBlock Grid.Row="1"
+                                       Text="{Binding CategoryName}"
+                                       FontSize="18" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,10"
+                                       TextWrapping="Wrap" TextAlignment="Center"/>
+                                    </Grid>
                                 </Border>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-
             <!-- STAGE 2 – BRAND CHIPS (horizontal scroll) -->
             <Border Grid.Row="1" Padding="0,4"
         Visibility="{Binding IsStage2Visible, Converter={StaticResource BoolToVis}}">

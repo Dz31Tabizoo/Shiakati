@@ -5,7 +5,7 @@
         xmlns:converters="clr-namespace:Shiakati.Converters"
         Title="Shiakati POS" Height="800" Width="1280"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        Background="Transparent"
+        Background="{DynamicResource BgAltBrush}"
         WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         FontFamily="{DynamicResource BodyFont}">
@@ -16,7 +16,7 @@
     </Window.Resources>
 
     <!-- ============ ROUNDED WINDOW CORNERS ============ -->
-    <Border CornerRadius="14" Background="{DynamicResource BgBrush}">
+    <Border CornerRadius="14" Background="{DynamicResource BgAltBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -55,6 +55,7 @@
                     CornerRadius="10" Padding="8,2" Margin="12,0,0,0" 
                     VerticalAlignment="Center">
                             <TextBlock FontSize="11" FontWeight="SemiBold" 
+                                       
                            Foreground="{DynamicResource TextSecondaryBrush}" 
                            VerticalAlignment="Center">
                     <Run Text="v"/><Run Text="{Binding Version, Mode=OneWay}"/>
@@ -297,8 +298,8 @@
             </Border>
             
             <!-- ═══════════ 2. COLLAPSIBLE NAVIGATION BAR ═══════════ -->
-            <Border Grid.Row="1" Height="80" Background="{DynamicResource BgBrush}"
-                    BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1"
+            <Border Grid.Row="1" Height="80" Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource SecondaryBrush}" BorderThickness="0,0,0,1"
                     Visibility="{Binding ElementName=NavVisibilityToggle, Path=IsChecked, Converter={StaticResource BoolToVis}}">
                 <Grid Margin="20,0">
                     <!-- Left: main navigation buttons -->
@@ -443,9 +444,9 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header bar (visible when CurrentViewTitle is NOT null AND NOT empty) -->
-                <Border Grid.Row="0" Height="48"
+                <Border Grid.Row="0" Height="32"
             Background="{DynamicResource SurfaceBrush}"
-            BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
+            BorderBrush="{DynamicResource SecondaryBrush}" BorderThickness="0,0,0,1">
                     <Border.Style>
                         <Style TargetType="Border">
                             <!-- Default: visible -->
@@ -463,24 +464,24 @@
                     </Border.Style>
                     <Grid Margin="16,0">
                         <TextBlock Text="{Binding CurrentViewTitle}"
-                       FontFamily="{StaticResource HeadingFont}"
-                       FontSize="18" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryLightBrush}"
+                       FontFamily="{StaticResource MaterialDesignFont}"
+                       FontSize="15" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center"/>
                         <Button HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="Fermer cette vue"
                                 Margin="0,0,10,0"
                     Command="{Binding CloseCurrentViewCommand}"
-                    Foreground="{DynamicResource PrimaryLightBrush}"
-                    Width="36" Height="36">
-                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="{StaticResource BgBrush}"/>
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    Width="24" Height="24">
+                            <materialDesign:PackIcon Kind="Close" Width="20" Height="20" Foreground="{StaticResource TextPrimaryBrush}"/>
                         </Button>
                     </Grid>
                 </Border>
 
                 <!-- Original content area -->
-                <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Margin="16"/>
+                <ContentControl Grid.Row="1" Background="{DynamicResource BgAltBrush}" Content="{Binding CurrentView}" Margin="16"/>
             </Grid>
         </Grid>
     </Border>

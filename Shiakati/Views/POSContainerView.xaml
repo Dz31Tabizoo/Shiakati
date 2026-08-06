@@ -3,50 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:Shiakati.Views"
+             Background="Transparent"
              FontFamily="{StaticResource BodyFont}">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Header -->
-        <Border  Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
-                BorderBrush="{DynamicResource BgAltBrush}" BorderThickness="0,0,0,1">
-            <Grid>
-                <!-- Larger, touch‑optimised “Nouvelle vente” button -->
-                <Button HorizontalAlignment="Right"
-                        VerticalAlignment= "Top"
-                        Command="{Binding AddNewTabCommand}"
-                        Style="{StaticResource PrimaryButton}"
-                        MinHeight="35"
-                        MinWidth="120"
-                        FontSize="18"
-                        Margin="0,-6,8,0"
-                        
-                        >
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus"
-                                         Width="24" Height="24"
-                                         VerticalAlignment="Center"
-                                         Margin="0,0,8,0"/>
-                        <TextBlock FontWeight="SemiBold" Foreground="{StaticResource BgBrush}" Text="Nouvelle vente" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-        </Border>
-        <!-- Tab control -->
-        <TabControl Grid.Row="1"
-                    ItemsSource="{Binding PosTabs}"
+        <!-- Tab control – fills the entire UserControl -->
+        <TabControl ItemsSource="{Binding PosTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     Style="{StaticResource MaterialDesignTabControl}"
-                    Background="{DynamicResource SurfaceBrush}">
+                    BorderBrush="{DynamicResource BgAltBrush}"
+                    Background="{DynamicResource BgAltBrush}">
 
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="4,0">
-                        <materialDesign:PackIcon Kind="Receipt"
+                        <materialDesign:PackIcon Kind="TicketOutline"
                                                  Width="16" Height="16"
                                                  VerticalAlignment="Center"
                                                  Foreground="{DynamicResource DarkLightTextNavyWhiteBrush}"
@@ -59,7 +30,7 @@
                         <Button Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
                                 CommandParameter="{Binding}"
                                 Style="{DynamicResource MaterialDesignIconForegroundButton}"
-                                Width="20" Height="20" Margin="0,-2,0,0"
+                                Width="20" Height="20" Margin="5,-2,0,0"
                                 ToolTip="Fermer la vente">
                             <materialDesign:PackIcon Kind="Close" Width="12" Height="12"/>
                         </Button>
@@ -73,5 +44,18 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
+
+        <!-- Compact "new tab" button floating over the tab strip -->
+        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                Width="30" Height="30"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,5,8,0"
+                Command="{Binding AddNewTabCommand}"
+                ToolTip="Nouvelle vente"
+                Background="{DynamicResource SecondaryBrush}"
+                Foreground="{StaticResource TextOnPrimaryBrush}">
+            <materialDesign:PackIcon Kind="PersonAddOutline" Width="18" Height="18"/>
+        </Button>
     </Grid>
 </UserControl>

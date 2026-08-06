@@ -80,7 +80,7 @@
                     <converters:IntToVisibilityConverter x:Key="IntToVisibility"/>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
 
-
+                    <converters:CategoryCardImageConverter x:Key="CategoryCardImageConverter"/>
                     <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibility"/>
                     <converters:BoolToColorConverter x:Key="BoolToColor"/>
                     <converters:BoolToIconConverter x:Key="BoolToIcon"/>

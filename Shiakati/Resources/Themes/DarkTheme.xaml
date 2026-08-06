@@ -11,7 +11,7 @@
     <Color x:Key="ShadowColor">#33FFFFFF</Color>
     <Color x:Key="BgColor">#0A1926</Color>
     <Color x:Key="BgAltColor">#0F2437</Color>
-    <Color x:Key="SurfaceColor">#13314B</Color>
+    <Color x:Key="SurfaceColor">#88633c</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
@@ -19,21 +19,21 @@
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}"/>
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
     <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
-    <SolidColorBrush x:Key="BgAltBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="BgAltBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
     <SolidColorBrush x:Key="DarkAccentBrush" Color="{StaticResource DarkAccentColor}"/>
     <SolidColorBrush x:Key="GreenLightBrush" Color="{StaticResource GreenLightColor}"/>
     <SolidColorBrush x:Key="InputBorderBrush" Color="#3A5068"/>
     <SolidColorBrush x:Key="DarkLightTextNavyWhiteBrush" Color="#EEEEEE"/>
 
-    <SolidColorBrush x:Key="MaterialDesignCardBackground" Color="{StaticResource SurfaceColor}"/>
-    <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignCardBackground" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="MaterialDesignBackground" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="MaterialDesignTextFieldBoxBackground" Color="Transparent"/>
     <SolidColorBrush x:Key="MaterialDesignTextBoxHoverBackground" Color="Transparent"/>
 
-    <SolidColorBrush x:Key="MaterialDesign.Brush.Card.Background" Color="{StaticResource SurfaceColor}"/>
-    <SolidColorBrush x:Key="MaterialDesign.Brush.Paper" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Card.Background" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="MaterialDesign.Brush.Paper" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="MaterialDesign.Brush.Background" Color="{StaticResource BgColor}"/>
     <SolidColorBrush x:Key="MaterialDesign.Brush.TextBox.HoverBackground" Color="Transparent"/>
     <SolidColorBrush x:Key="MaterialDesign.Brush.TextBox.Viewbox.Background" Color="Transparent"/>
